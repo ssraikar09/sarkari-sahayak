@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { VoiceSettingsProvider } from "@/lib/voice/voiceSettings";
+import { AppNav } from "@/components/layout/AppNav";
 
 function NotFoundComponent() {
   return (
@@ -121,8 +122,13 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <VoiceSettingsProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+        <div className="flex min-h-screen flex-col">
+          <AppNav />
+          <main className="flex-1">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </main>
+        </div>
         <Toaster richColors position="top-center" />
       </VoiceSettingsProvider>
     </QueryClientProvider>
