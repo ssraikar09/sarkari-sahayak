@@ -7,7 +7,11 @@ import type { GovernmentScheme } from "@/lib/schemes";
 export function SchemeCard({ scheme }: { scheme: GovernmentScheme }) {
   const isNational = scheme.scheme_scope === "National";
   return (
-    <article className="group flex flex-col rounded-2xl border bg-card p-5 shadow-sm transition hover:border-primary/40 hover:shadow-md">
+    <Link
+      to="/schemes/$id"
+      params={{ id: scheme.id }}
+      className="group flex flex-col rounded-2xl border bg-card p-5 shadow-sm transition hover:border-primary/40 hover:shadow-md"
+    >
       <div className="flex flex-wrap items-center gap-2">
         <Badge
           className={
@@ -43,13 +47,11 @@ export function SchemeCard({ scheme }: { scheme: GovernmentScheme }) {
           <Calendar className="size-3" />
           Updated {new Date(scheme.last_updated).toLocaleDateString("en-IN")}
         </span>
-        <Button asChild size="sm" variant="ghost" className="gap-1 group-hover:text-primary">
-          <Link to="/schemes/$id" params={{ id: scheme.id }}>
-            View Details
-            <ArrowRight className="size-3.5" />
-          </Link>
-        </Button>
+        <span className="inline-flex items-center gap-1 text-sm font-medium text-primary">
+          View Details
+          <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+        </span>
       </div>
-    </article>
+    </Link>
   );
 }
