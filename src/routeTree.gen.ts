@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
+import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SchemesIdRouteImport } from './routes/schemes.$id'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
@@ -29,6 +30,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const EligibilityRoute = EligibilityRouteImport.update({
   id: '/eligibility',
   path: '/eligibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistantRoute = AssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,6 +55,7 @@ const ProfileIdRoute = ProfileIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/eligibility': typeof EligibilityRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/eligibility': typeof EligibilityRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/eligibility': typeof EligibilityRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
@@ -76,6 +85,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/assistant'
     | '/eligibility'
     | '/onboarding'
     | '/schemes'
@@ -84,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/assistant'
     | '/eligibility'
     | '/onboarding'
     | '/schemes'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/assistant'
     | '/eligibility'
     | '/onboarding'
     | '/schemes'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AssistantRoute: typeof AssistantRoute
   EligibilityRoute: typeof EligibilityRoute
   OnboardingRoute: typeof OnboardingRoute
   SchemesRoute: typeof SchemesRouteWithChildren
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/eligibility'
       fullPath: '/eligibility'
       preLoaderRoute: typeof EligibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistant': {
+      id: '/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -167,6 +187,7 @@ const SchemesRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AssistantRoute: AssistantRoute,
   EligibilityRoute: EligibilityRoute,
   OnboardingRoute: OnboardingRoute,
   SchemesRoute: SchemesRouteWithChildren,
@@ -175,3 +196,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

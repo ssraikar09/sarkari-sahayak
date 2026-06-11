@@ -1,0 +1,345 @@
+import { createFileRoute, Link, useServerFn } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import {
+  ArrowLeft,
+  ArrowUp,
+  BookOpen,
+  ExternalLink,
+  MapPin,
+  MessageCircle,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { askAssistant } from "@/lib/rag/assistant.functions";
+import { getStoredProfileId } from "@/lib/citizen-profile/storage";
+import type { AssistantMessage, AssistantSource } from "@/lib/rag/types";
+
+export const Route = createFileRoute("/assistant")({
+  head: () => ({
+    meta: [
+      { title: "AI Welfare Assistant — Sarkari Sahayak X" },
+      {
+        name: "description",
+        content:
+          "Ask questions about government schemes and get trustworthy, source-cited answers from Sarkari Sahayak's verified knowledge base.",
+      },
+      {
+        property: "og:title",
+        content: "AI Welfare Assistant — Sarkari Sahayak X",
+      },
+      {
+        property: "og:description",
+        content:
+          "Explainable, verified scheme answers powered by Sarkari Sahayak's Hybrid RAG engine.",
+      },
+    ],
+  }),
+  component: AssistantPage,
+});
+
+const SUGGESTED_PROMPTS: string[] = [
+  "What schemes am I eligible for?",
+  "Explain PM-KISAN.",
+  "What documents are required for Mudra Yojana?",
+  "Suggest schemes for students.",
+];
+
+function AssistantPage() {
+  const ask = useServerFn(askAssistant);
+  const [messages, setMessages] = useState<AssistantMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setProfileId(getStoredProfileId());
+  }, []);
+
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages, loading]);
+
+  const submit = async (raw: string) => {
+    const query = raw.trim();
+    if (!query || loading) return;
+
+    const userMsg: AssistantMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: query,
+      createdAt: new Date().toISOString(),
+    };
+    setMessages((m) => [...m, userMsg]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const res = await ask({
+        data: { query, citizenProfileId: profileId },
+      });
+      const reply: AssistantMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: res.answer,
+        sources: res.sources,
+        fallback: res.fallback,
+        createdAt: new Date().toISOString(),
+      };
+      setMessages((m) => [...m, reply]);
+    } catch (err) {
+      console.error(err);
+      setMessages((m) => [
+        ...m,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content:
+            "Something went wrong while reaching the assistant. Please try again.",
+          fallback: true,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+    } finally {
+      setLoading(false);
+      requestAnimationFrame(() => textareaRef.current?.focus());
+    }
+  };
+
+  const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      void submit(input);
+    }
+  };
+
+  return (
+    <main className="flex min-h-screen flex-col bg-gradient-to-b from-background to-accent/30">
+      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6 sm:py-10">
+        <div className="mb-4 flex items-center justify-between">
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/">
+              <ArrowLeft className="mr-1 size-4" />
+              Home
+            </Link>
+          </Button>
+          <Badge variant="secondary" className="gap-1">
+            <Sparkles className="size-3" />
+            Module 4 · Hybrid RAG
+          </Badge>
+        </div>
+
+        <header className="mb-4">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            AI Welfare Assistant
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Ask about eligibility, documents, benefits or any scheme. Every
+            answer is grounded in Sarkari Sahayak's verified database.
+          </p>
+        </header>
+
+        <div
+          ref={scrollRef}
+          className="flex-1 space-y-4 overflow-y-auto rounded-2xl border bg-card/60 p-4 shadow-sm sm:p-6"
+        >
+          {messages.length === 0 ? (
+            <EmptyState onPick={(p) => void submit(p)} />
+          ) : (
+            messages.map((m) => <MessageBubble key={m.id} message={m} />)
+          )}
+          {loading ? <TypingIndicator /> : null}
+        </div>
+
+        <form
+          className="mt-4 flex items-end gap-2 rounded-2xl border bg-card p-2 shadow-sm"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void submit(input);
+          }}
+        >
+          <Textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={onKeyDown}
+            rows={1}
+            placeholder="Ask a question about any government scheme…"
+            className="min-h-11 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
+            aria-label="Message the assistant"
+          />
+          <Button
+            type="submit"
+            size="icon"
+            className="size-10 shrink-0"
+            disabled={!input.trim() || loading}
+            aria-label="Send"
+          >
+            <ArrowUp className="size-4" />
+          </Button>
+        </form>
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          Answers are generated from verified schemes only. Always confirm
+          critical details on the official link.
+        </p>
+      </div>
+    </main>
+  );
+}
+
+function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
+  return (
+    <div className="space-y-5 py-6 text-center sm:py-10">
+      <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <MessageCircle className="size-7" aria-hidden />
+      </div>
+      <div>
+        <h2 className="text-lg font-semibold text-foreground">
+          How can I help today?
+        </h2>
+        <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+          Try one of these to get started.
+        </p>
+      </div>
+      <div className="mx-auto grid max-w-xl gap-2 sm:grid-cols-2">
+        {SUGGESTED_PROMPTS.map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => onPick(p)}
+            className="rounded-xl border bg-background px-4 py-3 text-left text-sm text-foreground transition hover:border-primary/40 hover:bg-accent"
+          >
+            {p}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MessageBubble({ message }: { message: AssistantMessage }) {
+  const isUser = message.role === "user";
+  return (
+    <div
+      className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}
+    >
+      <div
+        className={cn(
+          "max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+          isUser
+            ? "bg-primary text-primary-foreground"
+            : "bg-background text-foreground shadow-sm ring-1 ring-border",
+        )}
+      >
+        {isUser ? (
+          <p className="whitespace-pre-wrap">{message.content}</p>
+        ) : (
+          <>
+            <div className="prose prose-sm max-w-none text-foreground prose-p:my-2 prose-ul:my-2 prose-headings:mt-3 prose-headings:mb-1 prose-strong:text-foreground">
+              <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
+            {message.fallback && (!message.sources || message.sources.length === 0) ? (
+              <TrustFallbackActions />
+            ) : null}
+            {message.sources && message.sources.length > 0 ? (
+              <VerifiedSources sources={message.sources} />
+            ) : null}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function VerifiedSources({ sources }: { sources: AssistantSource[] }) {
+  return (
+    <div className="mt-3 rounded-xl border bg-accent/40 p-3">
+      <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+        <ShieldCheck className="size-3.5 text-primary" aria-hidden />
+        Verified Sources
+      </div>
+      <ul className="mt-2 space-y-1.5">
+        {sources.map((s) => (
+          <li key={s.id} className="flex items-start gap-2 text-xs">
+            <Badge
+              variant="secondary"
+              className="mt-0.5 gap-1 px-1.5 py-0 text-[10px]"
+            >
+              <MapPin className="size-2.5" />
+              {s.scheme_scope === "National" ? "National" : s.state}
+            </Badge>
+            <div className="min-w-0 flex-1">
+              <Link
+                to="/schemes/$id"
+                params={{ id: s.id }}
+                className="font-medium text-foreground hover:text-primary"
+              >
+                {s.scheme_name}
+              </Link>
+              {s.official_link ? (
+                <a
+                  href={s.official_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-2 inline-flex items-center gap-0.5 text-muted-foreground hover:text-primary"
+                >
+                  Official link
+                  <ExternalLink className="size-3" aria-hidden />
+                </a>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function TrustFallbackActions() {
+  return (
+    <div className="mt-3 flex flex-wrap gap-2">
+      <Button asChild size="sm" variant="outline">
+        <Link to="/schemes">
+          <BookOpen className="mr-1 size-3.5" />
+          Browse Schemes
+        </Link>
+      </Button>
+      <Button asChild size="sm" variant="outline">
+        <a
+          href="https://www.myscheme.gov.in/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ExternalLink className="mr-1 size-3.5" />
+          Official Resources
+        </a>
+      </Button>
+    </div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex justify-start">
+      <div className="flex items-center gap-1.5 rounded-2xl bg-background px-4 py-3 text-sm text-muted-foreground shadow-sm ring-1 ring-border">
+        <span className="size-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.2s]" />
+        <span className="size-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.1s]" />
+        <span className="size-2 animate-bounce rounded-full bg-muted-foreground" />
+        <span className="ml-1">Thinking…</span>
+      </div>
+    </div>
+  );
+}
