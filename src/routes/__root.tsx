@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { VoiceSettingsProvider } from "@/lib/voice/voiceSettings";
+import { AppNav } from "@/components/layout/AppNav";
 
 function NotFoundComponent() {
   return (
