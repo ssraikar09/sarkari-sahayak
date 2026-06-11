@@ -69,6 +69,18 @@ const sectionD: CardItem[] = [
 ];
 
 function Welcome() {
+  const { data: schemeCount } = useQuery({
+    queryKey: ["schemes-count"],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { count } = await (supabase as any)
+        .from("government_schemes")
+        .select("*", { count: "exact", head: true });
+      return (count as number | null) ?? null;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+  const displayCount = schemeCount ? `${schemeCount}+` : "150+";
   return (
     <div className="bg-gradient-to-b from-background via-background to-accent/40">
       {/* Hero */}
