@@ -19,6 +19,11 @@ import { cn } from "@/lib/utils";
 import { askAssistant } from "@/lib/rag/assistant.functions";
 import { getStoredProfileId } from "@/lib/citizen-profile/storage";
 import type { AssistantMessage, AssistantSource } from "@/lib/rag/types";
+import { toast } from "sonner";
+import { MicButton } from "@/components/voice/MicButton";
+import { ListenButton } from "@/components/voice/ListenButton";
+import { VoiceSettingsBar } from "@/components/voice/VoiceSettingsBar";
+import { useVoiceSettings } from "@/lib/voice/voiceSettings";
 
 export const Route = createFileRoute("/assistant")({
   head: () => ({
@@ -52,10 +57,12 @@ const SUGGESTED_PROMPTS: string[] = [
 
 function AssistantPage() {
   const ask = useServerFn(askAssistant);
+  const { accessibilityMode } = useVoiceSettings();
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [profileId, setProfileId] = useState<string | null>(null);
+  const [lastAssistantId, setLastAssistantId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
