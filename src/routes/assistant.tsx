@@ -84,13 +84,15 @@ function AssistantPage() {
   }, [messages, loading]);
 
   const submit = async (raw: string) => {
-    const query = raw.trim();
-    if (!query || loading) return;
+    const original = raw.trim();
+    if (!original || loading) return;
+    // Normalize regional scheme references so the RAG pipeline can match them.
+    const query = normalizeVoiceQuery(original);
 
     const userMsg: AssistantMessage = {
       id: crypto.randomUUID(),
       role: "user",
-      content: query,
+      content: original,
       createdAt: new Date().toISOString(),
     };
     setMessages((m) => [...m, userMsg]);
@@ -101,10 +103,21 @@ function AssistantPage() {
       const res = await ask({
         data: { query, citizenProfileId: profileId },
       });
+      let displayContent = res.answer;
+      if (advancedMultilingual && language !== "en-IN") {
+        const t = await translateFromEnglish(res.answer, language);
+        if (t.translated) {
+          displayContent = t.text;
+        } else {
+          toast.message(
+            "Regional narration is currently unavailable. English narration will be used.",
+          );
+        }
+      }
       const reply: AssistantMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: res.answer,
+        content: displayContent,
         sources: res.sources,
         fallback: res.fallback,
         createdAt: new Date().toISOString(),
