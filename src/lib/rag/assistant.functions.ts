@@ -44,7 +44,7 @@ export const askAssistant = createServerFn({ method: "POST" })
       profile = (row as never) ?? null;
     }
 
-    const retrieved = await retrieveSchemes(data.query, profile);
+    const retrieved = await retrieveSchemes(data.query, profile, intent);
     const retrievedIds = retrieved.map((r) => r.scheme.id);
 
     // Log the query for analytics. Never let logging break the response.
