@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as FamilyPlannerRouteImport } from './routes/family-planner'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -28,6 +29,11 @@ const SchemesRoute = SchemesRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NavigatorRoute = NavigatorRouteImport.update({
+  id: '/navigator',
+  path: '/navigator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FamilyPlannerRoute = FamilyPlannerRouteImport.update({
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
+  '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/profile/$id': typeof ProfileIdRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
+  '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/profile/$id': typeof ProfileIdRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
+  '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/profile/$id': typeof ProfileIdRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/eligibility'
     | '/family-planner'
+    | '/navigator'
     | '/onboarding'
     | '/schemes'
     | '/profile/$id'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/eligibility'
     | '/family-planner'
+    | '/navigator'
     | '/onboarding'
     | '/schemes'
     | '/profile/$id'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/eligibility'
     | '/family-planner'
+    | '/navigator'
     | '/onboarding'
     | '/schemes'
     | '/profile/$id'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   EligibilityRoute: typeof EligibilityRoute
   FamilyPlannerRoute: typeof FamilyPlannerRoute
+  NavigatorRoute: typeof NavigatorRoute
   OnboardingRoute: typeof OnboardingRoute
   SchemesRoute: typeof SchemesRouteWithChildren
   ProfileIdRoute: typeof ProfileIdRoute
@@ -173,6 +186,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/navigator': {
+      id: '/navigator'
+      path: '/navigator'
+      fullPath: '/navigator'
+      preLoaderRoute: typeof NavigatorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/family-planner': {
@@ -252,6 +272,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   EligibilityRoute: EligibilityRoute,
   FamilyPlannerRoute: FamilyPlannerRoute,
+  NavigatorRoute: NavigatorRoute,
   OnboardingRoute: OnboardingRoute,
   SchemesRoute: SchemesRouteWithChildren,
   ProfileIdRoute: ProfileIdRoute,
@@ -259,3 +280,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
