@@ -80,7 +80,15 @@ function SchemeExplorer() {
       .then((rows) => {
         if (!active) return;
         setSchemes(rows);
-        // Log unsuccessful searches so we can prioritise what to add next.
+        // Log every search/filter interaction so Module 11 analytics can
+        // aggregate "Most Searched Categories" from real exploration data.
+        void logSchemeSearch({
+          query: debounced,
+          state: state === ALL ? null : state,
+          category: category === ALL ? null : category,
+          scope: scope === "All" ? null : scope,
+        });
+        // Keep prioritisation signal for unsuccessful keyword searches.
         if (rows.length === 0 && debounced.trim()) {
           void logUnsuccessfulSearch(
             debounced.trim(),
