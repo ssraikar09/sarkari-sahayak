@@ -1,13 +1,19 @@
-export type VoiceLanguageCode = "en-IN";
+export type VoiceLanguageCode = "en-IN" | "hi-IN" | "kn-IN" | "ta-IN" | "te-IN";
 
 export type VoiceLanguage = {
   code: VoiceLanguageCode;
   label: string;
   nativeLabel: string;
+  /** ISO 639-1 short code used by translation APIs. */
+  short: "en" | "hi" | "kn" | "ta" | "te";
 };
 
 export const VOICE_LANGUAGES: VoiceLanguage[] = [
-  { code: "en-IN", label: "English", nativeLabel: "English" },
+  { code: "en-IN", label: "English", nativeLabel: "English", short: "en" },
+  { code: "hi-IN", label: "Hindi", nativeLabel: "हिन्दी", short: "hi" },
+  { code: "kn-IN", label: "Kannada", nativeLabel: "ಕನ್ನಡ", short: "kn" },
+  { code: "ta-IN", label: "Tamil", nativeLabel: "தமிழ்", short: "ta" },
+  { code: "te-IN", label: "Telugu", nativeLabel: "తెలుగు", short: "te" },
 ];
 
 export const DEFAULT_VOICE_LANGUAGE: VoiceLanguageCode = "en-IN";
