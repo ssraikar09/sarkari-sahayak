@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelfareRoadmapRouteImport } from './routes/welfare-roadmap'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NavigatorRouteImport } from './routes/navigator'
@@ -25,6 +26,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SchemesIdRouteImport } from './routes/schemes.$id'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
 
+const WelfareRoadmapRoute = WelfareRoadmapRouteImport.update({
+  id: '/welfare-roadmap',
+  path: '/welfare-roadmap',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SchemesRoute = SchemesRouteImport.update({
   id: '/schemes',
   path: '/schemes',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
+  '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
   '/schemes/$id': typeof SchemesIdRoute
 }
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
+  '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
   '/schemes/$id': typeof SchemesIdRoute
 }
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
+  '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
   '/schemes/$id': typeof SchemesIdRoute
 }
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/navigator'
     | '/onboarding'
     | '/schemes'
+    | '/welfare-roadmap'
     | '/profile/$id'
     | '/schemes/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/navigator'
     | '/onboarding'
     | '/schemes'
+    | '/welfare-roadmap'
     | '/profile/$id'
     | '/schemes/$id'
   id:
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/navigator'
     | '/onboarding'
     | '/schemes'
+    | '/welfare-roadmap'
     | '/profile/$id'
     | '/schemes/$id'
   fileRoutesById: FileRoutesById
@@ -221,11 +233,19 @@ export interface RootRouteChildren {
   NavigatorRoute: typeof NavigatorRoute
   OnboardingRoute: typeof OnboardingRoute
   SchemesRoute: typeof SchemesRouteWithChildren
+  WelfareRoadmapRoute: typeof WelfareRoadmapRoute
   ProfileIdRoute: typeof ProfileIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welfare-roadmap': {
+      id: '/welfare-roadmap'
+      path: '/welfare-roadmap'
+      fullPath: '/welfare-roadmap'
+      preLoaderRoute: typeof WelfareRoadmapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/schemes': {
       id: '/schemes'
       path: '/schemes'
@@ -359,8 +379,19 @@ const rootRouteChildren: RootRouteChildren = {
   NavigatorRoute: NavigatorRoute,
   OnboardingRoute: OnboardingRoute,
   SchemesRoute: SchemesRouteWithChildren,
+  WelfareRoadmapRoute: WelfareRoadmapRoute,
   ProfileIdRoute: ProfileIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
