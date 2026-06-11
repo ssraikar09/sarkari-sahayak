@@ -15,7 +15,9 @@ import { SchemeCard } from "@/components/schemes/SchemeCard";
 import {
   SCHEME_CATEGORIES,
   SCHEME_STATES,
+  SchemeFallback,
   listSchemes,
+  logUnsuccessfulSearch,
   type GovernmentScheme,
   type SchemeScope,
 } from "@/lib/schemes";
