@@ -1,4 +1,8 @@
-/* Lightweight wrapper around window.speechSynthesis. */
+/* Lightweight wrapper around window.speechSynthesis.
+ * Output is always English for consistent accessibility. */
+
+const TTS_OUTPUT_LANG = "en-IN";
+const TTS_OUTPUT_FALLBACK = "en-US";
 
 export function isSpeechSynthesisSupported(): boolean {
   return typeof window !== "undefined" && "speechSynthesis" in window;
@@ -75,10 +79,11 @@ export async function speak(text: string, opts: SpeakOptions): Promise<void> {
   cancelSpeech();
 
   const utter = new SpeechSynthesisUtterance(clean);
-  utter.lang = opts.lang;
+  // Always render TTS in English regardless of the selected input language.
+  utter.lang = TTS_OUTPUT_LANG;
   utter.rate = opts.rate ?? 1;
   utter.pitch = opts.pitch ?? 1;
-  const voice = pickVoice(opts.lang);
+  const voice = pickVoice(TTS_OUTPUT_LANG) ?? pickVoice(TTS_OUTPUT_FALLBACK);
   if (voice) utter.voice = voice;
   utter.onstart = () => opts.onStart?.();
   utter.onend = () => opts.onEnd?.();
