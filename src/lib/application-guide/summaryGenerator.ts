@@ -43,6 +43,15 @@ export function buildSummaryText(g: SchemeGuidance): string {
   return lines.join("\n");
 }
 
+export const SUMMARY_DOWNLOAD_KEY = "sahayak.dashboard.summariesDownloaded";
+
+export function getSummaryDownloadCount(): number {
+  if (typeof window === "undefined") return 0;
+  const raw = window.localStorage.getItem(SUMMARY_DOWNLOAD_KEY);
+  const n = raw ? Number(raw) : 0;
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
 export function downloadSummary(g: SchemeGuidance): void {
   if (typeof window === "undefined") return;
   const text = buildSummaryText(g);
@@ -58,4 +67,12 @@ export function downloadSummary(g: SchemeGuidance): void {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  try {
+    window.localStorage.setItem(
+      SUMMARY_DOWNLOAD_KEY,
+      String(getSummaryDownloadCount() + 1),
+    );
+  } catch {
+    /* ignore quota errors */
+  }
 }
