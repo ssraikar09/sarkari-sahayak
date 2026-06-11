@@ -32,6 +32,8 @@ import {
   saveChecklistState,
   type SchemeGuidance,
 } from "@/lib/application-guide";
+import { ListenButton } from "@/components/voice/ListenButton";
+import { VoiceSettingsBar } from "@/components/voice/VoiceSettingsBar";
 
 const searchSchema = z.object({
   schemeId: z.string().uuid().optional(),
@@ -382,9 +384,19 @@ function GuidanceView({
 
       {/* Timeline */}
       <section className="rounded-2xl border bg-card p-5 shadow-sm sm:p-6">
-        <h3 className="text-lg font-semibold text-foreground">
-          Step-by-step timeline
-        </h3>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-lg font-semibold text-foreground">
+            Step-by-step timeline
+          </h3>
+          <ListenButton
+            text={[
+              `Application steps for ${s.scheme_name}.`,
+              ...guidance.steps.map(
+                (st) => `Step ${st.index}: ${st.title}.${st.detail ? " " + st.detail : ""}`,
+              ),
+            ].join(" ")}
+          />
+        </div>
         <ol className="mt-4 space-y-4">
           {guidance.steps.map((step, idx) => (
             <li key={step.index} className="flex gap-3">
