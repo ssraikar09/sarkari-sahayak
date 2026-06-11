@@ -82,14 +82,7 @@ function SchemeDetails() {
             <Skeleton className="h-24 w-full" />
           </div>
         ) : error || !scheme ? (
-          <div className="rounded-2xl border bg-card p-8 text-center shadow-sm">
-            <h1 className="text-xl font-semibold text-foreground">
-              {error ?? "Scheme not found"}
-            </h1>
-            <Button asChild className="mt-5">
-              <Link to="/schemes">Browse all schemes</Link>
-            </Button>
-          </div>
+          <SchemeFallback />
         ) : (
           <article className="overflow-hidden rounded-3xl border bg-card shadow-sm">
             <div className="bg-gradient-to-br from-primary to-primary/70 p-6 text-primary-foreground sm:p-8">
