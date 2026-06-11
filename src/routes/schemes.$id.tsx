@@ -8,10 +8,13 @@ import {
   ArrowLeft,
   Calendar,
   CheckCircle2,
+  ClipboardList,
+  Clock,
   ExternalLink,
   FileText,
   Gift,
   MapPin,
+  Phone,
   Tag,
 } from "lucide-react";
 import { getSchemeById, type GovernmentScheme } from "@/lib/schemes";
