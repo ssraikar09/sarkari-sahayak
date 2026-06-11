@@ -59,7 +59,7 @@ const SUGGESTED_PROMPTS: string[] = [
 
 function AssistantPage() {
   const ask = useServerFn(askAssistant);
-  const { accessibilityMode } = useVoiceSettings();
+  const { accessibilityMode, advancedMultilingual, language } = useVoiceSettings();
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
