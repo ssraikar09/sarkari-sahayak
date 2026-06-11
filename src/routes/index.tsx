@@ -42,6 +42,9 @@ function Welcome() {
           <Button asChild size="lg" className="h-14 px-10 text-base">
             <Link to="/onboarding">Get Started</Link>
           </Button>
+          <Button asChild size="lg" variant="secondary" className="h-14 px-8 text-base">
+            <Link to="/eligibility">Check My Eligibility</Link>
+          </Button>
           <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base">
             <Link to="/schemes">Browse Schemes</Link>
           </Button>
