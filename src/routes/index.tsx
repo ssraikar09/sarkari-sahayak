@@ -68,36 +68,44 @@ const sectionD: CardItem[] = [
 
 function Welcome() {
   return (
-    <div className="bg-gradient-to-b from-background via-background to-accent/20">
+    <div className="bg-gradient-to-b from-background via-background to-accent/40">
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border/60">
-        <div className="absolute inset-0 -z-10 opacity-60 [background:radial-gradient(60%_50%_at_50%_0%,hsl(var(--primary)/0.10),transparent_70%)]" />
-        <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+        <div className="absolute inset-0 -z-10 [background:radial-gradient(70%_55%_at_50%_0%,oklch(0.68_0.18_45/0.14),transparent_70%)]" />
+        <div className="absolute inset-0 -z-10 [background:radial-gradient(60%_50%_at_85%_30%,oklch(0.62_0.16_150/0.10),transparent_70%)]" />
+        <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-card/70 px-4 py-1.5 text-xs font-semibold text-primary backdrop-blur">
               <Sparkles className="size-3.5" />
-              Government-grade AI Welfare Platform
+              AI-Powered Government Scheme Navigator
+              <ArrowRight className="size-3.5" />
             </div>
-            <h1 className="mt-5 text-balance text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-              Welcome to <span className="text-primary">Sarkari Sahayak X</span>
+            <h1 className="mt-7 bg-gradient-to-r from-primary via-amber-500 to-secondary bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-7xl">
+              सरकारी सहायक
             </h1>
-            <p className="mt-4 text-balance text-base text-muted-foreground sm:text-lg">
-              Discover, plan, and act on the welfare schemes you're eligible for —
-              personalized, explainable, and in your language.
+            <p className="mt-5 text-balance text-xl font-semibold text-foreground sm:text-2xl">
+              Bridging Citizens &amp; Government Schemes
             </p>
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                to="/onboarding"
-                className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow transition hover:bg-primary/90"
-              >
-                Get Started
-                <ArrowRight className="ml-1.5 size-4" />
-              </Link>
+            <p className="mt-3 text-balance text-base text-muted-foreground sm:text-lg">
+              One platform to discover, check eligibility, and apply for{" "}
+              <span className="font-bold text-primary">16+ government schemes</span>
+              {" "}— in your own language.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 to="/eligibility"
-                className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-background px-6 text-sm font-medium hover:bg-accent"
+                className="group inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-primary to-amber-500 px-7 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:shadow-xl hover:shadow-primary/30"
               >
-                Check My Eligibility
+                <CheckCircle2 className="mr-2 size-4" />
+                Check Your Eligibility
+                <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                to="/assistant"
+                className="inline-flex h-12 items-center justify-center rounded-full border-2 border-secondary/50 bg-background px-7 text-sm font-semibold text-foreground hover:border-secondary hover:bg-secondary/5"
+              >
+                <MessageCircle className="mr-2 size-4 text-secondary" />
+                Ask AI Assistant
               </Link>
             </div>
           </div>
