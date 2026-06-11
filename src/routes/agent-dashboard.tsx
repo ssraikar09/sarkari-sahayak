@@ -221,7 +221,7 @@ function Stat({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4">
+    <div className="rounded-2xl border bg-card p-4">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <span className="text-primary">{icon}</span>
         {label}
@@ -246,7 +246,7 @@ function CitizenCard({ row }: { row: CitizenAssistanceRow }) {
   };
 
   return (
-    <div className="rounded-xl border bg-card p-5 shadow-sm">
+    <div className="rounded-2xl border bg-card p-5 shadow-sm">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="text-base font-semibold">{citizen.fullName}</h3>
@@ -403,7 +403,7 @@ function RankCard({
   items: { label: string; count: number }[];
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4">
+    <div className="rounded-2xl border bg-card p-4">
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       {items.length === 0 ? (
         <p className="mt-3 text-xs text-muted-foreground">
@@ -431,7 +431,7 @@ function RankCard({
 
 function ErrorBlock({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="rounded-xl border bg-card p-6 text-center">
+    <div className="rounded-2xl border bg-card p-6 text-center">
       <p className="text-sm text-muted-foreground">
         Could not load agent data right now.
       </p>
@@ -444,7 +444,7 @@ function ErrorBlock({ onRetry }: { onRetry: () => void }) {
 
 function EmptyState({ hasSearch }: { hasSearch: boolean }) {
   return (
-    <div className="rounded-xl border bg-card p-10 text-center shadow-sm">
+    <div className="rounded-2xl border bg-card p-10 text-center shadow-sm">
       <h3 className="text-lg font-semibold text-foreground">
         {hasSearch ? "No matching citizens" : "No assisted citizens available yet."}
       </h3>
