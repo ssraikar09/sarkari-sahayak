@@ -40,7 +40,7 @@ const SCHEME_FALLBACKS: SchemeFallbackEntry[] = [
   { keywords: ["mudra"], url: "https://www.mudra.org.in/" },
   { keywords: ["ayushman bharat", "pmjay", "pm-jay"], url: "https://beneficiary.nha.gov.in/" },
   { keywords: ["national scholarship", "nsp scholarship", "scholarship portal"], url: "https://scholarships.gov.in/" },
-  { keywords: ["atal pension", "apy"], url: "https://www.npscra.nsdl.co.in/" },
+  { keywords: ["atal pension", "apy"], url: "https://financialservices.gov.in/beta/en/page/atal-pension-yojna" },
   { keywords: ["pmay", "pradhan mantri awas"], url: "https://pmaymis.gov.in/" },
   { keywords: ["ujjwala"], url: "https://www.pmuy.gov.in/" },
   { keywords: ["sukanya samriddhi"], url: "https://www.india.gov.in/spotlight/sukanya-samriddhi-yojana" },
