@@ -85,10 +85,19 @@ export function RecommendationCard({
         </ul>
       </div>
 
-      <div className="mt-5 flex items-center justify-end">
-        <Button asChild size="sm">
+      <div className="mt-5 flex flex-wrap items-center justify-end gap-2">
+        <Button asChild size="sm" variant="outline">
           <Link to="/schemes/$id" params={{ id: scheme.id }}>
             View Details
+          </Link>
+        </Button>
+        <Button asChild size="sm">
+          <Link
+            to="/application-guide"
+            search={{ schemeId: scheme.id }}
+          >
+            <ClipboardCheck className="mr-1 size-4" />
+            {applyLabel}
             <ArrowRight className="ml-1 size-4" />
           </Link>
         </Button>
