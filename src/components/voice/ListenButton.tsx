@@ -24,7 +24,8 @@ export function ListenButton({
   size = "sm",
   label = "Listen",
 }: Props) {
-  const { language } = useVoiceSettings();
+  const { language, advancedMultilingual } = useVoiceSettings();
+  const effectiveLang = advancedMultilingual ? language : "en-IN";
   const [playing, setPlaying] = useState(false);
   const [supported, setSupported] = useState(true);
   const autoPlayedRef = useRef(false);
@@ -43,7 +44,7 @@ export function ListenButton({
     if (!supported || !text) return;
     setPlaying(true);
     void speak(text, {
-      lang: language,
+      lang: effectiveLang,
       onEnd: () => setPlaying(false),
       onError: () => setPlaying(false),
     });
