@@ -17,6 +17,7 @@ import {
   SCHEME_STATES,
   SchemeFallback,
   listSchemes,
+  logSchemeSearch,
   logUnsuccessfulSearch,
   type GovernmentScheme,
   type SchemeScope,
