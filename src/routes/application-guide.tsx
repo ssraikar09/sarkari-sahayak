@@ -107,7 +107,7 @@ function ApplicationGuidePage() {
     return () => {
       active = false;
     };
-  }, [schemeId, logAccess]);
+  }, [schemeId, logAccess, logFallback]);
 
   const toggle = (id: string) => {
     if (!schemeId) return;
