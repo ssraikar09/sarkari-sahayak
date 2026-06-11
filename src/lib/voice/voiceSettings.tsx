@@ -8,13 +8,16 @@ import {
 
 const LANG_KEY = "sahayak.voice.language";
 const ACCESSIBILITY_KEY = "sahayak.voice.accessibility";
+const ADVANCED_KEY = "sahayak.voice.advancedMultilingual";
 
 type VoiceSettings = {
   language: VoiceLanguageCode;
   accessibilityMode: boolean;
+  advancedMultilingual: boolean;
   setLanguage: (l: VoiceLanguageCode) => void;
   setAccessibilityMode: (v: boolean) => void;
   toggleAccessibilityMode: () => void;
+  setAdvancedMultilingual: (v: boolean) => void;
 };
 
 const VoiceSettingsContext = createContext<VoiceSettings | null>(null);
@@ -30,14 +33,20 @@ function readAccessibility(): boolean {
   return window.localStorage.getItem(ACCESSIBILITY_KEY) === "1";
 }
 
+function readAdvanced(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(ADVANCED_KEY) === "1";
+}
+
 export function VoiceSettingsProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<VoiceLanguageCode>(DEFAULT_VOICE_LANGUAGE);
   const [accessibilityMode, setAccessibilityModeState] = useState<boolean>(false);
+  const [advancedMultilingual, setAdvancedMultilingualState] = useState<boolean>(false);
 
-  // Hydrate from localStorage post-mount to keep SSR deterministic.
   useEffect(() => {
     setLanguageState(readLang());
     setAccessibilityModeState(readAccessibility());
+    setAdvancedMultilingualState(readAdvanced());
   }, []);
 
   const setLanguage = useCallback((l: VoiceLanguageCode) => {
@@ -56,15 +65,24 @@ export function VoiceSettingsProvider({ children }: { children: ReactNode }) {
     setAccessibilityMode(!accessibilityMode);
   }, [accessibilityMode, setAccessibilityMode]);
 
+  const setAdvancedMultilingual = useCallback((v: boolean) => {
+    setAdvancedMultilingualState(v);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(ADVANCED_KEY, v ? "1" : "0");
+    }
+  }, []);
+
   const value = useMemo<VoiceSettings>(
     () => ({
       language,
       accessibilityMode,
+      advancedMultilingual,
       setLanguage,
       setAccessibilityMode,
       toggleAccessibilityMode,
+      setAdvancedMultilingual,
     }),
-    [language, accessibilityMode, setLanguage, setAccessibilityMode, toggleAccessibilityMode],
+    [language, accessibilityMode, advancedMultilingual, setLanguage, setAccessibilityMode, toggleAccessibilityMode, setAdvancedMultilingual],
   );
 
   return (
@@ -75,14 +93,15 @@ export function VoiceSettingsProvider({ children }: { children: ReactNode }) {
 export function useVoiceSettings(): VoiceSettings {
   const ctx = useContext(VoiceSettingsContext);
   if (!ctx) {
-    // Safe fallback so consumers don't crash if used outside provider.
     const noop = () => {};
     return {
       language: DEFAULT_VOICE_LANGUAGE,
       accessibilityMode: false,
+      advancedMultilingual: false,
       setLanguage: noop,
       setAccessibilityMode: noop,
       toggleAccessibilityMode: noop,
+      setAdvancedMultilingual: noop,
     };
   }
   return ctx;
