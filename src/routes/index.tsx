@@ -5,7 +5,6 @@ import {
   Languages,
   MessageCircle,
   Users,
-  FileText,
   Compass,
   TrendingUp,
   Briefcase,
