@@ -1,15 +1,7 @@
 import { Accessibility, Languages } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { VOICE_LANGUAGES, type VoiceLanguageCode } from "@/lib/voice/languageConfig";
 import { useVoiceSettings } from "@/lib/voice/voiceSettings";
 
 type Props = {
@@ -21,10 +13,8 @@ type Props = {
 export function VoiceSettingsBar({
   className,
   showAccessibilityToggle = true,
-  compact = false,
 }: Props) {
-  const { language, setLanguage, accessibilityMode, setAccessibilityMode } =
-    useVoiceSettings();
+  const { accessibilityMode, setAccessibilityMode } = useVoiceSettings();
 
   return (
     <div
@@ -35,31 +25,8 @@ export function VoiceSettingsBar({
     >
       <div className="flex items-center gap-2">
         <Languages className="size-4 text-muted-foreground" aria-hidden />
-        <Label htmlFor="voice-lang" className="text-xs text-muted-foreground">
-          Voice language
-        </Label>
-        <Select
-          value={language}
-          onValueChange={(v) => setLanguage(v as VoiceLanguageCode)}
-        >
-          <SelectTrigger
-            id="voice-lang"
-            className={cn("h-8 min-w-[8rem]", compact && "min-w-[6.5rem]")}
-            aria-label="Voice language"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {VOICE_LANGUAGES.map((l) => (
-              <SelectItem key={l.code} value={l.code}>
-                <span className="font-medium">{l.label}</span>
-                <span className="ml-2 text-xs text-muted-foreground">
-                  {l.nativeLabel}
-                </span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <span className="text-xs text-muted-foreground">Voice Language:</span>
+        <span className="text-xs font-medium text-foreground">English</span>
       </div>
 
       {showAccessibilityToggle ? (
@@ -80,8 +47,9 @@ export function VoiceSettingsBar({
         </div>
       ) : null}
       <p className="w-full text-xs text-muted-foreground">
-        Speak in your preferred language. Audio responses are currently provided
-        in English.
+        Voice interaction currently supports English for optimal recognition
+        accuracy in the MVP. Future versions will support multilingual voice
+        understanding.
       </p>
     </div>
   );
