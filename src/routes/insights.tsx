@@ -174,6 +174,7 @@ function Content({ snap }: { snap: InsightsSnapshot }) {
               label: c.category,
               count: c.count,
             }))}
+            emptyMessage="Search activity insights will appear here once citizens explore schemes."
           />
           <RankCard
             title="Most Recommended Categories"
@@ -263,15 +264,17 @@ function Stat({
 function RankCard({
   title,
   items,
+  emptyMessage = "No data yet.",
 }: {
   title: string;
   items: { label: string; count: number }[];
+  emptyMessage?: string;
 }) {
   return (
     <div className="rounded-xl border bg-card p-4">
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       {items.length === 0 ? (
-        <p className="mt-3 text-xs text-muted-foreground">No data yet.</p>
+        <p className="mt-3 text-xs text-muted-foreground">{emptyMessage}</p>
       ) : (
         <ol className="mt-3 space-y-1.5 text-sm">
           {items.map((i, idx) => (

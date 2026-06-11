@@ -11,16 +11,24 @@ import type {
 } from "./types";
 import { bucketRisk } from "./riskDistribution";
 
-const CATEGORY_HINTS = [
-  "Farmer",
-  "Women",
-  "Student",
-  "Senior",
-  "Entrepreneur",
-  "Health",
-  "Education",
-  "Housing",
-];
+// Keyword hints map free-text queries to canonical scheme categories so the
+// "Most Searched Categories" ranking still works when users search by
+// keyword instead of selecting a category filter.
+const CATEGORY_HINTS: Record<string, string[]> = {
+  Farmers: ["farmer", "farming", "agri", "agriculture", "kisan", "crop"],
+  Women: ["women", "woman", "girl", "mahila", "maternity"],
+  Students: ["student", "education", "scholarship", "school", "college"],
+  "Senior Citizens": ["senior", "elderly", "pension", "old age", "vridha"],
+  Entrepreneurs: ["entrepreneur", "business", "startup", "msme", "mudra", "loan"],
+  "Health & Social Security": [
+    "health",
+    "medical",
+    "insurance",
+    "ayushman",
+    "hospital",
+    "social security",
+  ],
+};
 
 function topN<T extends { count: number }>(rows: T[], n = 5): T[] {
   return [...rows].sort((a, b) => b.count - a.count).slice(0, n);
@@ -87,11 +95,52 @@ export const getInsightsSnapshotFn = createServerFn({ method: "GET" })
     for (const s of schemeRows.data ?? []) schemeIndex.set(s.id, s);
 
     // ---- Welfare Trends ----
+    // Build a name→category lookup so we can resolve searched scheme names
+    // back to their canonical category when keyword hints don't match.
+    const nameToCategory = new Map<string, string>();
+    for (const s of schemeRows.data ?? []) {
+      if (s.scheme_name && s.category) {
+        nameToCategory.set(s.scheme_name.toLowerCase(), s.category);
+      }
+    }
+
     const searchedCats = new Map<string, number>();
     for (const r of searchRows.data ?? []) {
-      const q = (r.search_query ?? "").toLowerCase();
-      for (const c of CATEGORY_HINTS) {
-        if (q.includes(c.toLowerCase())) bumpMap(searchedCats, c);
+      const raw = (r.search_query ?? "").trim();
+      if (!raw) continue;
+      const q = raw.toLowerCase();
+      let matched = false;
+
+      // 1. Direct match on a canonical category name (filter selection).
+      for (const category of Object.keys(CATEGORY_HINTS)) {
+        if (q === category.toLowerCase()) {
+          bumpMap(searchedCats, category);
+          matched = true;
+          break;
+        }
+      }
+
+      // 2. Keyword hints inside the query text.
+      if (!matched) {
+        for (const [category, hints] of Object.entries(CATEGORY_HINTS)) {
+          if (hints.some((h) => q.includes(h))) {
+            bumpMap(searchedCats, category);
+            matched = true;
+            break;
+          }
+        }
+      }
+
+      // 3. Resolve the query against scheme names — if any verified scheme
+      //    name contains the query (or vice versa), derive its category.
+      if (!matched) {
+        for (const [name, category] of nameToCategory) {
+          if (name.includes(q) || q.includes(name)) {
+            bumpMap(searchedCats, category);
+            matched = true;
+            break;
+          }
+        }
       }
     }
 
