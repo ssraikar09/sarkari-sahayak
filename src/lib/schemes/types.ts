@@ -12,16 +12,21 @@ export const SCHEME_CATEGORIES = [
   "Students",
   "Senior Citizens",
   "Entrepreneurs",
+  "Health & Social Security",
 ] as const;
+
+export const SCHEME_SCOPES = ["National", "State"] as const;
 
 export type SchemeState = (typeof SCHEME_STATES)[number];
 export type SchemeCategory = (typeof SCHEME_CATEGORIES)[number];
+export type SchemeScope = (typeof SCHEME_SCOPES)[number];
 
 export type GovernmentScheme = {
   id: string;
   scheme_name: string;
   state: string;
   category: string;
+  scheme_scope: SchemeScope;
   description: string;
   eligibility_criteria: string;
   benefits: string;
@@ -35,4 +40,5 @@ export type SchemeFilters = {
   search?: string;
   state?: string;
   category?: string;
+  scope?: SchemeScope;
 };
