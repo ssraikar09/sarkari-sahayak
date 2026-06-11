@@ -9,10 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SchemesIdRouteImport } from './routes/schemes.$id'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
 
+const SchemesRoute = SchemesRouteImport.update({
+  id: '/schemes',
+  path: '/schemes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -23,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SchemesIdRoute = SchemesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => SchemesRoute,
+} as any)
 const ProfileIdRoute = ProfileIdRouteImport.update({
   id: '/profile/$id',
   path: '/profile/$id',
@@ -32,35 +44,55 @@ const ProfileIdRoute = ProfileIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
+  '/schemes': typeof SchemesRouteWithChildren
   '/profile/$id': typeof ProfileIdRoute
+  '/schemes/$id': typeof SchemesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
+  '/schemes': typeof SchemesRouteWithChildren
   '/profile/$id': typeof ProfileIdRoute
+  '/schemes/$id': typeof SchemesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
+  '/schemes': typeof SchemesRouteWithChildren
   '/profile/$id': typeof ProfileIdRoute
+  '/schemes/$id': typeof SchemesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/onboarding' | '/profile/$id'
+  fullPaths: '/' | '/onboarding' | '/schemes' | '/profile/$id' | '/schemes/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/onboarding' | '/profile/$id'
-  id: '__root__' | '/' | '/onboarding' | '/profile/$id'
+  to: '/' | '/onboarding' | '/schemes' | '/profile/$id' | '/schemes/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/onboarding'
+    | '/schemes'
+    | '/profile/$id'
+    | '/schemes/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OnboardingRoute: typeof OnboardingRoute
+  SchemesRoute: typeof SchemesRouteWithChildren
   ProfileIdRoute: typeof ProfileIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/schemes': {
+      id: '/schemes'
+      path: '/schemes'
+      fullPath: '/schemes'
+      preLoaderRoute: typeof SchemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -75,6 +107,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/schemes/$id': {
+      id: '/schemes/$id'
+      path: '/$id'
+      fullPath: '/schemes/$id'
+      preLoaderRoute: typeof SchemesIdRouteImport
+      parentRoute: typeof SchemesRoute
+    }
     '/profile/$id': {
       id: '/profile/$id'
       path: '/profile/$id'
@@ -85,11 +124,33 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SchemesRouteChildren {
+  SchemesIdRoute: typeof SchemesIdRoute
+}
+
+const SchemesRouteChildren: SchemesRouteChildren = {
+  SchemesIdRoute: SchemesIdRoute,
+}
+
+const SchemesRouteWithChildren =
+  SchemesRoute._addFileChildren(SchemesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OnboardingRoute: OnboardingRoute,
+  SchemesRoute: SchemesRouteWithChildren,
   ProfileIdRoute: ProfileIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
