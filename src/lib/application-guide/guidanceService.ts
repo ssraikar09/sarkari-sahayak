@@ -10,6 +10,18 @@ import type {
 const ONLINE_HINTS = ["online", "portal", "website", "https://", "http://"];
 const OFFLINE_HINTS = ["offline", "csc", "common service centre", "bank branch", "office", "in person"];
 
+function isValidHttpUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
+
 function detectMode(scheme: GovernmentScheme): ApplicationMode {
   const text = `${scheme.application_process ?? ""} ${scheme.description}`.toLowerCase();
   const link = (scheme.official_link ?? "").toLowerCase();
@@ -20,6 +32,12 @@ function detectMode(scheme: GovernmentScheme): ApplicationMode {
   if (hasOnline) return "Online";
   if (hasOffline) return "Offline";
   return "Unknown";
+}
+
+function extractUrls(text: string | null): string[] {
+  if (!text) return [];
+  const urlRegex = /https?:\/\/[^\s\"'<>]+/gi;
+  return Array.from(new Set(text.match(urlRegex) ?? []));
 }
 
 function deriveSteps(scheme: GovernmentScheme): ApplicationStep[] {
@@ -87,15 +105,29 @@ function estimateProcessingTime(scheme: GovernmentScheme): string {
 export function buildGuidance(scheme: GovernmentScheme): SchemeGuidance {
   const steps = deriveSteps(scheme);
   const documents = deriveDocuments(scheme);
+  const mode = detectMode(scheme);
+
+  const validatedSchemeLink = isValidHttpUrl(scheme.official_link);
+  const extractedUrls = extractUrls(scheme.application_process);
+  const validatedAppPortal =
+    extractedUrls.length > 0
+      ? isValidHttpUrl(extractedUrls[0])
+      : null;
+
+  const officialPortalLink =
+    validatedAppPortal && validatedAppPortal !== validatedSchemeLink
+      ? validatedAppPortal
+      : null;
+
   return {
     scheme,
-    mode: detectMode(scheme),
+    mode,
     estimatedProcessingTime: estimateProcessingTime(scheme),
     lastUpdated: scheme.last_updated,
     steps,
     documents,
-    officialSchemeLink: scheme.official_link,
-    officialPortalLink: scheme.official_link,
+    officialSchemeLink: validatedSchemeLink,
+    officialPortalLink,
     hasDetailedGuidance: documents.length > 0 && steps.length > 0,
   };
 }
