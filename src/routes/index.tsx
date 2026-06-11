@@ -5,7 +5,7 @@ import {
   Languages,
   MessageCircle,
   Users,
-  BarChart3,
+  FileText,
   Compass,
   TrendingUp,
   Briefcase,
