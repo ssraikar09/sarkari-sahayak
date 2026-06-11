@@ -12,7 +12,6 @@ import {
   Scale,
   Network,
   Map as MapIcon,
-  UserPlus,
   CheckCircle2,
   FileText,
   ArrowRight,
