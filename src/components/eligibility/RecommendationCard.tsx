@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Check, MapPin, ShieldCheck, Tag, X } from "lucide-react";
+import { ArrowRight, Check, ClipboardCheck, MapPin, ShieldCheck, Tag, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -10,8 +10,10 @@ import {
 
 export function RecommendationCard({
   recommendation,
+  applyLabel = "View Application Guide",
 }: {
   recommendation: EligibilityRecommendation;
+  applyLabel?: string;
 }) {
   const { scheme, confidence, matchedCount, totalApplicable, reasons } =
     recommendation;
