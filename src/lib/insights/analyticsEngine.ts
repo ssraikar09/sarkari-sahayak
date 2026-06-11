@@ -11,16 +11,24 @@ import type {
 } from "./types";
 import { bucketRisk } from "./riskDistribution";
 
-const CATEGORY_HINTS = [
-  "Farmer",
-  "Women",
-  "Student",
-  "Senior",
-  "Entrepreneur",
-  "Health",
-  "Education",
-  "Housing",
-];
+// Keyword hints map free-text queries to canonical scheme categories so the
+// "Most Searched Categories" ranking still works when users search by
+// keyword instead of selecting a category filter.
+const CATEGORY_HINTS: Record<string, string[]> = {
+  Farmers: ["farmer", "farming", "agri", "agriculture", "kisan", "crop"],
+  Women: ["women", "woman", "girl", "mahila", "maternity"],
+  Students: ["student", "education", "scholarship", "school", "college"],
+  "Senior Citizens": ["senior", "elderly", "pension", "old age", "vridha"],
+  Entrepreneurs: ["entrepreneur", "business", "startup", "msme", "mudra", "loan"],
+  "Health & Social Security": [
+    "health",
+    "medical",
+    "insurance",
+    "ayushman",
+    "hospital",
+    "social security",
+  ],
+};
 
 function topN<T extends { count: number }>(rows: T[], n = 5): T[] {
   return [...rows].sort((a, b) => b.count - a.count).slice(0, n);
