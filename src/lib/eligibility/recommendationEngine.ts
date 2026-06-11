@@ -1,4 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
 import type { CitizenProfile } from "@/lib/citizen-profile/constants";
 import { listSchemes, type GovernmentScheme } from "@/lib/schemes";
 import { getConfidence } from "./confidenceEvaluator";
@@ -14,9 +13,7 @@ import type {
   EligibilityAssessment,
   EligibilityRecommendation,
 } from "./types";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as any;
+import { logEligibilityAssessmentFn } from "./assessment.functions";
 
 function evaluateScheme(
   profile: CitizenProfile,
@@ -104,9 +101,11 @@ export async function logEligibilityAssessment(
   recommendedSchemeIds: string[],
 ): Promise<void> {
   try {
-    await db.from("eligibility_assessments").insert({
-      citizen_profile_id: profileId,
-      recommended_scheme_ids: recommendedSchemeIds,
+    await logEligibilityAssessmentFn({
+      data: {
+        citizen_profile_id: profileId,
+        recommended_scheme_ids: recommendedSchemeIds,
+      },
     });
   } catch (err) {
     console.warn("Failed to log eligibility assessment", err);

@@ -182,7 +182,7 @@ function FamilyPlannerPage() {
     setSaving(true);
     try {
       if (editing) {
-        const updated = await updateFamilyMember(editing.id, form);
+        const updated = await updateFamilyMember(editing.id, form, profile.id);
         setMembers((prev) =>
           prev.map((m) => (m.id === updated.id ? updated : m)),
         );
@@ -200,9 +200,10 @@ function FamilyPlannerPage() {
   };
 
   const remove = async (m: FamilyMember) => {
+    if (!profile) return;
     if (!confirm(`Remove ${m.full_name} from your family?`)) return;
     try {
-      await deleteFamilyMember(m.id);
+      await deleteFamilyMember(m.id, profile.id);
       setMembers((prev) => prev.filter((x) => x.id !== m.id));
     } catch (e) {
       console.error(e);

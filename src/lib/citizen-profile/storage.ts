@@ -1,35 +1,23 @@
-import { supabase } from "@/integrations/supabase/client";
 import type { CitizenProfile, CitizenProfileInput } from "./constants";
 import { PROFILE_STORAGE_KEY } from "./constants";
-
-// Supabase generated types don't yet include citizen_profiles; cast for now.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as any;
+import {
+  createCitizenProfileFn,
+  fetchCitizenProfileFn,
+} from "./profile.functions";
 
 export async function createCitizenProfile(
   input: CitizenProfileInput,
 ): Promise<CitizenProfile> {
-  const { data, error } = await db
-    .from("citizen_profiles")
-    .insert(input)
-    .select()
-    .single();
-
-  if (error) throw error;
+  const data = (await createCitizenProfileFn({ data: input })) as CitizenProfile;
   if (typeof window !== "undefined" && data?.id) {
     localStorage.setItem(PROFILE_STORAGE_KEY, data.id);
   }
-  return data as CitizenProfile;
+  return data;
 }
 
 export async function fetchCitizenProfile(id: string): Promise<CitizenProfile | null> {
-  const { data, error } = await db
-    .from("citizen_profiles")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-  if (error) throw error;
-  return (data as CitizenProfile) ?? null;
+  const data = (await fetchCitizenProfileFn({ data: { id } })) as CitizenProfile | null;
+  return data ?? null;
 }
 
 export function getStoredProfileId(): string | null {
