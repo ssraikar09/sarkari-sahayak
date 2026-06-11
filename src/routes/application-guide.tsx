@@ -316,24 +316,45 @@ function GuidanceView({
             <Download className="mr-1 size-4" />
             Download Application Summary
           </Button>
+
           {guidance.officialSchemeLink ? (
-            <Button asChild variant="outline">
+            <Button asChild variant="default">
               <a
                 href={guidance.officialSchemeLink}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <ExternalLink className="mr-1 size-4" />
-                Official Scheme Link
+                Visit Official Portal
               </a>
             </Button>
           ) : null}
+
+          {guidance.officialPortalLink ? (
+            <Button asChild variant="outline">
+              <a
+                href={guidance.officialPortalLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="mr-1 size-4" />
+                Apply Online
+              </a>
+            </Button>
+          ) : null}
+
           <Button asChild variant="ghost">
             <Link to="/schemes/$id" params={{ id: s.id }}>
               View full scheme details
             </Link>
           </Button>
         </div>
+
+        {!guidance.officialSchemeLink && !guidance.officialPortalLink ? (
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+            Official portal information is currently unavailable.
+          </div>
+        ) : null}
 
         {!guidance.hasDetailedGuidance ? (
           <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
