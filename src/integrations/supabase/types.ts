@@ -126,6 +126,56 @@ export type Database = {
           },
         ]
       }
+      family_members: {
+        Row: {
+          age: number
+          annual_income: string
+          citizen_profile_id: string
+          created_at: string
+          disability_status: boolean
+          education_level: string
+          full_name: string
+          gender: string
+          id: string
+          occupation: string
+          relationship: string
+        }
+        Insert: {
+          age: number
+          annual_income: string
+          citizen_profile_id: string
+          created_at?: string
+          disability_status?: boolean
+          education_level: string
+          full_name: string
+          gender: string
+          id?: string
+          occupation: string
+          relationship: string
+        }
+        Update: {
+          age?: number
+          annual_income?: string
+          citizen_profile_id?: string
+          created_at?: string
+          disability_status?: boolean
+          education_level?: string
+          full_name?: string
+          gender?: string
+          id?: string
+          occupation?: string
+          relationship?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_members_citizen_profile_id_fkey"
+            columns: ["citizen_profile_id"]
+            isOneToOne: false
+            referencedRelation: "citizen_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       government_schemes: {
         Row: {
           application_process: string | null
