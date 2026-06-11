@@ -31,6 +31,9 @@ export type GovernmentScheme = {
   eligibility_criteria: string;
   benefits: string;
   required_documents: string;
+  application_process: string | null;
+  important_dates: string | null;
+  contact_info: string | null;
   official_link: string | null;
   last_updated: string;
   created_at: string;
