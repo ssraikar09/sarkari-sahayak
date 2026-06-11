@@ -64,12 +64,15 @@ export type Database = {
       }
       government_schemes: {
         Row: {
+          application_process: string | null
           benefits: string
           category: string
+          contact_info: string | null
           created_at: string
           description: string
           eligibility_criteria: string
           id: string
+          important_dates: string | null
           last_updated: string
           official_link: string | null
           required_documents: string
@@ -78,12 +81,15 @@ export type Database = {
           state: string
         }
         Insert: {
+          application_process?: string | null
           benefits: string
           category: string
+          contact_info?: string | null
           created_at?: string
           description: string
           eligibility_criteria: string
           id?: string
+          important_dates?: string | null
           last_updated?: string
           official_link?: string | null
           required_documents: string
@@ -92,12 +98,15 @@ export type Database = {
           state: string
         }
         Update: {
+          application_process?: string | null
           benefits?: string
           category?: string
+          contact_info?: string | null
           created_at?: string
           description?: string
           eligibility_criteria?: string
           id?: string
+          important_dates?: string | null
           last_updated?: string
           official_link?: string | null
           required_documents?: string
