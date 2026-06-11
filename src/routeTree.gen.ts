@@ -15,6 +15,7 @@ import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as FamilyPlannerRouteImport } from './routes/family-planner'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
+import { Route as DecisionEngineRouteImport } from './routes/decision-engine'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as ApplicationGuideRouteImport } from './routes/application-guide'
@@ -51,6 +52,11 @@ const FamilyPlannerRoute = FamilyPlannerRouteImport.update({
 const EligibilityRoute = EligibilityRouteImport.update({
   id: '/eligibility',
   path: '/eligibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DecisionEngineRoute = DecisionEngineRouteImport.update({
+  id: '/decision-engine',
+  path: '/decision-engine',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/application-guide': typeof ApplicationGuideRoute
   '/assistant': typeof AssistantRoute
   '/dashboard': typeof DashboardRoute
+  '/decision-engine': typeof DecisionEngineRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/insights': typeof InsightsRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/application-guide': typeof ApplicationGuideRoute
   '/assistant': typeof AssistantRoute
   '/dashboard': typeof DashboardRoute
+  '/decision-engine': typeof DecisionEngineRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/insights': typeof InsightsRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/application-guide': typeof ApplicationGuideRoute
   '/assistant': typeof AssistantRoute
   '/dashboard': typeof DashboardRoute
+  '/decision-engine': typeof DecisionEngineRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/insights': typeof InsightsRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/application-guide'
     | '/assistant'
     | '/dashboard'
+    | '/decision-engine'
     | '/eligibility'
     | '/family-planner'
     | '/insights'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/application-guide'
     | '/assistant'
     | '/dashboard'
+    | '/decision-engine'
     | '/eligibility'
     | '/family-planner'
     | '/insights'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/application-guide'
     | '/assistant'
     | '/dashboard'
+    | '/decision-engine'
     | '/eligibility'
     | '/family-planner'
     | '/insights'
@@ -189,6 +201,7 @@ export interface RootRouteChildren {
   ApplicationGuideRoute: typeof ApplicationGuideRoute
   AssistantRoute: typeof AssistantRoute
   DashboardRoute: typeof DashboardRoute
+  DecisionEngineRoute: typeof DecisionEngineRoute
   EligibilityRoute: typeof EligibilityRoute
   FamilyPlannerRoute: typeof FamilyPlannerRoute
   InsightsRoute: typeof InsightsRoute
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/eligibility'
       fullPath: '/eligibility'
       preLoaderRoute: typeof EligibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/decision-engine': {
+      id: '/decision-engine'
+      path: '/decision-engine'
+      fullPath: '/decision-engine'
+      preLoaderRoute: typeof DecisionEngineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -311,6 +331,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApplicationGuideRoute: ApplicationGuideRoute,
   AssistantRoute: AssistantRoute,
   DashboardRoute: DashboardRoute,
+  DecisionEngineRoute: DecisionEngineRoute,
   EligibilityRoute: EligibilityRoute,
   FamilyPlannerRoute: FamilyPlannerRoute,
   InsightsRoute: InsightsRoute,
