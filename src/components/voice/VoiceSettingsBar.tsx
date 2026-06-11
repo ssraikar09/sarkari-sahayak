@@ -79,6 +79,10 @@ export function VoiceSettingsBar({
           />
         </div>
       ) : null}
+      <p className="w-full text-xs text-muted-foreground">
+        Voice input supports multiple languages. Audio responses are currently
+        provided in English for consistent accessibility.
+      </p>
     </div>
   );
 }
