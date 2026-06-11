@@ -227,17 +227,34 @@ function SchemeExplorer() {
               ))}
             </SchemesGrid>
           ) : schemes.length === 0 ? (
-            <EmptyState
-              title="No schemes match your filters"
-              message="Try a different search term or clear the filters to see all schemes."
-              action={
-                hasFilters ? (
-                  <Button onClick={clearFilters} variant="outline">
-                    Clear filters
-                  </Button>
-                ) : null
-              }
-            />
+            debounced.trim() ? (
+              <div className="space-y-4">
+                <SchemeFallback
+                  searchQuery={debounced.trim()}
+                  stateSelected={state === ALL ? null : state}
+                />
+                {hasFilters ? (
+                  <div className="text-center">
+                    <Button onClick={clearFilters} variant="outline">
+                      <X className="mr-1 size-4" />
+                      Clear filters
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <EmptyState
+                title="No schemes match your filters"
+                message="Try a different search term or clear the filters to see all schemes."
+                action={
+                  hasFilters ? (
+                    <Button onClick={clearFilters} variant="outline">
+                      Clear filters
+                    </Button>
+                  ) : null
+                }
+              />
+            )
           ) : (
             <>
               <p className="mb-3 text-sm text-muted-foreground">
