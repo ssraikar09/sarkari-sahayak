@@ -20,6 +20,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as ApplicationGuideRouteImport } from './routes/application-guide'
 import { Route as AgentDashboardRouteImport } from './routes/agent-dashboard'
+import { Route as DecisionEngineRouteImport } from './routes/decision-engine'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SchemesIdRouteImport } from './routes/schemes.$id'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
@@ -77,6 +78,11 @@ const ApplicationGuideRoute = ApplicationGuideRouteImport.update({
 const AgentDashboardRoute = AgentDashboardRouteImport.update({
   id: '/agent-dashboard',
   path: '/agent-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DecisionEngineRoute = DecisionEngineRouteImport.update({
+  id: '/decision-engine',
+  path: '/decision-engine',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
