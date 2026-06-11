@@ -116,14 +116,8 @@ function Welcome() {
       <div className="mx-auto max-w-6xl space-y-12 px-6 py-14">
         <Section
           eyebrow="Step 1"
-          title="Start Your Welfare Journey"
-          desc="Set up your profile and discover schemes built for you."
-          items={sectionA}
-        />
-        <Section
-          eyebrow="Step 1"
           title="Continue Your Welfare Journey"
-          desc="Set up your profile and discover schemes built for you."
+          desc="Pick up where you left off — discover and act on schemes built for you."
           items={sectionA}
         />
         <Section
