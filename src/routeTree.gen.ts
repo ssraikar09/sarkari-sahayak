@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NavigatorRouteImport } from './routes/navigator'
+import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as FamilyPlannerRouteImport } from './routes/family-planner'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -34,6 +35,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const NavigatorRoute = NavigatorRouteImport.update({
   id: '/navigator',
   path: '/navigator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FamilyPlannerRoute = FamilyPlannerRouteImport.update({
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
+  '/insights': typeof InsightsRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
+  '/insights': typeof InsightsRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
+  '/insights': typeof InsightsRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/eligibility'
     | '/family-planner'
+    | '/insights'
     | '/navigator'
     | '/onboarding'
     | '/schemes'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/eligibility'
     | '/family-planner'
+    | '/insights'
     | '/navigator'
     | '/onboarding'
     | '/schemes'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/eligibility'
     | '/family-planner'
+    | '/insights'
     | '/navigator'
     | '/onboarding'
     | '/schemes'
@@ -166,6 +178,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   EligibilityRoute: typeof EligibilityRoute
   FamilyPlannerRoute: typeof FamilyPlannerRoute
+  InsightsRoute: typeof InsightsRoute
   NavigatorRoute: typeof NavigatorRoute
   OnboardingRoute: typeof OnboardingRoute
   SchemesRoute: typeof SchemesRouteWithChildren
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/navigator'
       fullPath: '/navigator'
       preLoaderRoute: typeof NavigatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/family-planner': {
@@ -272,6 +292,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   EligibilityRoute: EligibilityRoute,
   FamilyPlannerRoute: FamilyPlannerRoute,
+  InsightsRoute: InsightsRoute,
   NavigatorRoute: NavigatorRoute,
   OnboardingRoute: OnboardingRoute,
   SchemesRoute: SchemesRouteWithChildren,
