@@ -62,6 +62,48 @@ export type Database = {
         }
         Relationships: []
       }
+      government_schemes: {
+        Row: {
+          benefits: string
+          category: string
+          created_at: string
+          description: string
+          eligibility_criteria: string
+          id: string
+          last_updated: string
+          official_link: string | null
+          required_documents: string
+          scheme_name: string
+          state: string
+        }
+        Insert: {
+          benefits: string
+          category: string
+          created_at?: string
+          description: string
+          eligibility_criteria: string
+          id?: string
+          last_updated?: string
+          official_link?: string | null
+          required_documents: string
+          scheme_name: string
+          state: string
+        }
+        Update: {
+          benefits?: string
+          category?: string
+          created_at?: string
+          description?: string
+          eligibility_criteria?: string
+          id?: string
+          last_updated?: string
+          official_link?: string | null
+          required_documents?: string
+          scheme_name?: string
+          state?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
