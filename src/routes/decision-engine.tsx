@@ -320,6 +320,23 @@ function OverviewSection({
       </div>
 
       <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Top Eligible Schemes</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {report.decisions
+            .filter((d) => d.status === "eligible")
+            .slice(0, 5)
+            .map((d) => (
+              <DecisionRow key={d.scheme.id} decision={d} />
+            ))}
+          {report.decisions.filter((d) => d.status === "eligible").length === 0 ? (
+            <p className="text-sm text-muted-foreground">No fully eligible schemes detected yet.</p>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle className="text-base">Research Export</CardTitle>
           <div className="flex flex-wrap gap-2">
@@ -350,23 +367,6 @@ function OverviewSection({
           <p className="text-sm text-muted-foreground">
             Export decisions, evidence and household explainability as research-grade PDFs.
           </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Top Eligible Schemes</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {report.decisions
-            .filter((d) => d.status === "eligible")
-            .slice(0, 5)
-            .map((d) => (
-              <DecisionRow key={d.scheme.id} decision={d} />
-            ))}
-          {report.decisions.filter((d) => d.status === "eligible").length === 0 ? (
-            <p className="text-sm text-muted-foreground">No fully eligible schemes detected yet.</p>
-          ) : null}
         </CardContent>
       </Card>
     </div>

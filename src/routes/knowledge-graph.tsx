@@ -171,13 +171,13 @@ function GraphWorkspace({ profile }: { profile: CitizenProfile }) {
 
   return (
     <div className="space-y-6">
-      <ExportBar graph={graph} />
       <GraphCanvas graph={graph} />
       <HouseholdSection graph={graph} />
       <SchemeSection graph={graph} />
       <GoalSection graph={graph} />
       <RiskHeatmap graph={graph} />
       <InsightsSection graph={graph} />
+      <ExportBar graph={graph} />
     </div>
   );
 }

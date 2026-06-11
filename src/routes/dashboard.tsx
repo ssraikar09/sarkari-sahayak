@@ -497,7 +497,7 @@ function WelfareGapCard({
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-2xl border bg-card p-4">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Opportunity Score</span>
             <Gauge className="size-4" />
@@ -527,7 +527,7 @@ function WelfareGapCard({
           )}
         </div>
 
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-2xl border bg-card p-4">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Estimated annual benefit</span>
             <IndianRupee className="size-4" />
@@ -550,7 +550,7 @@ function WelfareGapCard({
           )}
         </div>
 
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-2xl border bg-card p-4">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Total missed opportunities</span>
             <AlertTriangle className="size-4" />

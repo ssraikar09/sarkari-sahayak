@@ -122,7 +122,7 @@ function LoadingState() {
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="rounded-xl border bg-card p-6 text-center">
+    <div className="rounded-2xl border bg-card p-6 text-center">
       <p className="text-sm text-muted-foreground">
         Could not load research insights right now.
       </p>
@@ -225,7 +225,7 @@ function Content({ snap }: { snap: InsightsSnapshot }) {
       {/* Summary */}
       <section>
         <h2 className="mb-3 text-lg font-semibold">Insights Summary</h2>
-        <div className="rounded-xl border bg-card p-4">
+        <div className="rounded-2xl border bg-card p-4">
           {summary.length === 0 ? (
             <p className="text-sm text-muted-foreground">No insights available yet.</p>
           ) : (
@@ -251,7 +251,7 @@ function Stat({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4">
+    <div className="rounded-2xl border bg-card p-4">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <span className="text-primary">{icon}</span>
         {label}
@@ -271,7 +271,7 @@ function RankCard({
   emptyMessage?: string;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4">
+    <div className="rounded-2xl border bg-card p-4">
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       {items.length === 0 ? (
         <p className="mt-3 text-xs text-muted-foreground">{emptyMessage}</p>
@@ -313,7 +313,7 @@ function RiskBar({ risk }: { risk: RiskDistribution }) {
     { key: "low", label: "Low Risk", count: risk.low, cls: "bg-emerald-500" },
   ];
   return (
-    <div className="rounded-xl border bg-card p-4">
+    <div className="rounded-2xl border bg-card p-4">
       {risk.total === 0 ? (
         <p className="text-sm text-muted-foreground">
           No household assessments yet to compute risk distribution.
