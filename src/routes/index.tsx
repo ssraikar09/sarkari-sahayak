@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ShieldCheck, Languages } from "lucide-react";
+import { Sparkles, ShieldCheck, Languages, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,6 +44,12 @@ function Welcome() {
           </Button>
           <Button asChild size="lg" variant="secondary" className="h-14 px-8 text-base">
             <Link to="/eligibility">Check My Eligibility</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base">
+            <Link to="/assistant">
+              <MessageCircle className="mr-1 size-4" />
+              Ask the Assistant
+            </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base">
             <Link to="/schemes">Browse Schemes</Link>
