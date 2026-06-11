@@ -64,7 +64,14 @@ export async function retrieveSchemes(
     }
 
     // 3) Profile-aware boosting — third priority.
-    if (profile) {
+    // STRICT MODE (documents): ignore profile boosting unless the scheme
+    // name exactly/phrase-matches the query.
+    const isExactNameMatch =
+      nameLower === qLower ||
+      qLower.includes(nameLower) ||
+      nameLower.includes(qLower);
+    const allowProfileBoost = intent !== "documents" || isExactNameMatch;
+    if (profile && allowProfileBoost) {
       if (scheme.scheme_scope === "National" || scheme.state === profile.state) {
         score += 2;
       }
