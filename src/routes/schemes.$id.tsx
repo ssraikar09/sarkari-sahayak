@@ -17,7 +17,11 @@ import {
   Phone,
   Tag,
 } from "lucide-react";
-import { getSchemeById, type GovernmentScheme } from "@/lib/schemes";
+import {
+  getSchemeById,
+  SchemeFallback,
+  type GovernmentScheme,
+} from "@/lib/schemes";
 
 export const Route = createFileRoute("/schemes/$id")({
   head: () => ({
