@@ -27,6 +27,7 @@ import {
   downloadSummary,
   fetchGuidance,
   loadChecklistState,
+  logFallbackUsageFn,
   logGuidanceAccessFn,
   saveChecklistState,
   type SchemeGuidance,
@@ -64,6 +65,7 @@ function ApplicationGuidePage() {
   const navigate = useNavigate();
   const { schemeId } = Route.useSearch();
   const logAccess = useServerFn(logGuidanceAccessFn);
+  const logFallback = useServerFn(logFallbackUsageFn);
 
   const [guidance, setGuidance] = useState<SchemeGuidance | null>(null);
   const [loading, setLoading] = useState<boolean>(Boolean(schemeId));
@@ -92,6 +94,9 @@ function ApplicationGuidePage() {
         setChecked(loadChecklistState(schemeId));
         const profileId = getStoredProfileId();
         void logAccess({ data: { schemeId, citizenProfileId: profileId } });
+        if (g.linkStatus !== "direct_link") {
+          void logFallback({ data: { schemeId, fallbackType: g.linkStatus } });
+        }
       } catch (e) {
         console.error(e);
         if (active) setError("Couldn't load the application guidance.");
@@ -102,7 +107,7 @@ function ApplicationGuidePage() {
     return () => {
       active = false;
     };
-  }, [schemeId, logAccess]);
+  }, [schemeId, logAccess, logFallback]);
 
   const toggle = (id: string) => {
     if (!schemeId) return;
@@ -317,28 +322,28 @@ function GuidanceView({
             Download Application Summary
           </Button>
 
-          {guidance.officialSchemeLink ? (
+          {guidance.resolvedPrimary.url ? (
             <Button asChild variant="default">
               <a
-                href={guidance.officialSchemeLink}
+                href={guidance.resolvedPrimary.url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <ExternalLink className="mr-1 size-4" />
-                Visit Official Portal
+                {guidance.resolvedPrimary.label}
               </a>
             </Button>
           ) : null}
 
-          {guidance.officialPortalLink ? (
+          {guidance.resolvedApply?.url ? (
             <Button asChild variant="outline">
               <a
-                href={guidance.officialPortalLink}
+                href={guidance.resolvedApply.url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <ExternalLink className="mr-1 size-4" />
-                Apply Online
+                {guidance.resolvedApply.label}
               </a>
             </Button>
           ) : null}
@@ -350,9 +355,20 @@ function GuidanceView({
           </Button>
         </div>
 
-        {!guidance.officialSchemeLink && !guidance.officialPortalLink ? (
+        {guidance.linkStatus === "department_link" ? (
+          <div className="mt-4 rounded-xl border border-sky-200 bg-sky-50 p-3 text-sm text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/30 dark:text-sky-200">
+            A scheme-specific portal wasn't listed, so we've linked the
+            relevant {guidance.resolvedPrimary.source === "state_department"
+              ? "state department"
+              : "official"}{" "}
+            portal. Please navigate to the scheme section from there.
+          </div>
+        ) : null}
+
+        {guidance.linkStatus === "unavailable" ? (
           <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
-            Official portal information is currently unavailable.
+            Official portal information is currently unavailable. Please refer
+            to your nearest CSC centre.
           </div>
         ) : null}
 

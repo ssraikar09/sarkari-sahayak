@@ -269,6 +269,27 @@ export type Database = {
         }
         Relationships: []
       }
+      official_link_fallback_logs: {
+        Row: {
+          created_at: string
+          fallback_type: string
+          id: string
+          scheme_id: string
+        }
+        Insert: {
+          created_at?: string
+          fallback_type: string
+          id?: string
+          scheme_id: string
+        }
+        Update: {
+          created_at?: string
+          fallback_type?: string
+          id?: string
+          scheme_id?: string
+        }
+        Relationships: []
+      }
       scheme_search_logs: {
         Row: {
           created_at: string

@@ -1,5 +1,6 @@
 import { getSchemeById } from "@/lib/schemes";
 import type { GovernmentScheme } from "@/lib/schemes";
+import { resolveOfficialLinks } from "./linkResolver";
 import type {
   ApplicationMode,
   ApplicationStep,
@@ -9,18 +10,6 @@ import type {
 
 const ONLINE_HINTS = ["online", "portal", "website", "https://", "http://"];
 const OFFLINE_HINTS = ["offline", "csc", "common service centre", "bank branch", "office", "in person"];
-
-function isValidHttpUrl(url: string | null | undefined): string | null {
-  if (!url) return null;
-  const trimmed = url.trim();
-  if (!trimmed) return null;
-  try {
-    const parsed = new URL(trimmed);
-    return parsed.protocol === "http:" || parsed.protocol === "https:" ? trimmed : null;
-  } catch {
-    return null;
-  }
-}
 
 function detectMode(scheme: GovernmentScheme): ApplicationMode {
   const text = `${scheme.application_process ?? ""} ${scheme.description}`.toLowerCase();
@@ -34,12 +23,6 @@ function detectMode(scheme: GovernmentScheme): ApplicationMode {
   return "Unknown";
 }
 
-function extractUrls(text: string | null): string[] {
-  if (!text) return [];
-  const urlRegex = /https?:\/\/[^\s\"'<>]+/gi;
-  return Array.from(new Set(text.match(urlRegex) ?? []));
-}
-
 function deriveSteps(scheme: GovernmentScheme): ApplicationStep[] {
   const fromScheme = (scheme.application_process ?? "")
     .split(/\r?\n|(?:\d+[.)])\s+|;\s+/)
@@ -50,7 +33,6 @@ function deriveSteps(scheme: GovernmentScheme): ApplicationStep[] {
     return fromScheme.slice(0, 8).map((title, i) => ({ index: i + 1, title }));
   }
 
-  // Fallback canonical timeline
   const portal = scheme.official_link ?? "the official government portal";
   return [
     {
@@ -106,18 +88,7 @@ export function buildGuidance(scheme: GovernmentScheme): SchemeGuidance {
   const steps = deriveSteps(scheme);
   const documents = deriveDocuments(scheme);
   const mode = detectMode(scheme);
-
-  const validatedSchemeLink = isValidHttpUrl(scheme.official_link);
-  const extractedUrls = extractUrls(scheme.application_process);
-  const validatedAppPortal =
-    extractedUrls.length > 0
-      ? isValidHttpUrl(extractedUrls[0])
-      : null;
-
-  const officialPortalLink =
-    validatedAppPortal && validatedAppPortal !== validatedSchemeLink
-      ? validatedAppPortal
-      : null;
+  const resolved = resolveOfficialLinks(scheme);
 
   return {
     scheme,
@@ -126,8 +97,11 @@ export function buildGuidance(scheme: GovernmentScheme): SchemeGuidance {
     lastUpdated: scheme.last_updated,
     steps,
     documents,
-    officialSchemeLink: validatedSchemeLink,
-    officialPortalLink,
+    officialSchemeLink: resolved.primary.url,
+    officialPortalLink: resolved.apply?.url ?? null,
+    linkStatus: resolved.status,
+    resolvedPrimary: resolved.primary,
+    resolvedApply: resolved.apply,
     hasDetailedGuidance: documents.length > 0 && steps.length > 0,
   };
 }
