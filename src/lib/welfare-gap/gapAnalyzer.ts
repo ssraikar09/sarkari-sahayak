@@ -167,14 +167,17 @@ export const getWelfareGapFn = createServerFn({ method: "GET" })
       0,
     );
     const topMissedByValue = [...householdMissed]
-      .sort((a, b) => b.annualValueINR - a.annualValueINR)
+      .sort(
+        (a, b) =>
+          b.annualValueINR - a.annualValueINR ||
+          a.schemeName.localeCompare(b.schemeName) ||
+          a.schemeId.localeCompare(b.schemeId),
+      )
       .slice(0, 5);
 
     const { score, tier } = computeOpportunityScore({
       totalEligible: householdEligibleIds.size,
       totalExplored: householdExplored.length,
-      familyMembersAssessed: family?.length ?? 0,
-      hasEligibilityAssessment: householdEligibleIds.size > 0,
     });
 
     const insights = generateInsights({
