@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      assistant_queries: {
+        Row: {
+          citizen_profile_id: string | null
+          created_at: string
+          id: string
+          query: string
+          retrieved_scheme_ids: string[]
+        }
+        Insert: {
+          citizen_profile_id?: string | null
+          created_at?: string
+          id?: string
+          query: string
+          retrieved_scheme_ids?: string[]
+        }
+        Update: {
+          citizen_profile_id?: string | null
+          created_at?: string
+          id?: string
+          query?: string
+          retrieved_scheme_ids?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assistant_queries_citizen_profile_id_fkey"
+            columns: ["citizen_profile_id"]
+            isOneToOne: false
+            referencedRelation: "citizen_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       citizen_profiles: {
         Row: {
           age: number
