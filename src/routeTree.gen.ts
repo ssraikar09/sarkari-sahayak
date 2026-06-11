@@ -13,6 +13,7 @@ import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as FamilyPlannerRouteImport } from './routes/family-planner'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as ApplicationGuideRouteImport } from './routes/application-guide'
 import { Route as IndexRouteImport } from './routes/index'
@@ -37,6 +38,11 @@ const FamilyPlannerRoute = FamilyPlannerRouteImport.update({
 const EligibilityRoute = EligibilityRouteImport.update({
   id: '/eligibility',
   path: '/eligibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AssistantRoute = AssistantRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/application-guide': typeof ApplicationGuideRoute
   '/assistant': typeof AssistantRoute
+  '/dashboard': typeof DashboardRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/onboarding': typeof OnboardingRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/application-guide': typeof ApplicationGuideRoute
   '/assistant': typeof AssistantRoute
+  '/dashboard': typeof DashboardRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/onboarding': typeof OnboardingRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/application-guide': typeof ApplicationGuideRoute
   '/assistant': typeof AssistantRoute
+  '/dashboard': typeof DashboardRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/onboarding': typeof OnboardingRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/application-guide'
     | '/assistant'
+    | '/dashboard'
     | '/eligibility'
     | '/family-planner'
     | '/onboarding'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/application-guide'
     | '/assistant'
+    | '/dashboard'
     | '/eligibility'
     | '/family-planner'
     | '/onboarding'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/application-guide'
     | '/assistant'
+    | '/dashboard'
     | '/eligibility'
     | '/family-planner'
     | '/onboarding'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApplicationGuideRoute: typeof ApplicationGuideRoute
   AssistantRoute: typeof AssistantRoute
+  DashboardRoute: typeof DashboardRoute
   EligibilityRoute: typeof EligibilityRoute
   FamilyPlannerRoute: typeof FamilyPlannerRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/eligibility'
       fullPath: '/eligibility'
       preLoaderRoute: typeof EligibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assistant': {
@@ -229,6 +249,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplicationGuideRoute: ApplicationGuideRoute,
   AssistantRoute: AssistantRoute,
+  DashboardRoute: DashboardRoute,
   EligibilityRoute: EligibilityRoute,
   FamilyPlannerRoute: FamilyPlannerRoute,
   OnboardingRoute: OnboardingRoute,
@@ -238,3 +259,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
