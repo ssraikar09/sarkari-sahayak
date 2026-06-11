@@ -95,6 +95,12 @@ function Welcome() {
               Decision Engine
             </Link>
           </Button>
+          <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base">
+            <Link to="/knowledge-graph">
+              <Network className="mr-1 size-4" />
+              Knowledge Graph
+            </Link>
+          </Button>
         </div>
 
         <div className="mt-16 grid w-full gap-4 sm:grid-cols-3">
