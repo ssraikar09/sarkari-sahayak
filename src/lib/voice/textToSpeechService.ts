@@ -1,8 +1,9 @@
 /* Lightweight wrapper around window.speechSynthesis.
- * Output is always English for consistent accessibility. */
+ * Honors the requested language but falls back to English voices when no
+ * regional voice is installed in the browser. */
 
-const TTS_OUTPUT_LANG = "en-IN";
-const TTS_OUTPUT_FALLBACK = "en-US";
+const TTS_FALLBACK_LANG = "en-IN";
+const TTS_FALLBACK_LANG_2 = "en-US";
 
 export function isSpeechSynthesisSupported(): boolean {
   return typeof window !== "undefined" && "speechSynthesis" in window;
@@ -15,8 +16,13 @@ function pickVoice(lang: string): SpeechSynthesisVoice | null {
   const exact = voices.find((v) => v.lang === lang);
   if (exact) return exact;
   const prefix = lang.split("-")[0];
-  const prefixed = voices.find((v) => v.lang.startsWith(prefix));
+  const prefixed = voices.find((v) => v.lang.toLowerCase().startsWith(prefix.toLowerCase()));
   return prefixed ?? null;
+}
+
+/** True if the browser ships a voice matching the requested language. */
+export function hasVoiceFor(lang: string): boolean {
+  return pickVoice(lang) !== null;
 }
 
 /* Some browsers populate voices asynchronously. */
@@ -30,7 +36,6 @@ export function ensureVoicesLoaded(): Promise<void> {
       resolve();
     };
     window.speechSynthesis.addEventListener("voiceschanged", handler);
-    // Safety timeout
     setTimeout(() => {
       window.speechSynthesis.removeEventListener("voiceschanged", handler);
       resolve();
@@ -45,9 +50,10 @@ export type SpeakOptions = {
   onStart?: () => void;
   onEnd?: () => void;
   onError?: (message: string) => void;
+  /** Called if we had to fall back to an English voice. */
+  onFallback?: () => void;
 };
 
-/* Strip markdown so TTS reads plain prose. */
 export function stripMarkdownForSpeech(text: string): string {
   return text
     .replace(/```[\s\S]*?```/g, " ")
@@ -79,17 +85,23 @@ export async function speak(text: string, opts: SpeakOptions): Promise<void> {
   cancelSpeech();
 
   const utter = new SpeechSynthesisUtterance(clean);
-  // Always render TTS in English regardless of the selected input language.
-  utter.lang = TTS_OUTPUT_LANG;
+  let voice = pickVoice(opts.lang);
+  let usedLang = opts.lang;
+  if (!voice) {
+    voice = pickVoice(TTS_FALLBACK_LANG) ?? pickVoice(TTS_FALLBACK_LANG_2);
+    usedLang = voice?.lang ?? TTS_FALLBACK_LANG;
+    if (opts.lang.split("-")[0] !== "en") {
+      opts.onFallback?.();
+    }
+  }
+  utter.lang = usedLang;
   utter.rate = opts.rate ?? 1;
   utter.pitch = opts.pitch ?? 1;
-  const voice = pickVoice(TTS_OUTPUT_LANG) ?? pickVoice(TTS_OUTPUT_FALLBACK);
   if (voice) utter.voice = voice;
   utter.onstart = () => opts.onStart?.();
   utter.onend = () => opts.onEnd?.();
   utter.onerror = (e) => {
     const err = e as SpeechSynthesisErrorEvent;
-    // 'interrupted' / 'canceled' happen on natural stop — don't surface.
     if (err.error === "interrupted" || err.error === "canceled") {
       opts.onEnd?.();
       return;
