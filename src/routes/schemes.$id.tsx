@@ -8,10 +8,13 @@ import {
   ArrowLeft,
   Calendar,
   CheckCircle2,
+  ClipboardList,
+  Clock,
   ExternalLink,
   FileText,
   Gift,
   MapPin,
+  Phone,
   Tag,
 } from "lucide-react";
 import { getSchemeById, type GovernmentScheme } from "@/lib/schemes";
@@ -120,6 +123,36 @@ function SchemeDetails() {
                 title="Required documents"
                 content={scheme.required_documents}
               />
+              {scheme.application_process ? (
+                <>
+                  <Separator />
+                  <Section
+                    icon={<ClipboardList className="size-4" />}
+                    title="How to apply"
+                    content={scheme.application_process}
+                  />
+                </>
+              ) : null}
+              {scheme.important_dates ? (
+                <>
+                  <Separator />
+                  <Section
+                    icon={<Clock className="size-4" />}
+                    title="Important dates"
+                    content={scheme.important_dates}
+                  />
+                </>
+              ) : null}
+              {scheme.contact_info ? (
+                <>
+                  <Separator />
+                  <Section
+                    icon={<Phone className="size-4" />}
+                    title="Contact & helpline"
+                    content={scheme.contact_info}
+                  />
+                </>
+              ) : null}
 
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-accent/40 p-4">
                 <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">

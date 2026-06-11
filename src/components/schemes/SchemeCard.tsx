@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Calendar, MapPin, Tag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import type { GovernmentScheme } from "@/lib/schemes";
 
 export function SchemeCard({ scheme }: { scheme: GovernmentScheme }) {
