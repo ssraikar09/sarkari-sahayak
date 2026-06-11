@@ -31,7 +31,7 @@ export async function retrieveSchemes(
   const qLower = query.toLowerCase();
   const rows = await fetchCandidateSchemes(keywords, profile);
 
-  const scored: RetrievedScheme[] = rows.map((scheme) => {
+  const scored = rows.map((scheme) => {
     const nameLower = scheme.scheme_name.toLowerCase();
     const categoryLower = scheme.category.toLowerCase();
     const haystack =
@@ -81,13 +81,39 @@ export async function retrieveSchemes(
       score += 6;
     }
 
-    return { scheme, score, matchedTerms };
+    return { scheme, score, matchedTerms, nameKeywordHits };
   });
+
+  // STRICT MODE for "Documents Required": require strong name-match similarity,
+  // exclude indirectly related schemes, and cap sources tighter.
+  if (intent === "documents") {
+    const minNameHits = Math.max(
+      1,
+      Math.ceil(keywords.length * STRICT_MIN_NAME_OVERLAP),
+    );
+    const strict = scored
+      .filter((r) => {
+        const exactOrPhrase =
+          r.scheme.scheme_name.toLowerCase() === qLower ||
+          qLower.includes(r.scheme.scheme_name.toLowerCase()) ||
+          r.scheme.scheme_name.toLowerCase().includes(qLower);
+        const strongLexical =
+          keywords.length > 0 && r.nameKeywordHits >= minNameHits;
+        return (
+          (exactOrPhrase || strongLexical) && r.score >= STRICT_MIN_SCORE
+        );
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, STRICT_MAX_RETRIEVED)
+      .map(({ scheme, score, matchedTerms }) => ({ scheme, score, matchedTerms }));
+    return strict;
+  }
 
   return scored
     .filter((r) => r.score >= MIN_SCORE && r.matchedTerms.length > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, MAX_RETRIEVED);
+    .slice(0, MAX_RETRIEVED)
+    .map(({ scheme, score, matchedTerms }) => ({ scheme, score, matchedTerms }));
 }
 
 async function fetchCandidateSchemes(
