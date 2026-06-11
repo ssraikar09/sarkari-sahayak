@@ -1,22 +1,21 @@
-/* Lightweight client-side translation using the free MyMemory API.
- * No API key required. Falls back to the original text on any failure so
- * the user always sees a response. */
+/* Client-side translation. Uses Google's public translate endpoint (no key)
+ * with MyMemory as a fallback. Translates paragraph-by-paragraph so long
+ * answers come through complete instead of being truncated.
+ *
+ * Falls back to the original English text on total failure so the user
+ * always sees a response. */
 
 import { getVoiceLanguage, type VoiceLanguageCode } from "./languageConfig";
 
-const ENDPOINT = "https://api.mymemory.translated.net/get";
-const MAX_CHARS = 480; // MyMemory query limit per call
+const GOOGLE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
+const MYMEMORY_ENDPOINT = "https://api.mymemory.translated.net/get";
+const CHUNK_CHARS = 1500; // safe under Google's ~5000 char per-request limit
 
 export type TranslationResult = {
   text: string;
   translated: boolean;
 };
 
-/**
- * Translate English `text` to the language identified by `targetLang`.
- * If the target is English, the text is returned unchanged.
- * On any error, returns the original text with translated:false.
- */
 export async function translateFromEnglish(
   text: string,
   targetLang: VoiceLanguageCode,
@@ -25,25 +24,95 @@ export async function translateFromEnglish(
   if (lang.short === "en" || !text.trim()) {
     return { text, translated: false };
   }
-  try {
-    const chunks = splitIntoChunks(text, MAX_CHARS);
-    const translated: string[] = [];
+
+  // Translate block-by-block so markdown structure (paragraphs, bullets) is
+  // preserved in the output.
+  const blocks = text.split(/\n/);
+  const out: string[] = [];
+  let anyTranslated = false;
+  let anyFailed = false;
+
+  for (const block of blocks) {
+    if (!block.trim()) {
+      out.push(block);
+      continue;
+    }
+    // Preserve markdown leading markers ("- ", "* ", "1. ", "## ").
+    const m = block.match(/^(\s*(?:[-*]|\d+\.|#{1,6})\s+)?(.*)$/);
+    const prefix = m?.[1] ?? "";
+    const body = m?.[2] ?? block;
+
+    const chunks = splitIntoChunks(body, CHUNK_CHARS);
+    const translatedChunks: string[] = [];
     for (const chunk of chunks) {
-      const url = `${ENDPOINT}?q=${encodeURIComponent(chunk)}&langpair=en|${lang.short}`;
+      const t = await translateChunk(chunk, lang.short);
+      if (t === null) {
+        anyFailed = true;
+        translatedChunks.push(chunk);
+      } else {
+        anyTranslated = true;
+        translatedChunks.push(t);
+      }
+    }
+    out.push(prefix + translatedChunks.join(" "));
+  }
+
+  if (!anyTranslated) return { text, translated: false };
+  // Partial success still counts as translated; UI keeps the regional copy.
+  void anyFailed;
+  return { text: out.join("\n"), translated: true };
+}
+
+async function translateChunk(
+  chunk: string,
+  short: string,
+): Promise<string | null> {
+  // 1) Google public endpoint
+  try {
+    const url =
+      `${GOOGLE_ENDPOINT}?client=gtx&sl=en&tl=${short}&dt=t&q=${encodeURIComponent(chunk)}`;
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = (await res.json()) as unknown;
+      const joined = extractGoogleText(data);
+      if (joined) return joined;
+    }
+  } catch {
+    /* fall through */
+  }
+
+  // 2) MyMemory fallback (smaller per-call limit, so chunk further)
+  try {
+    const pieces = splitIntoChunks(chunk, 480);
+    const parts: string[] = [];
+    for (const p of pieces) {
+      const url = `${MYMEMORY_ENDPOINT}?q=${encodeURIComponent(p)}&langpair=en|${short}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error(`status ${res.status}`);
+      if (!res.ok) return null;
       const json = (await res.json()) as {
         responseData?: { translatedText?: string };
-        responseStatus?: number;
       };
       const t = json.responseData?.translatedText;
-      if (!t) throw new Error("empty translation");
-      translated.push(t);
+      if (!t) return null;
+      parts.push(t);
     }
-    return { text: translated.join(" "), translated: true };
+    return parts.join(" ");
   } catch {
-    return { text, translated: false };
+    return null;
   }
+}
+
+function extractGoogleText(data: unknown): string | null {
+  if (!Array.isArray(data) || !Array.isArray(data[0])) return null;
+  const segments = data[0] as Array<unknown>;
+  const out: string[] = [];
+  for (const seg of segments) {
+    if (Array.isArray(seg) && typeof seg[0] === "string") {
+      out.push(seg[0] as string);
+    }
+  }
+  const joined = out.join("");
+  return joined.trim() ? joined : null;
 }
 
 function splitIntoChunks(text: string, max: number): string[] {
@@ -55,7 +124,6 @@ function splitIntoChunks(text: string, max: number): string[] {
     if ((buf + " " + s).trim().length > max) {
       if (buf) out.push(buf.trim());
       if (s.length > max) {
-        // Hard split overly long sentence.
         for (let i = 0; i < s.length; i += max) out.push(s.slice(i, i + max));
         buf = "";
       } else {
