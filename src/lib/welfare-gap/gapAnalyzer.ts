@@ -51,8 +51,12 @@ export const getWelfareGapFn = createServerFn({ method: "GET" })
           .from("family_members")
           .select("*")
           .eq("citizen_profile_id", data.citizen_profile_id)
-          .order("created_at", { ascending: true }),
-        supabaseAdmin.from("government_schemes").select("*"),
+          .order("created_at", { ascending: true })
+          .order("id", { ascending: true }),
+        supabaseAdmin
+          .from("government_schemes")
+          .select("*")
+          .order("id", { ascending: true }),
       ]);
 
     if (!profile) return emptyAnalysis();
@@ -69,11 +73,13 @@ export const getWelfareGapFn = createServerFn({ method: "GET" })
       supabaseAdmin
         .from("assistant_queries")
         .select("retrieved_scheme_ids")
-        .eq("citizen_profile_id", data.citizen_profile_id),
+        .eq("citizen_profile_id", data.citizen_profile_id)
+        .order("created_at", { ascending: true }),
       supabaseAdmin
         .from("application_guide_usage")
         .select("scheme_id")
-        .eq("citizen_profile_id", data.citizen_profile_id),
+        .eq("citizen_profile_id", data.citizen_profile_id)
+        .order("created_at", { ascending: true }),
     ]);
 
     const exploredIds = new Set<string>();
@@ -161,14 +167,17 @@ export const getWelfareGapFn = createServerFn({ method: "GET" })
       0,
     );
     const topMissedByValue = [...householdMissed]
-      .sort((a, b) => b.annualValueINR - a.annualValueINR)
+      .sort(
+        (a, b) =>
+          b.annualValueINR - a.annualValueINR ||
+          a.schemeName.localeCompare(b.schemeName) ||
+          a.schemeId.localeCompare(b.schemeId),
+      )
       .slice(0, 5);
 
     const { score, tier } = computeOpportunityScore({
       totalEligible: householdEligibleIds.size,
       totalExplored: householdExplored.length,
-      familyMembersAssessed: family?.length ?? 0,
-      hasEligibilityAssessment: householdEligibleIds.size > 0,
     });
 
     const insights = generateInsights({

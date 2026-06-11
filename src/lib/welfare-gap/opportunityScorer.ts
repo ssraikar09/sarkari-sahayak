@@ -1,38 +1,24 @@
 import type { WelfareCoverageTier } from "./types";
 
 /**
- * Welfare Opportunity Score (0–100).
+ * Welfare Opportunity Score (0–100) — deterministic.
  *
- * Heuristic blend:
- *  - 70% exploration coverage (explored / eligible)
- *  - 20% breadth (eligible schemes identified vs. an expected baseline)
- *  - 10% assessment completeness (eligibility + family members assessed)
+ * Formula:
+ *   score = round( (explored_schemes / total_eligible_schemes) * 100 )
  *
- * Higher = better welfare coverage.
+ * Derived only from persisted data (eligible scheme set + explored scheme set).
+ * No randomness, no time-dependent inputs.
  */
 export function computeOpportunityScore(input: {
   totalEligible: number;
   totalExplored: number;
-  familyMembersAssessed: number;
-  hasEligibilityAssessment: boolean;
 }): { score: number; tier: WelfareCoverageTier } {
-  const { totalEligible, totalExplored, familyMembersAssessed, hasEligibilityAssessment } = input;
-
-  if (!hasEligibilityAssessment && totalEligible === 0) {
+  const { totalEligible, totalExplored } = input;
+  if (totalEligible <= 0) {
     return { score: 0, tier: "High Risk of Welfare Exclusion" };
   }
-
-  const explorationRatio = totalEligible > 0 ? Math.min(1, totalExplored / totalEligible) : 0;
-  const exploration = explorationRatio * 70;
-
-  // Breadth: 10 eligible schemes considered a strong baseline.
-  const breadth = Math.min(1, totalEligible / 10) * 20;
-
-  // Completeness: profile + family planner usage.
-  const completeness =
-    (hasEligibilityAssessment ? 6 : 0) + Math.min(1, familyMembersAssessed / 3) * 4;
-
-  const score = Math.round(exploration + breadth + completeness);
+  const ratio = Math.min(1, Math.max(0, totalExplored / totalEligible));
+  const score = Math.round(ratio * 100);
   const clamped = Math.max(0, Math.min(100, score));
   return { score: clamped, tier: tierForScore(clamped) };
 }
