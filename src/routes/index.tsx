@@ -94,7 +94,11 @@ function Welcome() {
               AI-Powered Government Scheme Navigator
               <ArrowRight className="size-3.5" />
             </div>
-            <h1 className="mt-7 bg-gradient-to-r from-primary via-amber-500 to-secondary bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-7xl">
+            <h1
+              lang="hi"
+              style={{ fontFamily: '"Noto Sans Devanagari", "Tiro Devanagari Hindi", system-ui, sans-serif' }}
+              className="mt-7 bg-gradient-to-r from-primary via-amber-500 to-secondary bg-clip-text pb-2 text-5xl font-extrabold leading-[1.2] tracking-tight text-transparent sm:text-7xl"
+            >
               सरकारी सहायक
             </h1>
             <p className="mt-5 text-balance text-xl font-semibold text-foreground sm:text-2xl">
