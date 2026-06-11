@@ -121,8 +121,14 @@ function Welcome() {
           items={sectionA}
         />
         <Section
+          eyebrow="Step 1"
+          title="Continue Your Welfare Journey"
+          desc="Set up your profile and discover schemes built for you."
+          items={sectionA}
+        />
+        <Section
           eyebrow="Step 2"
-          title="Plan for Your Family"
+          title="Family Welfare"
           desc="Coordinate welfare across every household member."
           items={sectionB}
         />
