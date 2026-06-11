@@ -5,14 +5,12 @@ import {
   Languages,
   MessageCircle,
   Users,
-  BarChart3,
   Compass,
   TrendingUp,
   Briefcase,
   Scale,
   Network,
   Map as MapIcon,
-  UserPlus,
   CheckCircle2,
   FileText,
   ArrowRight,
@@ -47,9 +45,9 @@ type CardItem = {
 };
 
 const sectionA: CardItem[] = [
-  { to: "/onboarding", icon: UserPlus, title: "Create Profile", desc: "Build your citizen digital twin in minutes." },
-  { to: "/eligibility", icon: CheckCircle2, title: "Check Eligibility", desc: "See schemes matched to your profile." },
   { to: "/assistant", icon: MessageCircle, title: "Ask Assistant", desc: "AI answers grounded in official sources." },
+  { to: "/eligibility", icon: CheckCircle2, title: "Check Eligibility", desc: "See schemes matched to your profile." },
+  { to: "/schemes", icon: FileText, title: "Explore Schemes", desc: "Browse all government welfare programs." },
 ];
 
 const sectionB: CardItem[] = [
@@ -59,7 +57,6 @@ const sectionB: CardItem[] = [
 ];
 
 const sectionC: CardItem[] = [
-  { to: "/dashboard", icon: BarChart3, title: "Impact Dashboard", desc: "Track outcomes and household impact." },
   { to: "/decision-engine", icon: Scale, title: "Decision Engine", desc: "Transparent, explainable AI decisions." },
   { to: "/knowledge-graph", icon: Network, title: "Knowledge Graph", desc: "Visualize the welfare relationship map." },
   { to: "/insights", icon: TrendingUp, title: "Research Insights", desc: "Aggregate, exportable welfare analytics." },
@@ -117,19 +114,19 @@ function Welcome() {
       <div className="mx-auto max-w-6xl space-y-12 px-6 py-14">
         <Section
           eyebrow="Step 1"
-          title="Start Your Welfare Journey"
-          desc="Set up your profile and discover schemes built for you."
+          title="Continue Your Welfare Journey"
+          desc="Pick up where you left off — discover and act on schemes built for you."
           items={sectionA}
         />
         <Section
           eyebrow="Step 2"
-          title="Plan for Your Family"
+          title="Family Welfare"
           desc="Coordinate welfare across every household member."
           items={sectionB}
         />
         <Section
-          eyebrow="Insights"
-          title="Advanced Insights"
+          eyebrow="Intelligence"
+          title="Advanced Intelligence"
           desc="Research-grade analytics and explainable AI."
           items={sectionC}
         />
