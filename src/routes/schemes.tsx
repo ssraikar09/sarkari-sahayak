@@ -17,7 +17,9 @@ import {
   SCHEME_STATES,
   listSchemes,
   type GovernmentScheme,
+  type SchemeScope,
 } from "@/lib/schemes";
+import { cn } from "@/lib/utils";
 
 const ALL = "__all__";
 
@@ -40,9 +42,13 @@ export const Route = createFileRoute("/schemes")({
   component: SchemeExplorer,
 });
 
+type ScopeOption = "All" | SchemeScope;
+const SCOPE_OPTIONS: ScopeOption[] = ["All", "National", "State"];
+
 function SchemeExplorer() {
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
+  const [scope, setScope] = useState<ScopeOption>("All");
   const [state, setState] = useState<string>(ALL);
   const [category, setCategory] = useState<string>(ALL);
   const [schemes, setSchemes] = useState<GovernmentScheme[] | null>(null);
@@ -53,6 +59,11 @@ function SchemeExplorer() {
     return () => clearTimeout(t);
   }, [search]);
 
+  // When viewing National only, clear the state-specific filter
+  useEffect(() => {
+    if (scope === "National" && state !== ALL) setState(ALL);
+  }, [scope, state]);
+
   useEffect(() => {
     let active = true;
     setSchemes(null);
@@ -61,6 +72,7 @@ function SchemeExplorer() {
       search: debounced || undefined,
       state: state === ALL ? undefined : state,
       category: category === ALL ? undefined : category,
+      scope: scope === "All" ? undefined : scope,
     })
       .then((rows) => {
         if (active) setSchemes(rows);
@@ -72,17 +84,18 @@ function SchemeExplorer() {
     return () => {
       active = false;
     };
-  }, [debounced, state, category]);
+  }, [debounced, state, category, scope]);
 
   const hasFilters = useMemo(
-    () => Boolean(search || state !== ALL || category !== ALL),
-    [search, state, category],
+    () => Boolean(search || state !== ALL || category !== ALL || scope !== "All"),
+    [search, state, category, scope],
   );
 
   const clearFilters = () => {
     setSearch("");
     setState(ALL);
     setCategory(ALL);
+    setScope("All");
   };
 
   return (
