@@ -108,6 +108,7 @@ function AssistantPage() {
         createdAt: new Date().toISOString(),
       };
       setMessages((m) => [...m, reply]);
+      setLastAssistantId(reply.id);
     } catch (err) {
       console.error(err);
       setMessages((m) => [
@@ -160,6 +161,8 @@ function AssistantPage() {
           </p>
         </header>
 
+        <VoiceSettingsBar className="mb-3" />
+
         <div
           ref={scrollRef}
           className="flex-1 space-y-4 overflow-y-auto rounded-2xl border bg-card/60 p-4 shadow-sm sm:p-6"
@@ -167,7 +170,17 @@ function AssistantPage() {
           {messages.length === 0 ? (
             <EmptyState onPick={(p) => void submit(p)} />
           ) : (
-            messages.map((m) => <MessageBubble key={m.id} message={m} />)
+            messages.map((m) => (
+              <MessageBubble
+                key={m.id}
+                message={m}
+                autoPlay={
+                  accessibilityMode &&
+                  m.role === "assistant" &&
+                  m.id === lastAssistantId
+                }
+              />
+            ))
           )}
           {loading ? <TypingIndicator /> : null}
         </div>
@@ -179,13 +192,24 @@ function AssistantPage() {
             void submit(input);
           }}
         >
+          <MicButton
+            onTranscript={(t) => {
+              setInput(t);
+              // Auto-submit final transcript.
+              void submit(t);
+            }}
+            onPartial={(t) => setInput(t)}
+            onError={(m) => toast.error(m)}
+            disabled={loading}
+            className="size-10"
+          />
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             rows={1}
-            placeholder="Ask a question about any government scheme…"
+            placeholder="Ask a question or tap the mic to speak…"
             className="min-h-11 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
             aria-label="Message the assistant"
           />
