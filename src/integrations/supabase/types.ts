@@ -116,6 +116,27 @@ export type Database = {
         }
         Relationships: []
       }
+      scheme_search_logs: {
+        Row: {
+          created_at: string
+          id: string
+          search_query: string
+          state_selected: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          search_query: string
+          state_selected?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          search_query?: string
+          state_selected?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

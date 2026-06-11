@@ -15,7 +15,9 @@ import { SchemeCard } from "@/components/schemes/SchemeCard";
 import {
   SCHEME_CATEGORIES,
   SCHEME_STATES,
+  SchemeFallback,
   listSchemes,
+  logUnsuccessfulSearch,
   type GovernmentScheme,
   type SchemeScope,
 } from "@/lib/schemes";
@@ -75,7 +77,15 @@ function SchemeExplorer() {
       scope: scope === "All" ? undefined : scope,
     })
       .then((rows) => {
-        if (active) setSchemes(rows);
+        if (!active) return;
+        setSchemes(rows);
+        // Log unsuccessful searches so we can prioritise what to add next.
+        if (rows.length === 0 && debounced.trim()) {
+          void logUnsuccessfulSearch(
+            debounced.trim(),
+            state === ALL ? null : state,
+          );
+        }
       })
       .catch((e) => {
         console.error(e);
@@ -217,17 +227,34 @@ function SchemeExplorer() {
               ))}
             </SchemesGrid>
           ) : schemes.length === 0 ? (
-            <EmptyState
-              title="No schemes match your filters"
-              message="Try a different search term or clear the filters to see all schemes."
-              action={
-                hasFilters ? (
-                  <Button onClick={clearFilters} variant="outline">
-                    Clear filters
-                  </Button>
-                ) : null
-              }
-            />
+            debounced.trim() ? (
+              <div className="space-y-4">
+                <SchemeFallback
+                  searchQuery={debounced.trim()}
+                  stateSelected={state === ALL ? null : state}
+                />
+                {hasFilters ? (
+                  <div className="text-center">
+                    <Button onClick={clearFilters} variant="outline">
+                      <X className="mr-1 size-4" />
+                      Clear filters
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <EmptyState
+                title="No schemes match your filters"
+                message="Try a different search term or clear the filters to see all schemes."
+                action={
+                  hasFilters ? (
+                    <Button onClick={clearFilters} variant="outline">
+                      Clear filters
+                    </Button>
+                  ) : null
+                }
+              />
+            )
           ) : (
             <>
               <p className="mb-3 text-sm text-muted-foreground">
