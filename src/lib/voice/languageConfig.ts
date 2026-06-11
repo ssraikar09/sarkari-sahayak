@@ -1,4 +1,4 @@
-export type VoiceLanguageCode = "en-IN" | "hi-IN" | "kn-IN" | "ta-IN" | "te-IN";
+export type VoiceLanguageCode = "en-IN";
 
 export type VoiceLanguage = {
   code: VoiceLanguageCode;
@@ -8,10 +8,6 @@ export type VoiceLanguage = {
 
 export const VOICE_LANGUAGES: VoiceLanguage[] = [
   { code: "en-IN", label: "English", nativeLabel: "English" },
-  { code: "hi-IN", label: "Hindi", nativeLabel: "हिन्दी" },
-  { code: "kn-IN", label: "Kannada", nativeLabel: "ಕನ್ನಡ" },
-  { code: "ta-IN", label: "Tamil", nativeLabel: "தமிழ்" },
-  { code: "te-IN", label: "Telugu", nativeLabel: "తెలుగు" },
 ];
 
 export const DEFAULT_VOICE_LANGUAGE: VoiceLanguageCode = "en-IN";
