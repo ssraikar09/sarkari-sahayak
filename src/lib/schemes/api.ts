@@ -13,6 +13,7 @@ export async function listSchemes(filters: SchemeFilters = {}): Promise<Governme
 
   if (filters.state) query = query.eq("state", filters.state);
   if (filters.category) query = query.eq("category", filters.category);
+  if (filters.scope) query = query.eq("scheme_scope", filters.scope);
   if (filters.search && filters.search.trim()) {
     const term = filters.search.trim().replace(/[%_]/g, "");
     query = query.or(
