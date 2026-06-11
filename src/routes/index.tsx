@@ -58,6 +58,11 @@ function Welcome() {
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base">
+            <Link to="/application-guide" search={{ schemeId: undefined }}>
+              How to Apply
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base">
             <Link to="/schemes">Browse Schemes</Link>
           </Button>
         </div>

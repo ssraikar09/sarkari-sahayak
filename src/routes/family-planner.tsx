@@ -389,6 +389,7 @@ function FamilyPlannerPage() {
                               <RecommendationCard
                                 key={`${mr.member.id}-${r.scheme.id}`}
                                 recommendation={r}
+                                applyLabel="Apply Now"
                               />
                             ))}
                           </div>

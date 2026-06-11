@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Check, MapPin, ShieldCheck, Tag, X } from "lucide-react";
+import { ArrowRight, Check, ClipboardCheck, MapPin, ShieldCheck, Tag, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -10,8 +10,10 @@ import {
 
 export function RecommendationCard({
   recommendation,
+  applyLabel = "View Application Guide",
 }: {
   recommendation: EligibilityRecommendation;
+  applyLabel?: string;
 }) {
   const { scheme, confidence, matchedCount, totalApplicable, reasons } =
     recommendation;
@@ -83,10 +85,19 @@ export function RecommendationCard({
         </ul>
       </div>
 
-      <div className="mt-5 flex items-center justify-end">
-        <Button asChild size="sm">
+      <div className="mt-5 flex flex-wrap items-center justify-end gap-2">
+        <Button asChild size="sm" variant="outline">
           <Link to="/schemes/$id" params={{ id: scheme.id }}>
             View Details
+          </Link>
+        </Button>
+        <Button asChild size="sm">
+          <Link
+            to="/application-guide"
+            search={{ schemeId: scheme.id }}
+          >
+            <ClipboardCheck className="mr-1 size-4" />
+            {applyLabel}
             <ArrowRight className="ml-1 size-4" />
           </Link>
         </Button>

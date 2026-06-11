@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      application_guide_usage: {
+        Row: {
+          accessed_at: string
+          citizen_profile_id: string | null
+          created_at: string
+          id: string
+          scheme_id: string
+        }
+        Insert: {
+          accessed_at?: string
+          citizen_profile_id?: string | null
+          created_at?: string
+          id?: string
+          scheme_id: string
+        }
+        Update: {
+          accessed_at?: string
+          citizen_profile_id?: string | null
+          created_at?: string
+          id?: string
+          scheme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_guide_usage_citizen_profile_id_fkey"
+            columns: ["citizen_profile_id"]
+            isOneToOne: false
+            referencedRelation: "citizen_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_guide_usage_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "government_schemes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assistant_queries: {
         Row: {
           citizen_profile_id: string | null
