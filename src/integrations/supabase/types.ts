@@ -62,6 +62,38 @@ export type Database = {
         }
         Relationships: []
       }
+      eligibility_assessments: {
+        Row: {
+          assessment_date: string
+          citizen_profile_id: string
+          created_at: string
+          id: string
+          recommended_scheme_ids: string[]
+        }
+        Insert: {
+          assessment_date?: string
+          citizen_profile_id: string
+          created_at?: string
+          id?: string
+          recommended_scheme_ids?: string[]
+        }
+        Update: {
+          assessment_date?: string
+          citizen_profile_id?: string
+          created_at?: string
+          id?: string
+          recommended_scheme_ids?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eligibility_assessments_citizen_profile_id_fkey"
+            columns: ["citizen_profile_id"]
+            isOneToOne: false
+            referencedRelation: "citizen_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       government_schemes: {
         Row: {
           application_process: string | null
