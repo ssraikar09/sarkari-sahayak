@@ -3,6 +3,7 @@ import { listSchemes, type GovernmentScheme } from "@/lib/schemes";
 import { recommendSchemes } from "@/lib/eligibility";
 import { familyMemberToProfileShape } from "./familyExplanationGenerator";
 import { listFamilyMembers } from "./familyService";
+import { filterRecommendationsForMember } from "./demographicFilter";
 import type { FamilyAssessment, FamilyMemberRecommendations } from "./types";
 
 /**
@@ -34,9 +35,10 @@ export async function assessFamilyEligibility(
 
   const perMember: FamilyMemberRecommendations[] = members.map((m) => {
     const shaped = familyMemberToProfileShape(m, anchor) as CitizenProfile;
+    const base = recommendSchemes(shaped, candidateSchemes);
     return {
       member: m,
-      recommendations: recommendSchemes(shaped, candidateSchemes),
+      recommendations: filterRecommendationsForMember(base, m),
     };
   });
 
