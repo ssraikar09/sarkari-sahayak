@@ -42,15 +42,7 @@ export function exportRoadmap(kind: RoadmapExportKind, roadmap: Roadmap): void {
     }, 1500);
   };
   iframe.onload = () => setTimeout(trigger, 250);
-  if ("srcdoc" in iframe) {
-    iframe.srcdoc = html;
-  } else {
-    const doc = iframe.contentDocument;
-    if (!doc) return;
-    doc.open();
-    doc.write(html);
-    doc.close();
-  }
+  iframe.srcdoc = html;
 }
 
 function buildHtml(kind: RoadmapExportKind, r: Roadmap): string {
