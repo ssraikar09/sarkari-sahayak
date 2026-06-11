@@ -1,15 +1,15 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { CitizenProfile, CitizenProfileInput } from "./constants";
+import { PROFILE_STORAGE_KEY } from "./constants";
 
-// Types are auto-regenerated; cast through unknown for now.
+// Supabase generated types don't yet include citizen_profiles; cast for now.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
-import { PROFILE_STORAGE_KEY } from "./constants";
 
 export async function createCitizenProfile(
   input: CitizenProfileInput,
 ): Promise<CitizenProfile> {
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("citizen_profiles")
     .insert(input)
     .select()
@@ -23,7 +23,7 @@ export async function createCitizenProfile(
 }
 
 export async function fetchCitizenProfile(id: string): Promise<CitizenProfile | null> {
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("citizen_profiles")
     .select("*")
     .eq("id", id)
