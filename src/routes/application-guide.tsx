@@ -146,6 +146,8 @@ function ApplicationGuidePage() {
           </p>
         </header>
 
+        <VoiceSettingsBar className="mb-4" showAccessibilityToggle={false} />
+
         {!schemeId ? (
           <SchemeSearchPanel
             onPick={(id) => navigate({ to: "/application-guide", search: { schemeId: id } })}
