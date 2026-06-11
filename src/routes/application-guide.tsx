@@ -65,6 +65,7 @@ function ApplicationGuidePage() {
   const navigate = useNavigate();
   const { schemeId } = Route.useSearch();
   const logAccess = useServerFn(logGuidanceAccessFn);
+  const logFallback = useServerFn(logFallbackUsageFn);
 
   const [guidance, setGuidance] = useState<SchemeGuidance | null>(null);
   const [loading, setLoading] = useState<boolean>(Boolean(schemeId));
@@ -93,6 +94,9 @@ function ApplicationGuidePage() {
         setChecked(loadChecklistState(schemeId));
         const profileId = getStoredProfileId();
         void logAccess({ data: { schemeId, citizenProfileId: profileId } });
+        if (g.linkStatus !== "direct_link") {
+          void logFallback({ data: { schemeId, fallbackType: g.linkStatus } });
+        }
       } catch (e) {
         console.error(e);
         if (active) setError("Couldn't load the application guidance.");
