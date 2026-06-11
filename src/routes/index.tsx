@@ -127,8 +127,8 @@ function Welcome() {
           items={sectionB}
         />
         <Section
-          eyebrow="Insights"
-          title="Advanced Insights"
+          eyebrow="Intelligence"
+          title="Advanced Intelligence"
           desc="Research-grade analytics and explainable AI."
           items={sectionC}
         />
