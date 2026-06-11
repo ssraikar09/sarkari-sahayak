@@ -1,12 +1,12 @@
 import type { AssistantIntent } from "./types";
 
 const INTENT_KEYWORDS: Record<AssistantIntent, string[]> = {
-  eligibility: ["eligible", "eligibility", "qualify", "qualifies", "qualified", "can i get", "am i"],
-  documents: ["document", "documents", "papers", "id proof", "aadhaar", "required to apply", "what do i need"],
-  benefits: ["benefit", "benefits", "amount", "how much", "payout", "subsidy", "explain"],
-  comparison: ["vs", "versus", "compare", "difference between", "better"],
-  discovery: ["suggest", "recommend", "schemes for", "what schemes", "list schemes"],
-  general: [],
+  eligibility: ["eligible", "eligibility", "qualify", "qualifies", "qualified", "can i get", "am i", "eligibility check"],
+  documents: ["document", "documents", "papers", "id proof", "aadhaar", "required to apply", "what do i need", "documents required", "paperwork"],
+  benefits: ["benefit", "benefits", "amount", "how much", "payout", "subsidy", "benefits inquiry", "what will i get"],
+  comparison: ["vs", "versus", "compare", "difference between", "better", "comparison"],
+  discovery: ["suggest", "recommend", "schemes for", "what schemes", "list schemes", "discover", "find schemes"],
+  general: ["explain", "what is", "tell me about", "about scheme"],
 };
 
 export function detectIntent(query: string): AssistantIntent {

@@ -2,39 +2,64 @@ import { supabase } from "@/integrations/supabase/client";
 import type { CitizenProfile } from "@/lib/citizen-profile/constants";
 import type { GovernmentScheme } from "@/lib/schemes";
 import { extractKeywords } from "./intent";
-import type { RetrievedScheme } from "./types";
+import type { AssistantIntent, RetrievedScheme } from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
 
-const MAX_RETRIEVED = 6;
+const MAX_RETRIEVED = 3;
+const MIN_SCORE = 4;
 
 /**
  * Hybrid retrieval over the verified government_schemes table.
- * - Lexical search across scheme_name + description + eligibility text.
- * - Profile-aware boosting (state + scope + category alignment).
- * Returns the top scored schemes.
+ * Ranking priority:
+ *   1. Exact / phrase scheme-name match (highest)
+ *   2. Category similarity
+ *   3. Profile-aware boosting (state + occupation alignment)
+ * Caps output at 3 schemes and filters out low-confidence matches.
  */
 export async function retrieveSchemes(
   query: string,
   profile: CitizenProfile | null,
+  intent: AssistantIntent = "general",
 ): Promise<RetrievedScheme[]> {
   const keywords = extractKeywords(query);
+  const qLower = query.toLowerCase();
   const rows = await fetchCandidateSchemes(keywords, profile);
 
   const scored: RetrievedScheme[] = rows.map((scheme) => {
+    const nameLower = scheme.scheme_name.toLowerCase();
+    const categoryLower = scheme.category.toLowerCase();
     const haystack =
-      `${scheme.scheme_name} ${scheme.description} ${scheme.eligibility_criteria} ${scheme.benefits} ${scheme.category}`.toLowerCase();
+      `${nameLower} ${scheme.description} ${scheme.eligibility_criteria} ${scheme.benefits} ${categoryLower}`.toLowerCase();
 
     const matchedTerms = keywords.filter((k) => haystack.includes(k));
-    let score = matchedTerms.length * 3;
+    let score = 0;
 
-    // Strong boost for direct scheme-name hits.
+    // 1) Exact scheme-name match — highest priority.
+    if (nameLower === qLower) {
+      score += 100;
+    } else if (qLower.includes(nameLower) || nameLower.includes(qLower)) {
+      score += 40;
+    }
+    // Per-keyword name hits.
+    let nameKeywordHits = 0;
     for (const k of keywords) {
-      if (scheme.scheme_name.toLowerCase().includes(k)) score += 5;
+      if (nameLower.includes(k)) {
+        score += 8;
+        nameKeywordHits += 1;
+      }
+    }
+    if (keywords.length > 0 && nameKeywordHits === keywords.length) {
+      score += 10; // all keywords appear in the name
     }
 
-    // Profile-aware boosting.
+    // 2) Category similarity — second priority.
+    for (const k of keywords) {
+      if (categoryLower.includes(k)) score += 5;
+    }
+
+    // 3) Profile-aware boosting — third priority.
     if (profile) {
       if (scheme.scheme_scope === "National" || scheme.state === profile.state) {
         score += 2;
@@ -44,11 +69,19 @@ export async function retrieveSchemes(
       }
     }
 
+    // Generic content-match bonus (lowest weight).
+    score += matchedTerms.length * 1;
+
+    // "Documents Required" intent — strengthen name-match priority further.
+    if (intent === "documents" && nameKeywordHits > 0) {
+      score += 6;
+    }
+
     return { scheme, score, matchedTerms };
   });
 
   return scored
-    .filter((r) => r.score > 0)
+    .filter((r) => r.score >= MIN_SCORE && r.matchedTerms.length > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, MAX_RETRIEVED);
 }
@@ -60,7 +93,6 @@ async function fetchCandidateSchemes(
   let query = db.from("government_schemes").select("*").limit(60);
 
   if (keywords.length > 0) {
-    // Build an OR clause across the most important text columns.
     const clauses = keywords
       .slice(0, 6)
       .flatMap((k) => {
@@ -75,7 +107,6 @@ async function fetchCandidateSchemes(
       .join(",");
     query = query.or(clauses);
   } else if (profile) {
-    // No useful keywords — fall back to the citizen's state + national.
     query = query.or(
       `scheme_scope.eq.National,state.eq.${profile.state.replace(/,/g, "")}`,
     );
