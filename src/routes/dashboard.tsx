@@ -78,6 +78,7 @@ function DashboardPage() {
   const householdFn = useServerFn(getHouseholdImpactFn);
   const assistantFn = useServerFn(getAssistantInsightsFn);
   const progressFn = useServerFn(getApplicationProgressFn);
+  const welfareGapFn = useServerFn(getWelfareGapFn);
 
   const [profileId, setProfileId] = useState<string | null>(null);
   const [downloads, setDownloads] = useState<number>(0);
@@ -115,16 +116,26 @@ function DashboardPage() {
       }),
     enabled: hydrated,
   });
+  const welfareGap = useQuery({
+    queryKey: ["dashboard", "welfare-gap", profileId],
+    queryFn: () => welfareGapFn({ data: { citizen_profile_id: profileId } }),
+    enabled: hydrated,
+  });
 
   const loading =
     !hydrated ||
     personal.isLoading ||
     household.isLoading ||
     assistant.isLoading ||
-    progress.isLoading;
+    progress.isLoading ||
+    welfareGap.isLoading;
 
   const error =
-    personal.error || household.error || assistant.error || progress.error;
+    personal.error ||
+    household.error ||
+    assistant.error ||
+    progress.error ||
+    welfareGap.error;
 
   const isEmpty =
     hydrated &&
@@ -167,17 +178,21 @@ function DashboardPage() {
               household.refetch();
               assistant.refetch();
               progress.refetch();
+              welfareGap.refetch();
             }}
           />
         ) : isEmpty ? (
           <EmptyState />
         ) : (
           <div className="space-y-8">
+            <WelfareGapCard data={welfareGap.data} loading={loading} hasProfile={!!profileId} />
             <PersonalSection data={personal.data} loading={loading} />
             <HouseholdSection data={household.data} loading={loading} />
+            <WelfareGapSection data={welfareGap.data} loading={loading} hasProfile={!!profileId} />
             <AssistantSection data={assistant.data} loading={loading} />
             <ProgressSection data={progress.data} loading={loading} />
             <Explainability />
+
           </div>
         )}
       </div>
