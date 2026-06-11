@@ -7,6 +7,7 @@ import {
   getConfidenceTone,
   type EligibilityRecommendation,
 } from "@/lib/eligibility";
+import { ListenButton } from "@/components/voice/ListenButton";
 
 export function RecommendationCard({
   recommendation,
@@ -86,6 +87,17 @@ export function RecommendationCard({
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-end gap-2">
+        <ListenButton
+          text={[
+            `${scheme.scheme_name}.`,
+            scheme.description,
+            `Eligibility: ${matchedCount} of ${totalApplicable} criteria matched.`,
+            ...reasons.map(
+              (r) => `${r.matched ? "Matched" : "Not matched"}: ${r.reason}.`,
+            ),
+          ].join(" ")}
+          className="mr-auto"
+        />
         <Button asChild size="sm" variant="outline">
           <Link to="/schemes/$id" params={{ id: scheme.id }}>
             View Details

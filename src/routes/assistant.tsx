@@ -19,6 +19,11 @@ import { cn } from "@/lib/utils";
 import { askAssistant } from "@/lib/rag/assistant.functions";
 import { getStoredProfileId } from "@/lib/citizen-profile/storage";
 import type { AssistantMessage, AssistantSource } from "@/lib/rag/types";
+import { toast } from "sonner";
+import { MicButton } from "@/components/voice/MicButton";
+import { ListenButton } from "@/components/voice/ListenButton";
+import { VoiceSettingsBar } from "@/components/voice/VoiceSettingsBar";
+import { useVoiceSettings } from "@/lib/voice/voiceSettings";
 
 export const Route = createFileRoute("/assistant")({
   head: () => ({
@@ -52,10 +57,12 @@ const SUGGESTED_PROMPTS: string[] = [
 
 function AssistantPage() {
   const ask = useServerFn(askAssistant);
+  const { accessibilityMode } = useVoiceSettings();
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [profileId, setProfileId] = useState<string | null>(null);
+  const [lastAssistantId, setLastAssistantId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -101,6 +108,7 @@ function AssistantPage() {
         createdAt: new Date().toISOString(),
       };
       setMessages((m) => [...m, reply]);
+      setLastAssistantId(reply.id);
     } catch (err) {
       console.error(err);
       setMessages((m) => [
@@ -153,6 +161,8 @@ function AssistantPage() {
           </p>
         </header>
 
+        <VoiceSettingsBar className="mb-3" />
+
         <div
           ref={scrollRef}
           className="flex-1 space-y-4 overflow-y-auto rounded-2xl border bg-card/60 p-4 shadow-sm sm:p-6"
@@ -160,7 +170,17 @@ function AssistantPage() {
           {messages.length === 0 ? (
             <EmptyState onPick={(p) => void submit(p)} />
           ) : (
-            messages.map((m) => <MessageBubble key={m.id} message={m} />)
+            messages.map((m) => (
+              <MessageBubble
+                key={m.id}
+                message={m}
+                autoPlay={
+                  accessibilityMode &&
+                  m.role === "assistant" &&
+                  m.id === lastAssistantId
+                }
+              />
+            ))
           )}
           {loading ? <TypingIndicator /> : null}
         </div>
@@ -172,13 +192,24 @@ function AssistantPage() {
             void submit(input);
           }}
         >
+          <MicButton
+            onTranscript={(t) => {
+              setInput(t);
+              // Auto-submit final transcript.
+              void submit(t);
+            }}
+            onPartial={(t) => setInput(t)}
+            onError={(m) => toast.error(m)}
+            disabled={loading}
+            className="size-10"
+          />
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             rows={1}
-            placeholder="Ask a question about any government scheme…"
+            placeholder="Ask a question or tap the mic to speak…"
             className="min-h-11 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
             aria-label="Message the assistant"
           />
@@ -231,7 +262,13 @@ function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
   );
 }
 
-function MessageBubble({ message }: { message: AssistantMessage }) {
+function MessageBubble({
+  message,
+  autoPlay = false,
+}: {
+  message: AssistantMessage;
+  autoPlay?: boolean;
+}) {
   const isUser = message.role === "user";
   return (
     <div
@@ -251,6 +288,9 @@ function MessageBubble({ message }: { message: AssistantMessage }) {
           <>
             <div className="prose prose-sm max-w-none text-foreground prose-p:my-2 prose-ul:my-2 prose-headings:mt-3 prose-headings:mb-1 prose-strong:text-foreground">
               <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <ListenButton text={message.content} autoPlay={autoPlay} />
             </div>
             {message.fallback && (!message.sources || message.sources.length === 0) ? (
               <TrustFallbackActions />
