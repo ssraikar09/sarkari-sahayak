@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as FamilyPlannerRouteImport } from './routes/family-planner'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as IndexRouteImport } from './routes/index'
@@ -25,6 +26,11 @@ const SchemesRoute = SchemesRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FamilyPlannerRoute = FamilyPlannerRouteImport.update({
+  id: '/family-planner',
+  path: '/family-planner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EligibilityRoute = EligibilityRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/eligibility': typeof EligibilityRoute
+  '/family-planner': typeof FamilyPlannerRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/profile/$id': typeof ProfileIdRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/eligibility': typeof EligibilityRoute
+  '/family-planner': typeof FamilyPlannerRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/profile/$id': typeof ProfileIdRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/eligibility': typeof EligibilityRoute
+  '/family-planner': typeof FamilyPlannerRoute
   '/onboarding': typeof OnboardingRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/profile/$id': typeof ProfileIdRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/eligibility'
+    | '/family-planner'
     | '/onboarding'
     | '/schemes'
     | '/profile/$id'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/eligibility'
+    | '/family-planner'
     | '/onboarding'
     | '/schemes'
     | '/profile/$id'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/eligibility'
+    | '/family-planner'
     | '/onboarding'
     | '/schemes'
     | '/profile/$id'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssistantRoute: typeof AssistantRoute
   EligibilityRoute: typeof EligibilityRoute
+  FamilyPlannerRoute: typeof FamilyPlannerRoute
   OnboardingRoute: typeof OnboardingRoute
   SchemesRoute: typeof SchemesRouteWithChildren
   ProfileIdRoute: typeof ProfileIdRoute
@@ -134,6 +147,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/family-planner': {
+      id: '/family-planner'
+      path: '/family-planner'
+      fullPath: '/family-planner'
+      preLoaderRoute: typeof FamilyPlannerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eligibility': {
@@ -189,6 +209,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssistantRoute: AssistantRoute,
   EligibilityRoute: EligibilityRoute,
+  FamilyPlannerRoute: FamilyPlannerRoute,
   OnboardingRoute: OnboardingRoute,
   SchemesRoute: SchemesRouteWithChildren,
   ProfileIdRoute: ProfileIdRoute,
@@ -196,3 +217,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
