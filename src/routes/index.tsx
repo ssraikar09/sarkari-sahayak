@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Sparkles,
   ShieldCheck,
@@ -67,6 +69,18 @@ const sectionD: CardItem[] = [
 ];
 
 function Welcome() {
+  const { data: schemeCount } = useQuery({
+    queryKey: ["schemes-count"],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { count } = await (supabase as any)
+        .from("government_schemes")
+        .select("*", { count: "exact", head: true });
+      return (count as number | null) ?? null;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+  const displayCount = schemeCount ? `${schemeCount}+` : "150+";
   return (
     <div className="bg-gradient-to-b from-background via-background to-accent/40">
       {/* Hero */}
@@ -88,7 +102,7 @@ function Welcome() {
             </p>
             <p className="mt-3 text-balance text-base text-muted-foreground sm:text-lg">
               One platform to discover, check eligibility, and apply for{" "}
-              <span className="font-bold text-primary">16+ government schemes</span>
+              <span className="font-bold text-primary">{displayCount} government schemes</span>
               {" "}— in your own language.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
