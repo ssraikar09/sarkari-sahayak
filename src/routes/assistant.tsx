@@ -262,7 +262,13 @@ function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
   );
 }
 
-function MessageBubble({ message }: { message: AssistantMessage }) {
+function MessageBubble({
+  message,
+  autoPlay = false,
+}: {
+  message: AssistantMessage;
+  autoPlay?: boolean;
+}) {
   const isUser = message.role === "user";
   return (
     <div
@@ -282,6 +288,9 @@ function MessageBubble({ message }: { message: AssistantMessage }) {
           <>
             <div className="prose prose-sm max-w-none text-foreground prose-p:my-2 prose-ul:my-2 prose-headings:mt-3 prose-headings:mb-1 prose-strong:text-foreground">
               <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <ListenButton text={message.content} autoPlay={autoPlay} />
             </div>
             {message.fallback && (!message.sources || message.sources.length === 0) ? (
               <TrustFallbackActions />
