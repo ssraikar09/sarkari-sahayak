@@ -180,20 +180,7 @@ export function resolveOfficialLinks(scheme: GovernmentScheme): ResolvedOfficial
     };
   }
 
-  // Known scheme fallback (national).
-  const schemeFallback = matchSchemeFallback(scheme);
-  if (schemeFallback) {
-    return {
-      primary: {
-        url: schemeFallback,
-        status: "department_link",
-        label: "Visit Official Portal",
-        source: "scheme_fallback",
-      },
-      apply: null,
-      status: "department_link",
-    };
-  }
+  // (Known-scheme fallback handled above as the preferred primary.)
 
   // State department fallback.
   const stateFallback = matchStateDepartment(scheme);
