@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ShieldCheck, Languages, MessageCircle, Users, BarChart3, Compass, TrendingUp, Briefcase, Scale, Network } from "lucide-react";
+import { Sparkles, ShieldCheck, Languages, MessageCircle, Users, BarChart3, Compass, TrendingUp, Briefcase, Scale, Network, Map as MapIcon } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -99,6 +99,12 @@ function Welcome() {
             <Link to="/knowledge-graph">
               <Network className="mr-1 size-4" />
               Knowledge Graph
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base">
+            <Link to="/welfare-roadmap">
+              <MapIcon className="mr-1 size-4" />
+              Welfare Roadmap
             </Link>
           </Button>
         </div>
