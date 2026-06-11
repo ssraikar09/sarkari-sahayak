@@ -269,6 +269,41 @@ export type Database = {
         }
         Relationships: []
       }
+      navigator_usage_logs: {
+        Row: {
+          citizen_profile_id: string | null
+          created_at: string
+          goal_category: string
+          goal_text: string
+          id: string
+          recommended_scheme_ids: string[]
+        }
+        Insert: {
+          citizen_profile_id?: string | null
+          created_at?: string
+          goal_category: string
+          goal_text: string
+          id?: string
+          recommended_scheme_ids?: string[]
+        }
+        Update: {
+          citizen_profile_id?: string | null
+          created_at?: string
+          goal_category?: string
+          goal_text?: string
+          id?: string
+          recommended_scheme_ids?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "navigator_usage_logs_citizen_profile_id_fkey"
+            columns: ["citizen_profile_id"]
+            isOneToOne: false
+            referencedRelation: "citizen_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       official_link_fallback_logs: {
         Row: {
           created_at: string
