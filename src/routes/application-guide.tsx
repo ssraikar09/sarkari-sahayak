@@ -27,6 +27,7 @@ import {
   downloadSummary,
   fetchGuidance,
   loadChecklistState,
+  logFallbackUsageFn,
   logGuidanceAccessFn,
   saveChecklistState,
   type SchemeGuidance,
