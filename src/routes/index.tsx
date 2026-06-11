@@ -38,9 +38,12 @@ function Welcome() {
           Your AI-powered government scheme assistant.
         </p>
 
-        <div className="mt-10">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg" className="h-14 px-10 text-base">
             <Link to="/onboarding">Get Started</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="h-14 px-8 text-base">
+            <Link to="/schemes">Browse Schemes</Link>
           </Button>
         </div>
 
