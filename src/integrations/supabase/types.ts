@@ -74,6 +74,7 @@ export type Database = {
           official_link: string | null
           required_documents: string
           scheme_name: string
+          scheme_scope: string
           state: string
         }
         Insert: {
@@ -87,6 +88,7 @@ export type Database = {
           official_link?: string | null
           required_documents: string
           scheme_name: string
+          scheme_scope?: string
           state: string
         }
         Update: {
@@ -100,6 +102,7 @@ export type Database = {
           official_link?: string | null
           required_documents?: string
           scheme_name?: string
+          scheme_scope?: string
           state?: string
         }
         Relationships: []
