@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      citizen_profiles: {
+        Row: {
+          age: number
+          annual_income: string
+          created_at: string
+          disability_status: boolean
+          district: string
+          education_level: string
+          family_members: number
+          full_name: string
+          gender: string
+          id: string
+          occupation: string
+          preferred_language: string
+          state: string
+        }
+        Insert: {
+          age: number
+          annual_income: string
+          created_at?: string
+          disability_status?: boolean
+          district: string
+          education_level: string
+          family_members: number
+          full_name: string
+          gender: string
+          id?: string
+          occupation: string
+          preferred_language: string
+          state: string
+        }
+        Update: {
+          age?: number
+          annual_income?: string
+          created_at?: string
+          disability_status?: boolean
+          district?: string
+          education_level?: string
+          family_members?: number
+          full_name?: string
+          gender?: string
+          id?: string
+          occupation?: string
+          preferred_language?: string
+          state?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
