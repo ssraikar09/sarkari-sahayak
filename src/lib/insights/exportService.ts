@@ -48,7 +48,7 @@ export function exportInsightsToPdf(snap: InsightsSnapshot): void {
   if ("srcdoc" in iframe) {
     iframe.srcdoc = html;
   } else {
-    const doc = iframe.contentDocument;
+    const doc = (iframe as HTMLIFrameElement).contentDocument;
     if (!doc) return;
     doc.open();
     doc.write(html);
