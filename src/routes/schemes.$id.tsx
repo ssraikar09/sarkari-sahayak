@@ -93,7 +93,9 @@ function SchemeDetails() {
                 </Badge>
                 <Badge variant="secondary" className="gap-1 text-foreground">
                   <MapPin className="size-3" />
-                  {scheme.state}
+                  {scheme.scheme_scope === "National"
+                    ? "National Scheme"
+                    : `State Scheme · ${scheme.state}`}
                 </Badge>
               </div>
               <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{scheme.scheme_name}</h1>

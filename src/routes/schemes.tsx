@@ -17,7 +17,9 @@ import {
   SCHEME_STATES,
   listSchemes,
   type GovernmentScheme,
+  type SchemeScope,
 } from "@/lib/schemes";
+import { cn } from "@/lib/utils";
 
 const ALL = "__all__";
 
@@ -40,9 +42,13 @@ export const Route = createFileRoute("/schemes")({
   component: SchemeExplorer,
 });
 
+type ScopeOption = "All" | SchemeScope;
+const SCOPE_OPTIONS: ScopeOption[] = ["All", "National", "State"];
+
 function SchemeExplorer() {
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
+  const [scope, setScope] = useState<ScopeOption>("All");
   const [state, setState] = useState<string>(ALL);
   const [category, setCategory] = useState<string>(ALL);
   const [schemes, setSchemes] = useState<GovernmentScheme[] | null>(null);
@@ -53,6 +59,11 @@ function SchemeExplorer() {
     return () => clearTimeout(t);
   }, [search]);
 
+  // When viewing National only, clear the state-specific filter
+  useEffect(() => {
+    if (scope === "National" && state !== ALL) setState(ALL);
+  }, [scope, state]);
+
   useEffect(() => {
     let active = true;
     setSchemes(null);
@@ -61,6 +72,7 @@ function SchemeExplorer() {
       search: debounced || undefined,
       state: state === ALL ? undefined : state,
       category: category === ALL ? undefined : category,
+      scope: scope === "All" ? undefined : scope,
     })
       .then((rows) => {
         if (active) setSchemes(rows);
@@ -72,17 +84,18 @@ function SchemeExplorer() {
     return () => {
       active = false;
     };
-  }, [debounced, state, category]);
+  }, [debounced, state, category, scope]);
 
   const hasFilters = useMemo(
-    () => Boolean(search || state !== ALL || category !== ALL),
-    [search, state, category],
+    () => Boolean(search || state !== ALL || category !== ALL || scope !== "All"),
+    [search, state, category, scope],
   );
 
   const clearFilters = () => {
     setSearch("");
     setState(ALL);
     setCategory(ALL);
+    setScope("All");
   };
 
   return (
@@ -107,7 +120,34 @@ function SchemeExplorer() {
           </p>
         </header>
 
-        <div className="sticky top-2 z-10 rounded-2xl border bg-card/95 p-4 shadow-sm backdrop-blur">
+        <div className="sticky top-2 z-10 space-y-3 rounded-2xl border bg-card/95 p-4 shadow-sm backdrop-blur">
+          <div
+            role="tablist"
+            aria-label="Filter by scheme scope"
+            className="inline-flex rounded-lg bg-muted p-1"
+          >
+            {SCOPE_OPTIONS.map((opt) => {
+              const active = scope === opt;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setScope(opt)}
+                  className={cn(
+                    "rounded-md px-4 py-1.5 text-sm font-medium transition",
+                    active
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-[1fr_180px_180px_auto]">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -119,7 +159,11 @@ function SchemeExplorer() {
                 aria-label="Search schemes"
               />
             </div>
-            <Select value={state} onValueChange={setState}>
+            <Select
+              value={state}
+              onValueChange={setState}
+              disabled={scope === "National"}
+            >
               <SelectTrigger className="h-11" aria-label="Filter by state">
                 <SelectValue placeholder="All states" />
               </SelectTrigger>
