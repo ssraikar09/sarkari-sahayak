@@ -102,7 +102,7 @@ function Welcome() {
             </p>
             <p className="mt-3 text-balance text-base text-muted-foreground sm:text-lg">
               One platform to discover, check eligibility, and apply for{" "}
-              <span className="font-bold text-primary">16+ government schemes</span>
+              <span className="font-bold text-primary">{displayCount} government schemes</span>
               {" "}— in your own language.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
