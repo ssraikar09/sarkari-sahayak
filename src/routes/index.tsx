@@ -47,9 +47,9 @@ type CardItem = {
 };
 
 const sectionA: CardItem[] = [
-  { to: "/onboarding", icon: UserPlus, title: "Create Profile", desc: "Build your citizen digital twin in minutes." },
-  { to: "/eligibility", icon: CheckCircle2, title: "Check Eligibility", desc: "See schemes matched to your profile." },
   { to: "/assistant", icon: MessageCircle, title: "Ask Assistant", desc: "AI answers grounded in official sources." },
+  { to: "/eligibility", icon: CheckCircle2, title: "Check Eligibility", desc: "See schemes matched to your profile." },
+  { to: "/schemes", icon: FileText, title: "Explore Schemes", desc: "Browse all government welfare programs." },
 ];
 
 const sectionB: CardItem[] = [
@@ -59,7 +59,6 @@ const sectionB: CardItem[] = [
 ];
 
 const sectionC: CardItem[] = [
-  { to: "/dashboard", icon: BarChart3, title: "Impact Dashboard", desc: "Track outcomes and household impact." },
   { to: "/decision-engine", icon: Scale, title: "Decision Engine", desc: "Transparent, explainable AI decisions." },
   { to: "/knowledge-graph", icon: Network, title: "Knowledge Graph", desc: "Visualize the welfare relationship map." },
   { to: "/insights", icon: TrendingUp, title: "Research Insights", desc: "Aggregate, exportable welfare analytics." },
