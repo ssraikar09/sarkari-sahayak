@@ -1,5 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { CitizenProfile, CitizenProfileInput } from "./constants";
+
+// Types are auto-regenerated; cast through unknown for now.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
 import { PROFILE_STORAGE_KEY } from "./constants";
 
 export async function createCitizenProfile(
