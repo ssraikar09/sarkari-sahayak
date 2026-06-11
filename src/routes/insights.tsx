@@ -174,6 +174,7 @@ function Content({ snap }: { snap: InsightsSnapshot }) {
               label: c.category,
               count: c.count,
             }))}
+            emptyMessage="Search activity insights will appear here once citizens explore schemes."
           />
           <RankCard
             title="Most Recommended Categories"
