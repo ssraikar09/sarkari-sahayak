@@ -3,18 +3,24 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
+  AlertTriangle,
   ArrowLeft,
   BarChart3,
   BookOpen,
   Compass,
   Download,
   FileText,
+  Gauge,
+  IndianRupee,
+  Info,
   Layers,
+  Lightbulb,
   ListChecks,
   MapPin,
   MessageCircle,
   ShieldCheck,
   Sparkles,
+  Target,
   Users,
 } from "lucide-react";
 
@@ -40,6 +46,9 @@ import type {
   HouseholdImpact,
   PersonalImpact,
 } from "@/lib/dashboard/dashboardTypes";
+import { getWelfareGapFn } from "@/lib/welfare-gap/gapAnalyzer";
+import { formatINR } from "@/lib/welfare-gap/benefitEstimator";
+import type { WelfareGapAnalysis } from "@/lib/welfare-gap/types";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
