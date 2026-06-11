@@ -9,6 +9,10 @@ const db = supabase as any;
 
 const MAX_RETRIEVED = 3;
 const MIN_SCORE = 4;
+// Strict mode (Documents Required): tighter caps + name-match requirement.
+const STRICT_MAX_RETRIEVED = 2;
+const STRICT_MIN_SCORE = 14;
+const STRICT_MIN_NAME_OVERLAP = 0.5; // ≥50% of query keywords must hit scheme name
 
 /**
  * Hybrid retrieval over the verified government_schemes table.
