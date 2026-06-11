@@ -77,7 +77,15 @@ function SchemeExplorer() {
       scope: scope === "All" ? undefined : scope,
     })
       .then((rows) => {
-        if (active) setSchemes(rows);
+        if (!active) return;
+        setSchemes(rows);
+        // Log unsuccessful searches so we can prioritise what to add next.
+        if (rows.length === 0 && debounced.trim()) {
+          void logUnsuccessfulSearch(
+            debounced.trim(),
+            state === ALL ? null : state,
+          );
+        }
       })
       .catch((e) => {
         console.error(e);
