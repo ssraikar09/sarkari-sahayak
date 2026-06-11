@@ -120,7 +120,34 @@ function SchemeExplorer() {
           </p>
         </header>
 
-        <div className="sticky top-2 z-10 rounded-2xl border bg-card/95 p-4 shadow-sm backdrop-blur">
+        <div className="sticky top-2 z-10 space-y-3 rounded-2xl border bg-card/95 p-4 shadow-sm backdrop-blur">
+          <div
+            role="tablist"
+            aria-label="Filter by scheme scope"
+            className="inline-flex rounded-lg bg-muted p-1"
+          >
+            {SCOPE_OPTIONS.map((opt) => {
+              const active = scope === opt;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setScope(opt)}
+                  className={cn(
+                    "rounded-md px-4 py-1.5 text-sm font-medium transition",
+                    active
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-[1fr_180px_180px_auto]">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -132,7 +159,11 @@ function SchemeExplorer() {
                 aria-label="Search schemes"
               />
             </div>
-            <Select value={state} onValueChange={setState}>
+            <Select
+              value={state}
+              onValueChange={setState}
+              disabled={scope === "National"}
+            >
               <SelectTrigger className="h-11" aria-label="Filter by state">
                 <SelectValue placeholder="All states" />
               </SelectTrigger>
