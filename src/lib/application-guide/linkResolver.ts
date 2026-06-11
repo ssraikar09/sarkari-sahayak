@@ -117,6 +117,36 @@ export function resolveOfficialLinks(scheme: GovernmentScheme): ResolvedOfficial
   const extracted = extractUrlsFromText(scheme.application_process);
   const directApply = extracted.find((u) => u !== directScheme) ?? null;
 
+  // Known canonical fallback for well-known national schemes. Prefer it over
+  // potentially stale DB links (e.g. deep pages that 404), but keep the DB
+  // link as a secondary CTA if it's still valid and distinct.
+  const schemeFallback = matchSchemeFallback(scheme);
+  if (schemeFallback) {
+    const secondary =
+      directScheme && directScheme !== schemeFallback
+        ? directScheme
+        : directApply && directApply !== schemeFallback
+          ? directApply
+          : null;
+    return {
+      primary: {
+        url: schemeFallback,
+        status: "direct_link",
+        label: "Visit Official Portal",
+        source: "scheme_fallback",
+      },
+      apply: secondary
+        ? {
+            url: secondary,
+            status: "direct_link",
+            label: "Apply Online",
+            source: "scheme",
+          }
+        : null,
+      status: "direct_link",
+    };
+  }
+
   if (directScheme) {
     return {
       primary: {
@@ -150,20 +180,7 @@ export function resolveOfficialLinks(scheme: GovernmentScheme): ResolvedOfficial
     };
   }
 
-  // Known scheme fallback (national).
-  const schemeFallback = matchSchemeFallback(scheme);
-  if (schemeFallback) {
-    return {
-      primary: {
-        url: schemeFallback,
-        status: "department_link",
-        label: "Visit Official Portal",
-        source: "scheme_fallback",
-      },
-      apply: null,
-      status: "department_link",
-    };
-  }
+  // (Known-scheme fallback handled above as the preferred primary.)
 
   // State department fallback.
   const stateFallback = matchStateDepartment(scheme);
