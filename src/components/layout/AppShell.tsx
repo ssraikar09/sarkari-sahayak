@@ -40,6 +40,7 @@ const more: NavItem[] = [
   { to: "/decision-engine", label: "Decision Engine", icon: Scale },
   { to: "/knowledge-graph", label: "Knowledge Graph", icon: Network },
   { to: "/insights", label: "Research Insights", icon: TrendingUp },
+  { to: "/policy-intelligence", label: "Policy Intelligence", icon: ShieldCheck },
   { to: "/agent-dashboard", label: "CSC Dashboard", icon: Briefcase },
 ];
 
