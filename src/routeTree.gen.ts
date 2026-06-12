@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelfareRoadmapRouteImport } from './routes/welfare-roadmap'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as PolicyIntelligenceRouteImport } from './routes/policy-intelligence'
+import { Route as OutcomePredictionRouteImport } from './routes/outcome-prediction'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as KnowledgeGraphRouteImport } from './routes/knowledge-graph'
@@ -40,6 +41,11 @@ const SchemesRoute = SchemesRouteImport.update({
 const PolicyIntelligenceRoute = PolicyIntelligenceRouteImport.update({
   id: '/policy-intelligence',
   path: '/policy-intelligence',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OutcomePredictionRoute = OutcomePredictionRouteImport.update({
+  id: '/outcome-prediction',
+  path: '/outcome-prediction',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/outcome-prediction': typeof OutcomePredictionRoute
   '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-roadmap': typeof WelfareRoadmapRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/outcome-prediction': typeof OutcomePredictionRoute
   '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-roadmap': typeof WelfareRoadmapRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/outcome-prediction': typeof OutcomePredictionRoute
   '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-roadmap': typeof WelfareRoadmapRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/knowledge-graph'
     | '/navigator'
     | '/onboarding'
+    | '/outcome-prediction'
     | '/policy-intelligence'
     | '/schemes'
     | '/welfare-roadmap'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/knowledge-graph'
     | '/navigator'
     | '/onboarding'
+    | '/outcome-prediction'
     | '/policy-intelligence'
     | '/schemes'
     | '/welfare-roadmap'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/knowledge-graph'
     | '/navigator'
     | '/onboarding'
+    | '/outcome-prediction'
     | '/policy-intelligence'
     | '/schemes'
     | '/welfare-roadmap'
@@ -244,6 +256,7 @@ export interface RootRouteChildren {
   KnowledgeGraphRoute: typeof KnowledgeGraphRoute
   NavigatorRoute: typeof NavigatorRoute
   OnboardingRoute: typeof OnboardingRoute
+  OutcomePredictionRoute: typeof OutcomePredictionRoute
   PolicyIntelligenceRoute: typeof PolicyIntelligenceRoute
   SchemesRoute: typeof SchemesRouteWithChildren
   WelfareRoadmapRoute: typeof WelfareRoadmapRoute
@@ -271,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/policy-intelligence'
       fullPath: '/policy-intelligence'
       preLoaderRoute: typeof PolicyIntelligenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/outcome-prediction': {
+      id: '/outcome-prediction'
+      path: '/outcome-prediction'
+      fullPath: '/outcome-prediction'
+      preLoaderRoute: typeof OutcomePredictionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -398,6 +418,7 @@ const rootRouteChildren: RootRouteChildren = {
   KnowledgeGraphRoute: KnowledgeGraphRoute,
   NavigatorRoute: NavigatorRoute,
   OnboardingRoute: OnboardingRoute,
+  OutcomePredictionRoute: OutcomePredictionRoute,
   PolicyIntelligenceRoute: PolicyIntelligenceRoute,
   SchemesRoute: SchemesRouteWithChildren,
   WelfareRoadmapRoute: WelfareRoadmapRoute,
