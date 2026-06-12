@@ -753,14 +753,14 @@ function RiskDonut({ snap }: { snap: PolicyIntelligenceSnapshot }) {
       {r.total === 0 ? (
         <Empty />
       ) : (
-        <div className="grid grid-cols-2 gap-4">
-          <div className="relative h-44">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="relative h-72">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data}
-                  innerRadius={48}
-                  outerRadius={70}
+                  innerRadius={72}
+                  outerRadius={108}
                   paddingAngle={2}
                   dataKey="value"
                   stroke="none"
@@ -780,8 +780,8 @@ function RiskDonut({ snap }: { snap: PolicyIntelligenceSnapshot }) {
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-2xl font-bold">{highPct}%</div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <div className="text-4xl font-bold tabular-nums">{highPct}%</div>
+              <div className="mt-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                 High risk
               </div>
             </div>
