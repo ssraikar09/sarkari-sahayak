@@ -18,6 +18,7 @@ import {
   Sun,
   ChevronDown,
   ShieldCheck,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
