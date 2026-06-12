@@ -4,27 +4,13 @@
 
 const TTS_FALLBACK_LANG = "en-IN";
 const TTS_FALLBACK_LANG_2 = "en-US";
-const REMOTE_TTS_LANGS = new Set([
-  "hi",
-  "te",
-  "ta",
-  "kn",
-  "bn",
-  "mr",
-  "gu",
-  "ml",
-  "pa",
-]);
-const REMOTE_TTS_CHARS = 180;
 
-let activeAudio: HTMLAudioElement | null = null;
-let activeAudioUrl: string | null = null;
 let speechRunId = 0;
 
 export function isSpeechSynthesisSupported(): boolean {
   return (
     typeof window !== "undefined" &&
-    ("speechSynthesis" in window || typeof Audio !== "undefined")
+    "speechSynthesis" in window
   );
 }
 
@@ -86,7 +72,6 @@ export function stripMarkdownForSpeech(text: string): string {
 
 export function cancelSpeech(): void {
   speechRunId += 1;
-  stopActiveAudio();
   if (!isSpeechSynthesisSupported()) return;
   try {
     window.speechSynthesis?.cancel();
@@ -105,10 +90,6 @@ export function speak(text: string, opts: SpeakOptions): void {
 
   cancelSpeech();
   const runId = speechRunId;
-
-  if (shouldUseRemoteTts(opts.lang) && speakWithRemoteTts(clean, opts, runId)) {
-    return;
-  }
 
   speakWithBrowserTts(clean, opts, runId);
 }
@@ -186,110 +167,5 @@ function speakWithBrowserTts(text: string, opts: SpeakOptions, runId: number): v
       startSpeaking();
     }, 250);
   }
-}
-
-function shouldUseRemoteTts(lang: string): boolean {
-  return REMOTE_TTS_LANGS.has(getShortLang(lang));
-}
-
-function getShortLang(lang: string): string {
-  return lang.split("-")[0].toLowerCase();
-}
-
-function speakWithRemoteTts(text: string, opts: SpeakOptions, runId: number): boolean {
-  if (typeof Audio === "undefined") return false;
-  const chunks = splitForRemoteTts(text, REMOTE_TTS_CHARS);
-  if (chunks.length === 0) return false;
-
-  const audio = new Audio();
-  activeAudio = audio;
-  audio.preload = "auto";
-  let index = 0;
-  let started = false;
-  let failedOver = false;
-
-  const failToBrowser = () => {
-    if (failedOver || runId !== speechRunId) return;
-    failedOver = true;
-    stopActiveAudio();
-    speakWithBrowserTts(text, opts, runId);
-  };
-
-  const playCurrent = () => {
-    if (runId !== speechRunId) return;
-    audio.src = buildRemoteTtsDataUrl(chunks[index], opts.lang);
-    void audio
-      .play()
-      .then(() => {
-        if (!started && runId === speechRunId) {
-          started = true;
-          opts.onStart?.();
-        }
-      })
-      .catch(failToBrowser);
-  };
-
-  audio.onended = () => {
-    if (runId !== speechRunId) return;
-    index += 1;
-    if (index < chunks.length) {
-      playCurrent();
-      return;
-    }
-    stopActiveAudio();
-    opts.onEnd?.();
-  };
-  audio.onerror = failToBrowser;
-
-  playCurrent();
-  return true;
-}
-
-function buildRemoteTtsDataUrl(text: string, lang: string): string {
-  const speakable = encodeURIComponent(text);
-  const language = encodeURIComponent(getShortLang(lang));
-  const html = `<!doctype html><html><body><script>
-    const u = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${language}&q=${speakable}';
-    fetch(u).then(r => r.blob()).then(b => {
-      parent.postMessage({ type: 'tts-audio', url: URL.createObjectURL(b) }, '*');
-    }).catch(() => parent.postMessage({ type: 'tts-error' }, '*'));
-  </script></body></html>`;
-  return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
-}
-
-function stopActiveAudio(): void {
-  if (!activeAudio) return;
-  try {
-    activeAudio.onended = null;
-    activeAudio.onerror = null;
-    activeAudio.pause();
-    activeAudio.removeAttribute("src");
-    activeAudio.load();
-  } catch {
-    /* noop */
-  }
-  activeAudio = null;
-}
-
-function splitForRemoteTts(text: string, max: number): string[] {
-  const words = text.split(/\s+/).filter(Boolean);
-  const chunks: string[] = [];
-  let current = "";
-  for (const word of words) {
-    const next = current ? `${current} ${word}` : word;
-    if (next.length > max) {
-      if (current) chunks.push(current);
-      if (word.length > max) {
-        for (let i = 0; i < word.length; i += max) chunks.push(word.slice(i, i + max));
-        current = "";
-      } else {
-        current = word;
-      }
-    } else {
-      current = next;
-    }
-  }
-  if (current) chunks.push(current);
-  return chunks;
 }
 
