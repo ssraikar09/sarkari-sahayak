@@ -197,59 +197,76 @@ function getShortLang(lang: string): string {
 }
 
 function speakWithRemoteTts(text: string, opts: SpeakOptions, runId: number): boolean {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
+  if (typeof Audio === "undefined") return false;
   const chunks = splitForRemoteTts(text, REMOTE_TTS_CHARS);
   if (chunks.length === 0) return false;
 
-  const lang = getShortLang(opts.lang);
-  const markup = chunks
-    .map((chunk) => `<voice name="${lang}">${escapeSsml(chunk)}</voice>`)
-    .join("<break time=\"180ms\"/>");
-  const blob = new Blob([markup], { type: "application/ssml+xml" });
-  revokeActiveAudioUrl();
-  activeBlobUrl = URL.createObjectURL(blob);
+  const audio = new Audio();
+  activeAudio = audio;
+  audio.preload = "auto";
+  let index = 0;
+  let started = false;
+  let failedOver = false;
 
-  const utter = new SpeechSynthesisUtterance(activeBlobUrl);
-  utter.lang = opts.lang;
-  utter.rate = opts.rate ?? 1;
-  utter.pitch = opts.pitch ?? 1;
-  utter.onstart = () => {
-    if (runId === speechRunId) opts.onStart?.();
-  };
-  utter.onend = () => {
-    if (runId !== speechRunId) return;
-    revokeActiveAudioUrl();
-    opts.onEnd?.();
-  };
-  utter.onerror = () => {
-    if (runId !== speechRunId) return;
-    revokeActiveAudioUrl();
+  const failToBrowser = () => {
+    if (failedOver || runId !== speechRunId) return;
+    failedOver = true;
+    stopActiveAudio();
     speakWithBrowserTts(text, opts, runId);
   };
 
-  const synth = window.speechSynthesis;
-  synth.speak(utter);
-  if (synth.paused) synth.resume();
+  const playCurrent = () => {
+    if (runId !== speechRunId) return;
+    audio.src = buildRemoteTtsUrl(chunks[index], opts.lang);
+    void audio
+      .play()
+      .then(() => {
+        if (!started && runId === speechRunId) {
+          started = true;
+          opts.onStart?.();
+        }
+      })
+      .catch(failToBrowser);
+  };
+
+  audio.onended = () => {
+    if (runId !== speechRunId) return;
+    index += 1;
+    if (index < chunks.length) {
+      playCurrent();
+      return;
+    }
+    stopActiveAudio();
+    opts.onEnd?.();
+  };
+  audio.onerror = failToBrowser;
+
+  playCurrent();
   return true;
 }
 
-function revokeActiveAudioUrl(): void {
-  if (!activeBlobUrl || typeof URL === "undefined") return;
+function buildRemoteTtsUrl(text: string, lang: string): string {
+  const params = new URLSearchParams({
+    ie: "UTF-8",
+    client: "tw-ob",
+    tl: getShortLang(lang),
+    q: text,
+  });
+  return `${REMOTE_TTS_ENDPOINT}?${params.toString()}`;
+}
+
+function stopActiveAudio(): void {
+  if (!activeAudio) return;
   try {
-    URL.revokeObjectURL(activeBlobUrl);
+    activeAudio.onended = null;
+    activeAudio.onerror = null;
+    activeAudio.pause();
+    activeAudio.removeAttribute("src");
+    activeAudio.load();
   } catch {
     /* noop */
   }
-  activeBlobUrl = null;
-}
-
-function escapeSsml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/\'/g, "&apos;");
+  activeAudio = null;
 }
 
 function splitForRemoteTts(text: string, max: number): string[] {
