@@ -32,7 +32,7 @@ import {
   YAxis,
 } from "recharts";
 
-import { AppShell } from "@/components/layout/AppShell";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -118,18 +118,16 @@ function CommandCenterPage() {
   });
 
   return (
-    <AppShell>
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <Header isFetching={isFetching} onRefresh={() => refetch()} snap={data} />
-        {isLoading || !data ? (
-          <LoadingState />
-        ) : !data.hasSufficientData ? (
-          <EmptyState />
-        ) : (
-          <Content snap={data} />
-        )}
-      </div>
-    </AppShell>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <Header isFetching={isFetching} onRefresh={() => refetch()} snap={data} />
+      {isLoading || !data ? (
+        <LoadingState />
+      ) : !data.hasSufficientData ? (
+        <EmptyState />
+      ) : (
+        <Content snap={data} />
+      )}
+    </div>
   );
 }
 
