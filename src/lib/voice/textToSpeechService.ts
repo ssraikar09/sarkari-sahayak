@@ -4,27 +4,13 @@
 
 const TTS_FALLBACK_LANG = "en-IN";
 const TTS_FALLBACK_LANG_2 = "en-US";
-const REMOTE_TTS_LANGS = new Set([
-  "hi",
-  "te",
-  "ta",
-  "kn",
-  "bn",
-  "mr",
-  "gu",
-  "ml",
-  "pa",
-]);
-const REMOTE_TTS_CHARS = 180;
 
-let activeAudio: HTMLAudioElement | null = null;
-let activeAudioUrl: string | null = null;
 let speechRunId = 0;
 
 export function isSpeechSynthesisSupported(): boolean {
   return (
     typeof window !== "undefined" &&
-    ("speechSynthesis" in window || typeof Audio !== "undefined")
+    "speechSynthesis" in window
   );
 }
 
@@ -86,7 +72,6 @@ export function stripMarkdownForSpeech(text: string): string {
 
 export function cancelSpeech(): void {
   speechRunId += 1;
-  stopActiveAudio();
   if (!isSpeechSynthesisSupported()) return;
   try {
     window.speechSynthesis?.cancel();
@@ -105,10 +90,6 @@ export function speak(text: string, opts: SpeakOptions): void {
 
   cancelSpeech();
   const runId = speechRunId;
-
-  if (shouldUseRemoteTts(opts.lang) && speakWithRemoteTts(clean, opts, runId)) {
-    return;
-  }
 
   speakWithBrowserTts(clean, opts, runId);
 }
