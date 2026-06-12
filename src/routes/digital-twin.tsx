@@ -60,7 +60,7 @@ import { exportDigitalTwinReport } from "@/lib/digital-twin/reportExporter";
 import type {
   DigitalTwinReportKind,
 } from "@/lib/digital-twin/reportExporter";
-import type { LeverId, Levers } from "@/lib/digital-twin/types";
+import type { DigitalTwinBaseline, LeverId, Levers } from "@/lib/digital-twin/types";
 
 export const Route = createFileRoute("/digital-twin")({
   head: () => ({
@@ -286,13 +286,7 @@ function Hero({ generatedAt }: { generatedAt?: string }) {
 }
 
 /* ---------- Baseline ---------- */
-function BaselineSection({
-  baseline,
-}: {
-  baseline: ReturnType<typeof runForecast> extends infer _
-    ? Parameters<typeof runForecast>[0]
-    : never;
-}) {
+function BaselineSection({ baseline }: { baseline: DigitalTwinBaseline }) {
   const t = baseline.totals;
   const kpis: KpiProps[] = [
     {
@@ -442,7 +436,7 @@ function ComparisonSection({
   baseline,
   forecast,
 }: {
-  baseline: Parameters<typeof runForecast>[0];
+  baseline: DigitalTwinBaseline;
   forecast: ReturnType<typeof runForecast>;
 }) {
   const rows = [
