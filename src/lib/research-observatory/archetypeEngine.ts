@@ -21,7 +21,7 @@ export type ArchetypeInput = {
   eligibleByProfile: Map<string, string[]>;
   exploredByProfile: Map<string, Set<string>>;
   schemeIndex: Map<string, SchemeRecord>;
-  estimate: (s: { scheme_name: string; category: string; benefits: string | null }) => number;
+  estimate: (s: SchemeRecord) => number;
 };
 
 type ArchetypeDef = {
