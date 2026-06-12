@@ -92,7 +92,7 @@ function AgentDashboard() {
         <header className="mb-6">
           <div className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs text-muted-foreground">
             <Users className="size-3.5" />
-            Module 12 · CSC Agent Dashboard
+            CSC Agent Dashboard
           </div>
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
             CSC Agent Dashboard

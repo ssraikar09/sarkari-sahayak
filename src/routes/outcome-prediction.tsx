@@ -191,7 +191,7 @@ function Hero({ generatedAt }: { generatedAt?: string }) {
       <div className="relative">
         <div className="inline-flex items-center gap-2 rounded-full border bg-card/80 px-3.5 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
           <Sparkles className="size-3.5 text-primary" />
-          Module 17 · Welfare Outcome Prediction Engine
+          Welfare Outcome Prediction Engine
         </div>
         <h1 className="mt-6 max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
           What happens if citizens{" "}

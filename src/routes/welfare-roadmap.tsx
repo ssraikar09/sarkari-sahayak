@@ -97,7 +97,7 @@ function WelfareRoadmapPage() {
 
         <header className="mb-6">
           <div className="inline-flex items-center gap-2 rounded-full border bg-card/70 px-3 py-1 text-xs text-muted-foreground">
-            <MapIcon className="size-3.5" /> Module 15 · Personalized Welfare Roadmap
+            <MapIcon className="size-3.5" /> Personalized Welfare Roadmap
           </div>
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
             Welfare Roadmap

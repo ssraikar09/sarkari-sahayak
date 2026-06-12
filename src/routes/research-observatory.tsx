@@ -82,7 +82,7 @@ function Header({ snap }: { snap?: ResearchSnapshot }) {
         <ArrowLeft className="size-3.5" /> Back to Dashboard
       </Link>
       <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-        <Microscope className="size-3.5" /> Module 20 · Welfare Research Observatory
+        <Microscope className="size-3.5" /> Welfare Research Observatory
       </div>
       <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
         Publication-ready welfare intelligence

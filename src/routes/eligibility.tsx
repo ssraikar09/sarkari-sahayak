@@ -118,7 +118,7 @@ function EligibilityPage() {
         <header className="mb-8 text-center sm:text-left">
           <div className="inline-flex items-center gap-2 rounded-full border bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground">
             <Sparkles className="size-3.5" />
-            Module 3 · Explainable Eligibility
+            Explainable Eligibility
           </div>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Schemes you may qualify for

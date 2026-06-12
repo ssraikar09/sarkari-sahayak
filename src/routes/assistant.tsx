@@ -162,7 +162,7 @@ function AssistantPage() {
           </Button>
           <Badge variant="secondary" className="gap-1">
             <Sparkles className="size-3" />
-            Module 4 · Hybrid RAG
+            Hybrid RAG
           </Badge>
         </div>
 

@@ -79,7 +79,7 @@ function KnowledgeGraphPage() {
 
         <header className="mb-6">
           <div className="inline-flex items-center gap-2 rounded-full border bg-card/70 px-3 py-1 text-xs text-muted-foreground">
-            <Network className="size-3.5" /> Module 14 · Household Welfare Knowledge Graph
+            <Network className="size-3.5" /> Household Welfare Knowledge Graph
           </div>
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
             Knowledge Graph

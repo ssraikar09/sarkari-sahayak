@@ -132,7 +132,7 @@ function ApplicationGuidePage() {
           </Button>
           <Badge variant="secondary" className="gap-1">
             <Sparkles className="size-3" />
-            Module 6 · Application Guide
+            Application Guide
           </Badge>
         </div>
 
