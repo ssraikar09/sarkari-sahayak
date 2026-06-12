@@ -383,43 +383,46 @@ function Overview({ snap }: { snap: PolicyIntelligenceSnapshot }) {
     o.highRiskPercentage >= 40 ? "rose" : o.highRiskPercentage >= 20 ? "amber" : "emerald";
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-      <Kpi
-        icon={<Gauge className="size-5" />}
-        label="Avg Opportunity Score"
-        value={`${o.averageOpportunityScore}`}
-        suffix="/100"
-        description="Mean welfare opportunity capture across households."
-        tone={scoreTone}
-        trend={o.averageOpportunityScore >= 50 ? "up" : "down"}
-      />
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+      <div className="lg:col-span-2">
+        <Kpi
+          featured
+          icon={<Gauge className="size-6" />}
+          label="Avg Opportunity Score"
+          value={`${o.averageOpportunityScore}`}
+          suffix="/100"
+          description="Mean welfare opportunity capture across households."
+          tone={scoreTone}
+          trend={o.averageOpportunityScore >= 50 ? "up" : "down"}
+        />
+      </div>
       <Kpi
         icon={<Target className="size-5" />}
-        label="Avg Missed Opportunities"
+        label="Avg Missed"
         value={String(o.averageMissedOpportunities)}
-        description="Schemes the average household is eligible for but missing."
+        description="Schemes the average household misses."
         tone="amber"
       />
       <Kpi
         icon={<BarChart3 className="size-5" />}
         label="Avg Annual Benefits"
         value={formatINR(o.averageEstimatedAnnualBenefitsINR)}
-        description="Estimated unrealized financial benefit per household."
+        description="Unrealized financial benefit per household."
         tone="primary"
       />
       <Kpi
         icon={<Layers className="size-5" />}
         label="Households Analyzed"
         value={String(o.householdsAnalyzed)}
-        description="Anonymized profiles aggregated in this snapshot."
+        description="Anonymized profiles in this snapshot."
         tone="slate"
       />
       <Kpi
         icon={<ShieldAlert className="size-5" />}
-        label="High-Risk Households"
+        label="High-Risk %"
         value={`${o.highRiskPercentage}`}
         suffix="%"
-        description="Share with critical welfare access gaps."
+        description="Households with critical access gaps."
         tone={riskTone}
         trend={o.highRiskPercentage >= 30 ? "up" : "down"}
       />
