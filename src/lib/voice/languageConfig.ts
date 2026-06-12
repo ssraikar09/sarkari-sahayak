@@ -3,28 +3,14 @@ export type VoiceLanguageCode =
   | "hi-IN"
   | "kn-IN"
   | "ta-IN"
-  | "te-IN"
-  | "bn-IN"
-  | "mr-IN"
-  | "gu-IN"
-  | "ml-IN"
-  | "pa-IN"
-  | "or-IN"
-  | "ur-IN";
+  | "te-IN";
 
 export type VoiceLanguageShort =
   | "en"
   | "hi"
   | "kn"
   | "ta"
-  | "te"
-  | "bn"
-  | "mr"
-  | "gu"
-  | "ml"
-  | "pa"
-  | "or"
-  | "ur";
+  | "te";
 
 export type VoiceLanguage = {
   code: VoiceLanguageCode;
