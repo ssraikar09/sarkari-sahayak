@@ -74,30 +74,19 @@ export function cancelSpeech(): void {
   }
 }
 
-export async function speak(text: string, opts: SpeakOptions): Promise<void> {
+export function speak(text: string, opts: SpeakOptions): void {
   if (!isSpeechSynthesisSupported()) {
     opts.onError?.("Voice features are not supported on this device.");
     return;
   }
   const clean = stripMarkdownForSpeech(text);
   if (!clean) return;
-  await ensureVoicesLoaded();
-  cancelSpeech();
 
+  // Build utterance synchronously inside the user gesture so browsers
+  // (Chrome/Safari) don't block playback due to lost activation context.
   const utter = new SpeechSynthesisUtterance(clean);
-  let voice = pickVoice(opts.lang);
-  let usedLang = opts.lang;
-  if (!voice) {
-    voice = pickVoice(TTS_FALLBACK_LANG) ?? pickVoice(TTS_FALLBACK_LANG_2);
-    usedLang = voice?.lang ?? TTS_FALLBACK_LANG;
-    if (opts.lang.split("-")[0] !== "en") {
-      opts.onFallback?.();
-    }
-  }
-  utter.lang = usedLang;
   utter.rate = opts.rate ?? 1;
   utter.pitch = opts.pitch ?? 1;
-  if (voice) utter.voice = voice;
   utter.onstart = () => opts.onStart?.();
   utter.onend = () => opts.onEnd?.();
   utter.onerror = (e) => {
@@ -108,5 +97,51 @@ export async function speak(text: string, opts: SpeakOptions): Promise<void> {
     }
     opts.onError?.(`Voice output failed (${err.error ?? "unknown"}).`);
   };
-  window.speechSynthesis.speak(utter);
+
+  const assignVoice = () => {
+    let voice = pickVoice(opts.lang);
+    let usedLang = opts.lang;
+    if (!voice) {
+      voice = pickVoice(TTS_FALLBACK_LANG) ?? pickVoice(TTS_FALLBACK_LANG_2);
+      usedLang = voice?.lang ?? TTS_FALLBACK_LANG;
+      if (opts.lang.split("-")[0] !== "en") {
+        opts.onFallback?.();
+      }
+    }
+    utter.lang = usedLang;
+    if (voice) utter.voice = voice;
+  };
+
+  const synth = window.speechSynthesis;
+  // If something is currently speaking, cancel first. Chrome can get into a
+  // "paused" state — resume defensively before speaking the new utterance.
+  if (synth.speaking || synth.pending) {
+    synth.cancel();
+  }
+
+  const voicesReady = synth.getVoices().length > 0;
+  if (voicesReady) {
+    assignVoice();
+    synth.speak(utter);
+    if (synth.paused) synth.resume();
+  } else {
+    // Voices not loaded yet — wait briefly, then speak. Still in same task
+    // chain so the activation context is preserved on most browsers.
+    const handler = () => {
+      synth.removeEventListener("voiceschanged", handler);
+      assignVoice();
+      synth.speak(utter);
+      if (synth.paused) synth.resume();
+    };
+    synth.addEventListener("voiceschanged", handler);
+    setTimeout(() => {
+      synth.removeEventListener("voiceschanged", handler);
+      if (!utter.voice) {
+        assignVoice();
+        synth.speak(utter);
+        if (synth.paused) synth.resume();
+      }
+    }, 250);
+  }
 }
+
