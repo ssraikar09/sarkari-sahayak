@@ -4,6 +4,7 @@
 
 const TTS_FALLBACK_LANG = "en-IN";
 const TTS_FALLBACK_LANG_2 = "en-US";
+const REMOTE_TTS_ENDPOINT = "https://translate.google.com/translate_tts";
 const REMOTE_TTS_LANGS = new Set([
   "hi",
   "te",
@@ -17,7 +18,7 @@ const REMOTE_TTS_LANGS = new Set([
 ]);
 const REMOTE_TTS_CHARS = 180;
 
-let activeBlobUrl: string | null = null;
+let activeAudio: HTMLAudioElement | null = null;
 let speechRunId = 0;
 
 export function isSpeechSynthesisSupported(): boolean {
@@ -28,7 +29,7 @@ export function isSpeechSynthesisSupported(): boolean {
 }
 
 function pickVoice(lang: string): SpeechSynthesisVoice | null {
-  if (!isSpeechSynthesisSupported()) return null;
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
   const voices = window.speechSynthesis.getVoices();
   if (voices.length === 0) return null;
   const exact = voices.find((v) => v.lang === lang);
@@ -46,7 +47,7 @@ export function hasVoiceFor(lang: string): boolean {
 /* Some browsers populate voices asynchronously. */
 export function ensureVoicesLoaded(): Promise<void> {
   return new Promise((resolve) => {
-    if (!isSpeechSynthesisSupported()) return resolve();
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return resolve();
     const ready = window.speechSynthesis.getVoices();
     if (ready.length > 0) return resolve();
     const handler = () => {
@@ -85,7 +86,7 @@ export function stripMarkdownForSpeech(text: string): string {
 
 export function cancelSpeech(): void {
   speechRunId += 1;
-  revokeActiveAudioUrl();
+  stopActiveAudio();
   if (!isSpeechSynthesisSupported()) return;
   try {
     window.speechSynthesis?.cancel();
