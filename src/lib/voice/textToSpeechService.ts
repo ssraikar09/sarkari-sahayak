@@ -4,7 +4,6 @@
 
 const TTS_FALLBACK_LANG = "en-IN";
 const TTS_FALLBACK_LANG_2 = "en-US";
-const REMOTE_TTS_ENDPOINT = "https://translate.google.com/translate_tts";
 const REMOTE_TTS_LANGS = new Set([
   "hi",
   "te",
@@ -19,6 +18,7 @@ const REMOTE_TTS_LANGS = new Set([
 const REMOTE_TTS_CHARS = 180;
 
 let activeAudio: HTMLAudioElement | null = null;
+let activeAudioUrl: string | null = null;
 let speechRunId = 0;
 
 export function isSpeechSynthesisSupported(): boolean {
