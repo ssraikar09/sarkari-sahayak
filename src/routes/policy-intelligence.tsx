@@ -877,77 +877,83 @@ function Recommendations({ snap }: { snap: PolicyIntelligenceSnapshot }) {
     p === "high" ? "rose" : p === "medium" ? "amber" : "emerald";
 
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-2">
       {snap.recommendations.map((r) => {
         const tone = priorityTone(r.priority);
+        const accent =
+          tone === "rose"
+            ? "bg-rose-500"
+            : tone === "amber"
+              ? "bg-amber-500"
+              : "bg-emerald-500";
+        const priorityChip =
+          tone === "rose"
+            ? "bg-rose-500/10 text-rose-600 border-rose-500/30 dark:text-rose-400"
+            : tone === "amber"
+              ? "bg-amber-500/10 text-amber-600 border-amber-500/30 dark:text-amber-400"
+              : "bg-emerald-500/10 text-emerald-600 border-emerald-500/30 dark:text-emerald-400";
         return (
           <article
             key={r.id}
-            className="group relative overflow-hidden rounded-2xl border bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
+            className="group relative flex flex-col overflow-hidden rounded-2xl border bg-card p-7 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-xl sm:p-8"
           >
-            <span
-              className={cn(
-                "absolute left-0 top-0 h-full w-1",
-                tone === "rose"
-                  ? "bg-rose-500"
-                  : tone === "amber"
-                    ? "bg-amber-500"
-                    : "bg-emerald-500",
-              )}
-            />
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span
-                  className={cn(
-                    "inline-flex size-10 items-center justify-center rounded-xl",
-                    TONE_BG[tone],
-                  )}
-                >
-                  <Lightbulb className="size-5" />
-                </span>
-                <h3 className="text-base font-semibold leading-tight">
-                  {r.title}
-                </h3>
-              </div>
-              <Badge
-                variant={
-                  r.priority === "high"
-                    ? "destructive"
-                    : r.priority === "medium"
-                      ? "default"
-                      : "secondary"
-                }
-                className="shrink-0 uppercase"
+            <span className={cn("absolute left-0 top-0 h-full w-1.5", accent)} />
+            <div className="flex items-start justify-between gap-4">
+              <span
+                className={cn(
+                  "inline-flex size-12 shrink-0 items-center justify-center rounded-2xl",
+                  TONE_BG[tone],
+                )}
               >
-                {r.priority}
-              </Badge>
+                <Lightbulb className="size-6" />
+              </span>
+              <span
+                className={cn(
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em]",
+                  priorityChip,
+                )}
+              >
+                <span className={cn("size-1.5 rounded-full", accent)} />
+                {r.priority} priority
+              </span>
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            <h3 className="mt-5 text-xl font-bold leading-snug tracking-tight sm:text-2xl">
+              {r.title}
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
               {r.rationale}
             </p>
-            <div className="mt-4 rounded-lg border border-dashed bg-muted/40 p-3">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="mt-6 space-y-3">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                 Evidence
               </div>
-              <ul className="mt-1.5 space-y-1 text-xs text-foreground/80">
+              <div className="flex flex-wrap gap-2">
                 {r.evidence.map((e, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-primary">›</span>
-                    <span>{e}</span>
-                  </li>
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-lg border bg-muted/40 px-3 py-1.5 text-xs text-foreground/80"
+                  >
+                    <span className={cn("size-1.5 rounded-full", accent)} />
+                    {e}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {r.sources.map((s) => (
-                <span
-                  key={s}
-                  className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-foreground/70"
-                >
-                  {s}
+            {r.sources.length > 0 && (
+              <div className="mt-6 flex flex-wrap items-center gap-2 border-t pt-4">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Sources
                 </span>
-              ))}
-            </div>
+                {r.sources.map((s) => (
+                  <span
+                    key={s}
+                    className="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-medium text-foreground/70"
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+            )}
           </article>
         );
       })}
