@@ -150,10 +150,10 @@ function PolicyIntelligencePage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14">
         <Hero generatedAt={data?.generatedAt} />
 
-        <div className="my-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm">
+        <div className="my-10 flex items-start gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-sm">
           <Info className="mt-0.5 size-4 shrink-0 text-primary" />
           <p className="text-muted-foreground">
             <span className="font-medium text-foreground">
@@ -187,26 +187,34 @@ function Hero({ generatedAt }: { generatedAt?: string }) {
       })
     : "—";
   return (
-    <header className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-primary/10 via-card to-accent/30 p-6 sm:p-10">
-      <div className="absolute -right-20 -top-20 size-64 rounded-full bg-primary/10 blur-3xl" />
-      <div className="absolute -bottom-20 -left-10 size-56 rounded-full bg-accent/40 blur-3xl" />
+    <header className="relative overflow-hidden rounded-[2rem] border bg-gradient-to-br from-primary/10 via-card to-accent/30 p-8 sm:p-14">
+      <div className="absolute -right-20 -top-20 size-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="absolute -bottom-24 -left-12 size-64 rounded-full bg-accent/40 blur-3xl" />
+      <div
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
       <div className="relative">
-        <div className="inline-flex items-center gap-2 rounded-full border bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
+        <div className="inline-flex items-center gap-2 rounded-full border bg-card/80 px-3.5 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
           <Sparkles className="size-3.5 text-primary" />
           Module 16 · Policy Intelligence Engine
         </div>
-        <h1 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight sm:text-5xl">
+        <h1 className="mt-6 max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
           National Welfare Intelligence,{" "}
           <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             built on evidence.
           </span>
         </h1>
-        <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">
+        <p className="mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
           A research-grade analytics workspace for policymakers and welfare
           administrators — surfacing delivery gaps, regional risk, and
           explainable policy recommendations.
         </p>
-        <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
@@ -277,51 +285,63 @@ function EmptyState() {
 
 function Content({ snap }: { snap: PolicyIntelligenceSnapshot }) {
   return (
-    <div className="space-y-12">
+    <div className="space-y-20">
       {/* TOP — Executive KPIs */}
-      <SectionHeader
-        eyebrow="Executive Summary"
-        title="National welfare gap at a glance"
-        description="Top-line indicators across all analyzed households."
-      />
-      <Overview snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Executive Summary"
+          title="National welfare gap at a glance"
+          description="Top-line indicators across all analyzed households."
+        />
+        <Overview snap={snap} />
+      </section>
 
       {/* MIDDLE — Visual analytics */}
-      <SectionHeader
-        eyebrow="Visual Analytics"
-        title="Welfare exclusion & risk distribution"
-        description="Where citizens are missing benefits, and which groups are most affected."
-      />
-      <ExclusionAndRisk snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Visual Analytics"
+          title="Welfare exclusion & risk distribution"
+          description="Where citizens are missing benefits, and which groups are most affected."
+        />
+        <ExclusionAndRisk snap={snap} />
+      </section>
 
-      <SectionHeader
-        eyebrow="Regional Intelligence"
-        title="State-wise demand & risk concentration"
-        description="Where welfare demand is rising and where risk is concentrated."
-      />
-      <Regional snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Regional Intelligence"
+          title="State-wise demand & risk concentration"
+          description="Where welfare demand is rising and where risk is concentrated."
+        />
+        <Regional snap={snap} />
+      </section>
 
-      <SectionHeader
-        eyebrow="Recommendations"
-        title="Explainable policy recommendations"
-        description="Each recommendation is grounded in measurable evidence from real interactions."
-      />
-      <Recommendations snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Recommendations"
+          title="Explainable policy recommendations"
+          description="Each recommendation is grounded in measurable evidence from real interactions."
+        />
+        <Recommendations snap={snap} />
+      </section>
 
-      <SectionHeader
-        eyebrow="Trend Analysis"
-        title="Citizen demand & engagement signals"
-        description="Most common goals, recommended categories, and explored guides."
-      />
-      <Trends snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Trend Analysis"
+          title="Citizen demand & engagement signals"
+          description="Most common goals, recommended categories, and explored guides."
+        />
+        <Trends snap={snap} />
+      </section>
 
       {/* BOTTOM — Evidence tables & exports */}
-      <SectionHeader
-        eyebrow="Evidence"
-        title="Detailed evidence tables"
-        description="Granular data backing every insight above. Use the exports for offline review."
-      />
-      <EvidenceTables snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Evidence"
+          title="Detailed evidence tables"
+          description="Granular data backing every insight above. Use the exports for offline review."
+        />
+        <EvidenceTables snap={snap} />
+      </section>
     </div>
   );
 }
@@ -336,14 +356,15 @@ function SectionHeader({
   description: string;
 }) {
   return (
-    <div className="border-l-2 border-primary/60 pl-4">
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-primary">
+    <div className="flex flex-col gap-3">
+      <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+        <span className="size-1.5 rounded-full bg-primary" />
         {eyebrow}
       </div>
-      <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+      <h2 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
         {title}
       </h2>
-      <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground">
+      <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
         {description}
       </p>
     </div>
@@ -362,43 +383,46 @@ function Overview({ snap }: { snap: PolicyIntelligenceSnapshot }) {
     o.highRiskPercentage >= 40 ? "rose" : o.highRiskPercentage >= 20 ? "amber" : "emerald";
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-      <Kpi
-        icon={<Gauge className="size-5" />}
-        label="Avg Opportunity Score"
-        value={`${o.averageOpportunityScore}`}
-        suffix="/100"
-        description="Mean welfare opportunity capture across households."
-        tone={scoreTone}
-        trend={o.averageOpportunityScore >= 50 ? "up" : "down"}
-      />
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+      <div className="lg:col-span-2">
+        <Kpi
+          featured
+          icon={<Gauge className="size-6" />}
+          label="Avg Opportunity Score"
+          value={`${o.averageOpportunityScore}`}
+          suffix="/100"
+          description="Mean welfare opportunity capture across households."
+          tone={scoreTone}
+          trend={o.averageOpportunityScore >= 50 ? "up" : "down"}
+        />
+      </div>
       <Kpi
         icon={<Target className="size-5" />}
-        label="Avg Missed Opportunities"
+        label="Avg Missed"
         value={String(o.averageMissedOpportunities)}
-        description="Schemes the average household is eligible for but missing."
+        description="Schemes the average household misses."
         tone="amber"
       />
       <Kpi
         icon={<BarChart3 className="size-5" />}
         label="Avg Annual Benefits"
         value={formatINR(o.averageEstimatedAnnualBenefitsINR)}
-        description="Estimated unrealized financial benefit per household."
+        description="Unrealized financial benefit per household."
         tone="primary"
       />
       <Kpi
         icon={<Layers className="size-5" />}
         label="Households Analyzed"
         value={String(o.householdsAnalyzed)}
-        description="Anonymized profiles aggregated in this snapshot."
+        description="Anonymized profiles in this snapshot."
         tone="slate"
       />
       <Kpi
         icon={<ShieldAlert className="size-5" />}
-        label="High-Risk Households"
+        label="High-Risk %"
         value={`${o.highRiskPercentage}`}
         suffix="%"
-        description="Share with critical welfare access gaps."
+        description="Households with critical access gaps."
         tone={riskTone}
         trend={o.highRiskPercentage >= 30 ? "up" : "down"}
       />
@@ -432,6 +456,7 @@ function Kpi({
   description,
   tone,
   trend,
+  featured,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -440,13 +465,34 @@ function Kpi({
   description: string;
   tone: Tone;
   trend?: "up" | "down";
+  featured?: boolean;
 }) {
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
-      <div className="flex items-start justify-between">
+    <div
+      className={cn(
+        "group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-xl",
+        featured ? "p-7 sm:p-8" : "p-6",
+      )}
+    >
+      {featured && (
         <div
           className={cn(
-            "inline-flex size-10 items-center justify-center rounded-xl",
+            "pointer-events-none absolute -right-16 -top-16 size-48 rounded-full opacity-40 blur-3xl",
+            tone === "rose"
+              ? "bg-rose-500/30"
+              : tone === "amber"
+                ? "bg-amber-500/30"
+                : tone === "emerald"
+                  ? "bg-emerald-500/30"
+                  : "bg-primary/30",
+          )}
+        />
+      )}
+      <div className="relative flex items-start justify-between">
+        <div
+          className={cn(
+            "inline-flex items-center justify-center rounded-xl",
+            featured ? "size-12" : "size-10",
             TONE_BG[tone],
           )}
         >
@@ -462,20 +508,40 @@ function Kpi({
           {trend === "up" ? "↑" : trend === "down" ? "↓" : "•"} live
         </span>
       </div>
-      <div className="mt-4 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <div
+        className={cn(
+          "relative font-medium uppercase tracking-[0.14em] text-muted-foreground",
+          featured ? "mt-6 text-xs" : "mt-5 text-[11px]",
+        )}
+      >
         {label}
       </div>
-      <div className="mt-1 flex items-baseline gap-1">
-        <span className="text-3xl font-bold tracking-tight sm:text-4xl">
+      <div className="relative mt-2 flex items-baseline gap-1.5">
+        <span
+          className={cn(
+            "font-bold tracking-tight tabular-nums",
+            featured ? "text-5xl sm:text-6xl" : "text-3xl sm:text-4xl",
+          )}
+        >
           {value}
         </span>
         {suffix && (
-          <span className="text-sm font-medium text-muted-foreground">
+          <span
+            className={cn(
+              "font-medium text-muted-foreground",
+              featured ? "text-lg" : "text-sm",
+            )}
+          >
             {suffix}
           </span>
         )}
       </div>
-      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+      <p
+        className={cn(
+          "relative mt-3 leading-relaxed text-muted-foreground",
+          featured ? "text-sm" : "text-xs",
+        )}
+      >
         {description}
       </p>
       <div
@@ -632,7 +698,7 @@ function CategoryDistributionChart({ snap }: { snap: PolicyIntelligenceSnapshot 
       {data.length === 0 ? (
         <Empty />
       ) : (
-        <div className="h-72 w-full">
+        <div className="h-96 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 8, right: 8, left: -10, bottom: 8 }}>
               <defs>
@@ -687,14 +753,14 @@ function RiskDonut({ snap }: { snap: PolicyIntelligenceSnapshot }) {
       {r.total === 0 ? (
         <Empty />
       ) : (
-        <div className="grid grid-cols-2 gap-4">
-          <div className="relative h-44">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="relative h-72">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data}
-                  innerRadius={48}
-                  outerRadius={70}
+                  innerRadius={72}
+                  outerRadius={108}
                   paddingAngle={2}
                   dataKey="value"
                   stroke="none"
@@ -714,8 +780,8 @@ function RiskDonut({ snap }: { snap: PolicyIntelligenceSnapshot }) {
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-2xl font-bold">{highPct}%</div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <div className="text-4xl font-bold tabular-nums">{highPct}%</div>
+              <div className="mt-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                 High risk
               </div>
             </div>
@@ -811,77 +877,83 @@ function Recommendations({ snap }: { snap: PolicyIntelligenceSnapshot }) {
     p === "high" ? "rose" : p === "medium" ? "amber" : "emerald";
 
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-2">
       {snap.recommendations.map((r) => {
         const tone = priorityTone(r.priority);
+        const accent =
+          tone === "rose"
+            ? "bg-rose-500"
+            : tone === "amber"
+              ? "bg-amber-500"
+              : "bg-emerald-500";
+        const priorityChip =
+          tone === "rose"
+            ? "bg-rose-500/10 text-rose-600 border-rose-500/30 dark:text-rose-400"
+            : tone === "amber"
+              ? "bg-amber-500/10 text-amber-600 border-amber-500/30 dark:text-amber-400"
+              : "bg-emerald-500/10 text-emerald-600 border-emerald-500/30 dark:text-emerald-400";
         return (
           <article
             key={r.id}
-            className="group relative overflow-hidden rounded-2xl border bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
+            className="group relative flex flex-col overflow-hidden rounded-2xl border bg-card p-7 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-xl sm:p-8"
           >
-            <span
-              className={cn(
-                "absolute left-0 top-0 h-full w-1",
-                tone === "rose"
-                  ? "bg-rose-500"
-                  : tone === "amber"
-                    ? "bg-amber-500"
-                    : "bg-emerald-500",
-              )}
-            />
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span
-                  className={cn(
-                    "inline-flex size-10 items-center justify-center rounded-xl",
-                    TONE_BG[tone],
-                  )}
-                >
-                  <Lightbulb className="size-5" />
-                </span>
-                <h3 className="text-base font-semibold leading-tight">
-                  {r.title}
-                </h3>
-              </div>
-              <Badge
-                variant={
-                  r.priority === "high"
-                    ? "destructive"
-                    : r.priority === "medium"
-                      ? "default"
-                      : "secondary"
-                }
-                className="shrink-0 uppercase"
+            <span className={cn("absolute left-0 top-0 h-full w-1.5", accent)} />
+            <div className="flex items-start justify-between gap-4">
+              <span
+                className={cn(
+                  "inline-flex size-12 shrink-0 items-center justify-center rounded-2xl",
+                  TONE_BG[tone],
+                )}
               >
-                {r.priority}
-              </Badge>
+                <Lightbulb className="size-6" />
+              </span>
+              <span
+                className={cn(
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em]",
+                  priorityChip,
+                )}
+              >
+                <span className={cn("size-1.5 rounded-full", accent)} />
+                {r.priority} priority
+              </span>
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            <h3 className="mt-5 text-xl font-bold leading-snug tracking-tight sm:text-2xl">
+              {r.title}
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
               {r.rationale}
             </p>
-            <div className="mt-4 rounded-lg border border-dashed bg-muted/40 p-3">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="mt-6 space-y-3">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                 Evidence
               </div>
-              <ul className="mt-1.5 space-y-1 text-xs text-foreground/80">
+              <div className="flex flex-wrap gap-2">
                 {r.evidence.map((e, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-primary">›</span>
-                    <span>{e}</span>
-                  </li>
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-lg border bg-muted/40 px-3 py-1.5 text-xs text-foreground/80"
+                  >
+                    <span className={cn("size-1.5 rounded-full", accent)} />
+                    {e}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {r.sources.map((s) => (
-                <span
-                  key={s}
-                  className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-foreground/70"
-                >
-                  {s}
+            {r.sources.length > 0 && (
+              <div className="mt-6 flex flex-wrap items-center gap-2 border-t pt-4">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Sources
                 </span>
-              ))}
-            </div>
+                {r.sources.map((s) => (
+                  <span
+                    key={s}
+                    className="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-medium text-foreground/70"
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+            )}
           </article>
         );
       })}
