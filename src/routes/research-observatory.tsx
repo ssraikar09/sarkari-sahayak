@@ -23,6 +23,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { getResearchObservatoryFn } from "@/lib/research-observatory/observatory.functions";
 import { exportObservatoryReport, type ReportKind } from "@/lib/research-observatory/reportExporter";
+import {
+  DERIVATION_SOURCES,
+  summariseExplainability,
+} from "@/lib/research-observatory/explainability";
 import { formatINR } from "@/lib/welfare-gap/benefitEstimator";
 import type { ResearchSnapshot } from "@/lib/research-observatory/types";
 
@@ -267,8 +271,60 @@ function TrendsSection({ snap }: { snap: ResearchSnapshot }) {
             emptyMessage="No risk distribution data yet."
           />
         </Panel>
+        <Panel title="Navigator Adoption Trend">
+          {trends.navigatorAdoption.totalInteractions === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No navigator interactions recorded yet.
+            </p>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-3">
+                <MiniStat
+                  label="Adoption"
+                  value={`${trends.navigatorAdoption.adoptionPercent}%`}
+                />
+                <MiniStat
+                  label="Engaged"
+                  value={String(trends.navigatorAdoption.householdsEngaged)}
+                />
+                <MiniStat
+                  label="Interactions"
+                  value={String(trends.navigatorAdoption.totalInteractions)}
+                />
+              </div>
+              {trends.navigatorAdoption.topGoals.length > 0 ? (
+                <div className="mt-4">
+                  <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    Top navigator goals
+                  </div>
+                  <ul className="mt-2 flex flex-wrap gap-1.5">
+                    {trends.navigatorAdoption.topGoals.map((g) => (
+                      <li
+                        key={g.goal}
+                        className="rounded-full border bg-background px-2.5 py-0.5 text-xs text-muted-foreground"
+                      >
+                        {g.goal} · {g.count}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </>
+          )}
+        </Panel>
       </div>
     </section>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border bg-muted/40 p-3">
+      <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </div>
+      <div className="mt-1 text-xl font-semibold leading-none tabular-nums">{value}</div>
+    </div>
   );
 }
 
@@ -398,6 +454,7 @@ function FindingsSection({ snap }: { snap: ResearchSnapshot }) {
                       {f.category}
                     </Badge>
                     <Badge className="text-[10px]">{f.magnitude}</Badge>
+                    <ConfidenceBadge level={f.confidence} />
                   </div>
                   <h3 className="mt-2 text-base font-semibold tracking-tight">
                     {f.title}
@@ -413,6 +470,10 @@ function FindingsSection({ snap }: { snap: ResearchSnapshot }) {
                       {f.datasets.join(", ")}
                     </div>
                   </div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    <span className="font-semibold text-foreground">Confidence:</span>{" "}
+                    {f.confidenceExplanation}
+                  </div>
                 </div>
               </div>
             </li>
@@ -426,20 +487,41 @@ function FindingsSection({ snap }: { snap: ResearchSnapshot }) {
 /* ---------------- Explainability ---------------- */
 
 function ExplainabilitySection({ snap }: { snap: ResearchSnapshot }) {
-  const modules = Array.from(
-    new Set(snap.findings.flatMap((f) => f.contributingModules)),
-  );
-  const datasets = Array.from(new Set(snap.findings.flatMap((f) => f.datasets)));
+  const audit = summariseExplainability(snap);
   return (
     <section>
-      <SectionTitle eyebrow="06 · Explainability" title="Methodology & Sources" />
+      <SectionTitle
+        eyebrow="06 · Explainability"
+        title="Derived From — Methodology & Sources"
+        subtitle="Every finding above traces back to these modules and datasets. Refreshes do not alter findings unless underlying analytics change."
+      />
+      <div className="mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {DERIVATION_SOURCES.map((s) => (
+          <div key={s.module} className="rounded-2xl border bg-card p-5">
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Derived from
+            </div>
+            <div className="mt-1 text-sm font-semibold tracking-tight">{s.module}</div>
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              {s.sources.map((src) => (
+                <li
+                  key={src}
+                  className="rounded-full border bg-background px-2 py-0.5 text-[11px] text-muted-foreground"
+                >
+                  {src}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border bg-card p-6">
           <div className="flex items-center gap-2 text-sm font-semibold">
-            <Layers className="size-4 text-primary" /> Contributing modules
+            <Layers className="size-4 text-primary" /> Modules cited by findings
           </div>
           <ul className="mt-3 space-y-1.5 text-sm">
-            {modules.map((m) => (
+            {audit.modules.map((m) => (
               <li key={m} className="text-muted-foreground">
                 · {m}
               </li>
@@ -448,10 +530,10 @@ function ExplainabilitySection({ snap }: { snap: ResearchSnapshot }) {
         </div>
         <div className="rounded-2xl border bg-card p-6">
           <div className="flex items-center gap-2 text-sm font-semibold">
-            <Database className="size-4 text-primary" /> Source datasets
+            <Database className="size-4 text-primary" /> Datasets cited by findings
           </div>
           <ul className="mt-3 flex flex-wrap gap-1.5">
-            {datasets.map((d) => (
+            {audit.datasets.map((d) => (
               <li
                 key={d}
                 className="rounded-full border bg-background px-2 py-0.5 text-xs font-mono text-muted-foreground"
@@ -468,6 +550,22 @@ function ExplainabilitySection({ snap }: { snap: ResearchSnapshot }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function ConfidenceBadge({ level }: { level: "high" | "moderate" | "low" }) {
+  const cls =
+    level === "high"
+      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30"
+      : level === "moderate"
+        ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30"
+        : "bg-muted text-muted-foreground border-border";
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest ${cls}`}
+    >
+      {level} confidence
+    </span>
   );
 }
 

@@ -180,11 +180,34 @@ export const getResearchObservatoryFn = createServerFn({ method: "GET" })
       share: totalRisk ? r.value / totalRisk : 0,
     }));
 
+    // Navigator adoption trend
+    const navHouseholds = new Set<string>();
+    const navGoalCounts = new Map<string, number>();
+    for (const r of navRes.data ?? []) {
+      if (r.citizen_profile_id) navHouseholds.add(r.citizen_profile_id);
+      const goal = r.goal_category ?? "Other";
+      navGoalCounts.set(goal, (navGoalCounts.get(goal) ?? 0) + 1);
+    }
+    const navTotalInteractions = (navRes.data ?? []).length;
+    const navAdoptionPercent = analysed
+      ? Math.round((navHouseholds.size / analysed) * 100)
+      : 0;
+    const topGoals = [...navGoalCounts.entries()]
+      .map(([goal, count]) => ({ goal, count }))
+      .sort((a, b) => b.count - a.count || a.goal.localeCompare(b.goal))
+      .slice(0, 5);
+
     const trends: TrendObservatory = {
       missedByCategory,
       utilizationGaps,
       benefitConcentration,
       riskConcentration,
+      navigatorAdoption: {
+        totalInteractions: navTotalInteractions,
+        householdsEngaged: navHouseholds.size,
+        adoptionPercent: navAdoptionPercent,
+        topGoals,
+      },
     };
 
     const archetypes = buildArchetypes({
