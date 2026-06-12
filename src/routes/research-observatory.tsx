@@ -450,6 +450,7 @@ function FindingsSection({ snap }: { snap: ResearchSnapshot }) {
                       {f.category}
                     </Badge>
                     <Badge className="text-[10px]">{f.magnitude}</Badge>
+                    <ConfidenceBadge level={f.confidence} />
                   </div>
                   <h3 className="mt-2 text-base font-semibold tracking-tight">
                     {f.title}
@@ -465,6 +466,10 @@ function FindingsSection({ snap }: { snap: ResearchSnapshot }) {
                       {f.datasets.join(", ")}
                     </div>
                   </div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    <span className="font-semibold text-foreground">Confidence:</span>{" "}
+                    {f.confidenceExplanation}
+                  </div>
                 </div>
               </div>
             </li>
@@ -478,10 +483,47 @@ function FindingsSection({ snap }: { snap: ResearchSnapshot }) {
 /* ---------------- Explainability ---------------- */
 
 function ExplainabilitySection({ snap }: { snap: ResearchSnapshot }) {
-  const modules = Array.from(
-    new Set(snap.findings.flatMap((f) => f.contributingModules)),
-  );
-  const datasets = Array.from(new Set(snap.findings.flatMap((f) => f.datasets)));
+  const audit = summariseExplainability(snap);
+  return (
+    <section>
+      <SectionTitle
+        eyebrow="06 · Explainability"
+        title="Derived From — Methodology & Sources"
+        subtitle="Every finding above traces back to these modules and datasets. Refreshes do not alter findings unless underlying analytics change."
+      />
+      <div className="mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {DERIVATION_SOURCES.map((s) => (
+          <div key={s.module} className="rounded-2xl border bg-card p-5">
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Derived from
+            </div>
+            <div className="mt-1 text-sm font-semibold tracking-tight">{s.module}</div>
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              {s.sources.map((src) => (
+                <li
+                  key={src}
+                  className="rounded-full border bg-background px-2 py-0.5 text-[11px] text-muted-foreground"
+                >
+                  {src}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-2xl border bg-card p-6">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <Layers className="size-4 text-primary" /> Modules cited by findings
+          </div>
+          <ul className="mt-3 space-y-1.5 text-sm">
+            {audit.modules.map((m) => (
+              <li key={m} className="text-muted-foreground">
+                · {m}
+              </li>
+            ))}
+          </ul>
+        </div>
   return (
     <section>
       <SectionTitle eyebrow="06 · Explainability" title="Methodology & Sources" />
