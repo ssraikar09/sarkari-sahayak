@@ -524,28 +524,12 @@ function ExplainabilitySection({ snap }: { snap: ResearchSnapshot }) {
             ))}
           </ul>
         </div>
-  return (
-    <section>
-      <SectionTitle eyebrow="06 · Explainability" title="Methodology & Sources" />
-      <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border bg-card p-6">
           <div className="flex items-center gap-2 text-sm font-semibold">
-            <Layers className="size-4 text-primary" /> Contributing modules
-          </div>
-          <ul className="mt-3 space-y-1.5 text-sm">
-            {modules.map((m) => (
-              <li key={m} className="text-muted-foreground">
-                · {m}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-2xl border bg-card p-6">
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <Database className="size-4 text-primary" /> Source datasets
+            <Database className="size-4 text-primary" /> Datasets cited by findings
           </div>
           <ul className="mt-3 flex flex-wrap gap-1.5">
-            {datasets.map((d) => (
+            {audit.datasets.map((d) => (
               <li
                 key={d}
                 className="rounded-full border bg-background px-2 py-0.5 text-xs font-mono text-muted-foreground"
@@ -562,6 +546,22 @@ function ExplainabilitySection({ snap }: { snap: ResearchSnapshot }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function ConfidenceBadge({ level }: { level: "high" | "moderate" | "low" }) {
+  const cls =
+    level === "high"
+      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30"
+      : level === "moderate"
+        ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30"
+        : "bg-muted text-muted-foreground border-border";
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest ${cls}`}
+    >
+      {level} confidence
+    </span>
   );
 }
 
