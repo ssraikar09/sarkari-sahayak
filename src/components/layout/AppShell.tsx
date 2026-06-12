@@ -42,6 +42,7 @@ const more: NavItem[] = [
   { to: "/knowledge-graph", label: "Knowledge Graph", icon: Network },
   { to: "/insights", label: "Research Insights", icon: TrendingUp },
   { to: "/policy-intelligence", label: "Policy Intelligence", icon: ShieldCheck },
+  { to: "/outcome-prediction", label: "Outcome Prediction", icon: Sparkles },
   { to: "/agent-dashboard", label: "CSC Dashboard", icon: Briefcase },
 ];
 
