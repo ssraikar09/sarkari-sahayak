@@ -3,14 +3,28 @@ export type VoiceLanguageCode =
   | "hi-IN"
   | "kn-IN"
   | "ta-IN"
-  | "te-IN";
+  | "te-IN"
+  | "bn-IN"
+  | "mr-IN"
+  | "gu-IN"
+  | "ml-IN"
+  | "pa-IN"
+  | "or-IN"
+  | "as-IN";
 
 export type VoiceLanguageShort =
   | "en"
   | "hi"
   | "kn"
   | "ta"
-  | "te";
+  | "te"
+  | "bn"
+  | "mr"
+  | "gu"
+  | "ml"
+  | "pa"
+  | "or"
+  | "as";
 
 export type VoiceLanguage = {
   code: VoiceLanguageCode;
@@ -26,6 +40,13 @@ export const VOICE_LANGUAGES: VoiceLanguage[] = [
   { code: "te-IN", label: "Telugu", nativeLabel: "తెలుగు", short: "te" },
   { code: "ta-IN", label: "Tamil", nativeLabel: "தமிழ்", short: "ta" },
   { code: "kn-IN", label: "Kannada", nativeLabel: "ಕನ್ನಡ", short: "kn" },
+  { code: "bn-IN", label: "Bengali", nativeLabel: "বাংলা", short: "bn" },
+  { code: "mr-IN", label: "Marathi", nativeLabel: "मराठी", short: "mr" },
+  { code: "gu-IN", label: "Gujarati", nativeLabel: "ગુજરાતી", short: "gu" },
+  { code: "ml-IN", label: "Malayalam", nativeLabel: "മലയാളം", short: "ml" },
+  { code: "pa-IN", label: "Punjabi", nativeLabel: "ਪੰਜਾਬੀ", short: "pa" },
+  { code: "or-IN", label: "Odia", nativeLabel: "ଓଡ଼ିଆ", short: "or" },
+  { code: "as-IN", label: "Assamese", nativeLabel: "অসমীয়া", short: "as" },
 ];
 
 export const DEFAULT_VOICE_LANGUAGE: VoiceLanguageCode = "en-IN";
