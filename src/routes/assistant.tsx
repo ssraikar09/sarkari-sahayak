@@ -308,7 +308,26 @@ function MessageBubble({
               <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <ListenButton text={message.content} autoPlay={autoPlay} />
+              <ListenButton
+                text={message.content}
+                autoPlay={autoPlay}
+                onFallback={
+                  autoPlay
+                    ? () =>
+                        toast.message(
+                          "Voice explanation is not available on this device for the selected language.",
+                        )
+                    : undefined
+                }
+                onUnavailable={
+                  autoPlay
+                    ? () =>
+                        toast.message(
+                          "Voice explanation is not available on this device for the selected language.",
+                        )
+                    : undefined
+                }
+              />
             </div>
             {message.fallback && (!message.sources || message.sources.length === 0) ? (
               <TrustFallbackActions />
