@@ -456,6 +456,7 @@ function Kpi({
   description,
   tone,
   trend,
+  featured,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -464,13 +465,34 @@ function Kpi({
   description: string;
   tone: Tone;
   trend?: "up" | "down";
+  featured?: boolean;
 }) {
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
-      <div className="flex items-start justify-between">
+    <div
+      className={cn(
+        "group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-xl",
+        featured ? "p-7 sm:p-8" : "p-6",
+      )}
+    >
+      {featured && (
         <div
           className={cn(
-            "inline-flex size-10 items-center justify-center rounded-xl",
+            "pointer-events-none absolute -right-16 -top-16 size-48 rounded-full opacity-40 blur-3xl",
+            tone === "rose"
+              ? "bg-rose-500/30"
+              : tone === "amber"
+                ? "bg-amber-500/30"
+                : tone === "emerald"
+                  ? "bg-emerald-500/30"
+                  : "bg-primary/30",
+          )}
+        />
+      )}
+      <div className="relative flex items-start justify-between">
+        <div
+          className={cn(
+            "inline-flex items-center justify-center rounded-xl",
+            featured ? "size-12" : "size-10",
             TONE_BG[tone],
           )}
         >
@@ -486,20 +508,40 @@ function Kpi({
           {trend === "up" ? "↑" : trend === "down" ? "↓" : "•"} live
         </span>
       </div>
-      <div className="mt-4 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <div
+        className={cn(
+          "relative font-medium uppercase tracking-[0.14em] text-muted-foreground",
+          featured ? "mt-6 text-xs" : "mt-5 text-[11px]",
+        )}
+      >
         {label}
       </div>
-      <div className="mt-1 flex items-baseline gap-1">
-        <span className="text-3xl font-bold tracking-tight sm:text-4xl">
+      <div className="relative mt-2 flex items-baseline gap-1.5">
+        <span
+          className={cn(
+            "font-bold tracking-tight tabular-nums",
+            featured ? "text-5xl sm:text-6xl" : "text-3xl sm:text-4xl",
+          )}
+        >
           {value}
         </span>
         {suffix && (
-          <span className="text-sm font-medium text-muted-foreground">
+          <span
+            className={cn(
+              "font-medium text-muted-foreground",
+              featured ? "text-lg" : "text-sm",
+            )}
+          >
             {suffix}
           </span>
         )}
       </div>
-      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+      <p
+        className={cn(
+          "relative mt-3 leading-relaxed text-muted-foreground",
+          featured ? "text-sm" : "text-xs",
+        )}
+      >
         {description}
       </p>
       <div
