@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelfareRoadmapRouteImport } from './routes/welfare-roadmap'
 import { Route as SchemesRouteImport } from './routes/schemes'
+import { Route as PolicyIntelligenceRouteImport } from './routes/policy-intelligence'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as KnowledgeGraphRouteImport } from './routes/knowledge-graph'
@@ -34,6 +35,11 @@ const WelfareRoadmapRoute = WelfareRoadmapRouteImport.update({
 const SchemesRoute = SchemesRouteImport.update({
   id: '/schemes',
   path: '/schemes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PolicyIntelligenceRoute = PolicyIntelligenceRouteImport.update({
+  id: '/policy-intelligence',
+  path: '/policy-intelligence',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/knowledge-graph'
     | '/navigator'
     | '/onboarding'
+    | '/policy-intelligence'
     | '/schemes'
     | '/welfare-roadmap'
     | '/profile/$id'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/knowledge-graph'
     | '/navigator'
     | '/onboarding'
+    | '/policy-intelligence'
     | '/schemes'
     | '/welfare-roadmap'
     | '/profile/$id'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/knowledge-graph'
     | '/navigator'
     | '/onboarding'
+    | '/policy-intelligence'
     | '/schemes'
     | '/welfare-roadmap'
     | '/profile/$id'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   KnowledgeGraphRoute: typeof KnowledgeGraphRoute
   NavigatorRoute: typeof NavigatorRoute
   OnboardingRoute: typeof OnboardingRoute
+  PolicyIntelligenceRoute: typeof PolicyIntelligenceRoute
   SchemesRoute: typeof SchemesRouteWithChildren
   WelfareRoadmapRoute: typeof WelfareRoadmapRoute
   ProfileIdRoute: typeof ProfileIdRoute
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       path: '/schemes'
       fullPath: '/schemes'
       preLoaderRoute: typeof SchemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/policy-intelligence': {
+      id: '/policy-intelligence'
+      path: '/policy-intelligence'
+      fullPath: '/policy-intelligence'
+      preLoaderRoute: typeof PolicyIntelligenceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -378,6 +398,7 @@ const rootRouteChildren: RootRouteChildren = {
   KnowledgeGraphRoute: KnowledgeGraphRoute,
   NavigatorRoute: NavigatorRoute,
   OnboardingRoute: OnboardingRoute,
+  PolicyIntelligenceRoute: PolicyIntelligenceRoute,
   SchemesRoute: SchemesRouteWithChildren,
   WelfareRoadmapRoute: WelfareRoadmapRoute,
   ProfileIdRoute: ProfileIdRoute,
