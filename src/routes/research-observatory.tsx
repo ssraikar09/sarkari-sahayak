@@ -23,6 +23,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { getResearchObservatoryFn } from "@/lib/research-observatory/observatory.functions";
 import { exportObservatoryReport, type ReportKind } from "@/lib/research-observatory/reportExporter";
+import {
+  DERIVATION_SOURCES,
+  summariseExplainability,
+} from "@/lib/research-observatory/explainability";
 import { formatINR } from "@/lib/welfare-gap/benefitEstimator";
 import type { ResearchSnapshot } from "@/lib/research-observatory/types";
 
