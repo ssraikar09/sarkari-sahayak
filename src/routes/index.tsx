@@ -102,7 +102,7 @@ function Welcome() {
               सरकारी सहायक
             </h1>
             <p className="mt-5 text-balance text-xl font-semibold text-foreground sm:text-2xl">
-              Bridging Citizens &amp; Government Schemes
+              Transforming Welfare Access into Welfare Intelligence
             </p>
             <p className="mt-3 text-balance text-base text-muted-foreground sm:text-lg">
               One platform to discover, check eligibility, and apply for{" "}
