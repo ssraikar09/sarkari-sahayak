@@ -21,6 +21,7 @@ import {
   Sparkles,
   Atom,
   Siren,
+  Microscope,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -47,6 +48,7 @@ const more: NavItem[] = [
   { to: "/outcome-prediction", label: "Outcome Prediction", icon: Sparkles },
   { to: "/digital-twin", label: "Digital Twin", icon: Atom },
   { to: "/command-center", label: "Command Center", icon: Siren },
+  { to: "/research-observatory", label: "Research Observatory", icon: Microscope },
   { to: "/agent-dashboard", label: "CSC Dashboard", icon: Briefcase },
 ];
 
