@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelfareRoadmapRouteImport } from './routes/welfare-roadmap'
 import { Route as SchemesRouteImport } from './routes/schemes'
+import { Route as ResearchObservatoryRouteImport } from './routes/research-observatory'
 import { Route as PolicyIntelligenceRouteImport } from './routes/policy-intelligence'
 import { Route as OutcomePredictionRouteImport } from './routes/outcome-prediction'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -38,6 +39,11 @@ const WelfareRoadmapRoute = WelfareRoadmapRouteImport.update({
 const SchemesRoute = SchemesRouteImport.update({
   id: '/schemes',
   path: '/schemes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchObservatoryRoute = ResearchObservatoryRouteImport.update({
+  id: '/research-observatory',
+  path: '/research-observatory',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PolicyIntelligenceRoute = PolicyIntelligenceRouteImport.update({
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/outcome-prediction': typeof OutcomePredictionRoute
   '/policy-intelligence': typeof PolicyIntelligenceRoute
+  '/research-observatory': typeof ResearchObservatoryRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/outcome-prediction': typeof OutcomePredictionRoute
   '/policy-intelligence': typeof PolicyIntelligenceRoute
+  '/research-observatory': typeof ResearchObservatoryRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/outcome-prediction': typeof OutcomePredictionRoute
   '/policy-intelligence': typeof PolicyIntelligenceRoute
+  '/research-observatory': typeof ResearchObservatoryRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -217,6 +226,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/outcome-prediction'
     | '/policy-intelligence'
+    | '/research-observatory'
     | '/schemes'
     | '/welfare-roadmap'
     | '/profile/$id'
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/outcome-prediction'
     | '/policy-intelligence'
+    | '/research-observatory'
     | '/schemes'
     | '/welfare-roadmap'
     | '/profile/$id'
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/outcome-prediction'
     | '/policy-intelligence'
+    | '/research-observatory'
     | '/schemes'
     | '/welfare-roadmap'
     | '/profile/$id'
@@ -284,6 +296,7 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   OutcomePredictionRoute: typeof OutcomePredictionRoute
   PolicyIntelligenceRoute: typeof PolicyIntelligenceRoute
+  ResearchObservatoryRoute: typeof ResearchObservatoryRoute
   SchemesRoute: typeof SchemesRouteWithChildren
   WelfareRoadmapRoute: typeof WelfareRoadmapRoute
   ProfileIdRoute: typeof ProfileIdRoute
@@ -303,6 +316,13 @@ declare module '@tanstack/react-router' {
       path: '/schemes'
       fullPath: '/schemes'
       preLoaderRoute: typeof SchemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research-observatory': {
+      id: '/research-observatory'
+      path: '/research-observatory'
+      fullPath: '/research-observatory'
+      preLoaderRoute: typeof ResearchObservatoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/policy-intelligence': {
@@ -462,6 +482,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   OutcomePredictionRoute: OutcomePredictionRoute,
   PolicyIntelligenceRoute: PolicyIntelligenceRoute,
+  ResearchObservatoryRoute: ResearchObservatoryRoute,
   SchemesRoute: SchemesRouteWithChildren,
   WelfareRoadmapRoute: WelfareRoadmapRoute,
   ProfileIdRoute: ProfileIdRoute,
