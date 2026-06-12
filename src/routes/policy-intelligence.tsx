@@ -187,26 +187,34 @@ function Hero({ generatedAt }: { generatedAt?: string }) {
       })
     : "—";
   return (
-    <header className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-primary/10 via-card to-accent/30 p-6 sm:p-10">
-      <div className="absolute -right-20 -top-20 size-64 rounded-full bg-primary/10 blur-3xl" />
-      <div className="absolute -bottom-20 -left-10 size-56 rounded-full bg-accent/40 blur-3xl" />
+    <header className="relative overflow-hidden rounded-[2rem] border bg-gradient-to-br from-primary/10 via-card to-accent/30 p-8 sm:p-14">
+      <div className="absolute -right-20 -top-20 size-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="absolute -bottom-24 -left-12 size-64 rounded-full bg-accent/40 blur-3xl" />
+      <div
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
       <div className="relative">
-        <div className="inline-flex items-center gap-2 rounded-full border bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
+        <div className="inline-flex items-center gap-2 rounded-full border bg-card/80 px-3.5 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
           <Sparkles className="size-3.5 text-primary" />
           Module 16 · Policy Intelligence Engine
         </div>
-        <h1 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight sm:text-5xl">
+        <h1 className="mt-6 max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
           National Welfare Intelligence,{" "}
           <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             built on evidence.
           </span>
         </h1>
-        <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">
+        <p className="mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
           A research-grade analytics workspace for policymakers and welfare
           administrators — surfacing delivery gaps, regional risk, and
           explainable policy recommendations.
         </p>
-        <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
