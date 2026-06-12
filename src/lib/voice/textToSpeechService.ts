@@ -4,7 +4,6 @@
 
 const TTS_FALLBACK_LANG = "en-IN";
 const TTS_FALLBACK_LANG_2 = "en-US";
-const REMOTE_TTS_ENDPOINT = "https://translate.google.com/translate_tts";
 const REMOTE_TTS_LANGS = new Set([
   "hi",
   "te",
@@ -18,7 +17,7 @@ const REMOTE_TTS_LANGS = new Set([
 ]);
 const REMOTE_TTS_CHARS = 180;
 
-let activeAudio: HTMLAudioElement | null = null;
+let activeBlobUrl: string | null = null;
 let speechRunId = 0;
 
 export function isSpeechSynthesisSupported(): boolean {
@@ -86,18 +85,7 @@ export function stripMarkdownForSpeech(text: string): string {
 
 export function cancelSpeech(): void {
   speechRunId += 1;
-  if (activeAudio) {
-    try {
-      activeAudio.onended = null;
-      activeAudio.onerror = null;
-      activeAudio.pause();
-      activeAudio.removeAttribute("src");
-      activeAudio.load();
-    } catch {
-      /* noop */
-    }
-    activeAudio = null;
-  }
+  revokeActiveAudioUrl();
   if (!isSpeechSynthesisSupported()) return;
   try {
     window.speechSynthesis?.cancel();
@@ -208,67 +196,59 @@ function getShortLang(lang: string): string {
 }
 
 function speakWithRemoteTts(text: string, opts: SpeakOptions, runId: number): boolean {
-  if (typeof Audio === "undefined") return false;
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
   const chunks = splitForRemoteTts(text, REMOTE_TTS_CHARS);
   if (chunks.length === 0) return false;
 
-  const audio = new Audio();
-  activeAudio = audio;
-  audio.preload = "auto";
-  let index = 0;
-  let started = false;
-  let failedOver = false;
+  const lang = getShortLang(opts.lang);
+  const markup = chunks
+    .map((chunk) => `<voice name="${lang}">${escapeSsml(chunk)}</voice>`)
+    .join("<break time=\"180ms\"/>");
+  const blob = new Blob([markup], { type: "application/ssml+xml" });
+  revokeActiveAudioUrl();
+  activeBlobUrl = URL.createObjectURL(blob);
 
-  const cleanup = () => {
-    if (activeAudio === audio) activeAudio = null;
-    audio.onended = null;
-    audio.onerror = null;
+  const utter = new SpeechSynthesisUtterance(activeBlobUrl);
+  utter.lang = opts.lang;
+  utter.rate = opts.rate ?? 1;
+  utter.pitch = opts.pitch ?? 1;
+  utter.onstart = () => {
+    if (runId === speechRunId) opts.onStart?.();
   };
-
-  const failToBrowser = () => {
-    if (failedOver || runId !== speechRunId) return;
-    failedOver = true;
-    cleanup();
+  utter.onend = () => {
+    if (runId !== speechRunId) return;
+    revokeActiveAudioUrl();
+    opts.onEnd?.();
+  };
+  utter.onerror = () => {
+    if (runId !== speechRunId) return;
+    revokeActiveAudioUrl();
     speakWithBrowserTts(text, opts, runId);
   };
 
-  const playCurrent = () => {
-    if (runId !== speechRunId) return;
-    audio.src = buildRemoteTtsUrl(chunks[index], opts.lang);
-    const playPromise = audio.play();
-    void playPromise
-      .then(() => {
-        if (!started && runId === speechRunId) {
-          started = true;
-          opts.onStart?.();
-        }
-      })
-      .catch(failToBrowser);
-  };
-
-  audio.onended = () => {
-    if (runId !== speechRunId) return;
-    index += 1;
-    if (index < chunks.length) {
-      playCurrent();
-      return;
-    }
-    cleanup();
-    opts.onEnd?.();
-  };
-  audio.onerror = failToBrowser;
-  playCurrent();
+  const synth = window.speechSynthesis;
+  synth.speak(utter);
+  if (synth.paused) synth.resume();
   return true;
 }
 
-function buildRemoteTtsUrl(text: string, lang: string): string {
-  const params = new URLSearchParams({
-    ie: "UTF-8",
-    client: "tw-ob",
-    tl: getShortLang(lang),
-    q: text,
-  });
-  return `${REMOTE_TTS_ENDPOINT}?${params.toString()}`;
+function revokeActiveAudioUrl(): void {
+  if (!activeBlobUrl || typeof URL === "undefined") return;
+  try {
+    URL.revokeObjectURL(activeBlobUrl);
+  } catch {
+    /* noop */
+  }
+  activeBlobUrl = null;
+}
+
+function escapeSsml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/\'/g, "&apos;");
 }
 
 function splitForRemoteTts(text: string, max: number): string[] {
