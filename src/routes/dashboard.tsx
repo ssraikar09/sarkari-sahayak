@@ -156,7 +156,7 @@ function DashboardPage() {
           </Button>
           <Badge variant="secondary" className="gap-1">
             <Sparkles className="size-3" />
-            Module 8 · Citizen Impact
+            Citizen Impact
           </Badge>
         </div>
 

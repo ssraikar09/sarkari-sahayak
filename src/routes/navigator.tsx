@@ -123,7 +123,7 @@ function NavigatorPage() {
           </Button>
           <Badge variant="secondary" className="gap-1">
             <Sparkles className="size-3" />
-            Module 10 · Welfare Navigator
+            Welfare Navigator
           </Badge>
         </div>
 
