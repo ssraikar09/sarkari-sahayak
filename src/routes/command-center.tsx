@@ -297,7 +297,7 @@ function Kpi({
           <Icon className="size-4" />
         </div>
       </div>
-      <div className={cn("mt-3 font-black tracking-tight", span ? "text-5xl" : "text-3xl")}>
+      <div className={cn("mt-3 font-bold leading-none tracking-tight tabular-nums", span ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl")}>
         {value}
       </div>
       {caption ? (
@@ -714,7 +714,7 @@ function RiskTile({
         <span className="text-muted-foreground">{label}</span>
         <span className={color}>{pct}%</span>
       </div>
-      <div className="mt-2 text-2xl font-bold">{value}</div>
+      <div className="mt-2 text-2xl font-semibold leading-none tabular-nums">{value}</div>
       <Progress value={pct} className="mt-2 h-1.5" />
     </div>
   );
