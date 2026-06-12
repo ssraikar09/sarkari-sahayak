@@ -25,6 +25,7 @@ import { ListenButton } from "@/components/voice/ListenButton";
 import { VoiceSettingsBar } from "@/components/voice/VoiceSettingsBar";
 import { useVoiceSettings } from "@/lib/voice/voiceSettings";
 import { normalizeVoiceQuery } from "@/lib/voice/queryNormalizer";
+import { cancelSpeech } from "@/lib/voice/textToSpeechService";
 import { translateFromEnglish } from "@/lib/voice/translationService";
 
 export const Route = createFileRoute("/assistant")({
@@ -59,7 +60,7 @@ const SUGGESTED_PROMPTS: string[] = [
 
 function AssistantPage() {
   const ask = useServerFn(askAssistant);
-  const { accessibilityMode, advancedMultilingual, language } = useVoiceSettings();
+  const { advancedMultilingual, language } = useVoiceSettings();
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -86,6 +87,8 @@ function AssistantPage() {
   const submit = async (raw: string) => {
     const original = raw.trim();
     if (!original || loading) return;
+    // Stop any in-progress narration immediately when a new query starts.
+    cancelSpeech();
     // Normalize regional scheme references so the RAG pipeline can match them.
     const query = normalizeVoiceQuery(original);
 
@@ -190,9 +193,9 @@ function AssistantPage() {
                 key={m.id}
                 message={m}
                 autoPlay={
-                  accessibilityMode &&
                   m.role === "assistant" &&
-                  m.id === lastAssistantId
+                  m.id === lastAssistantId &&
+                  !loading
                 }
               />
             ))
@@ -305,7 +308,26 @@ function MessageBubble({
               <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <ListenButton text={message.content} autoPlay={autoPlay} />
+              <ListenButton
+                text={message.content}
+                autoPlay={autoPlay}
+                onFallback={
+                  autoPlay
+                    ? () =>
+                        toast.message(
+                          "Voice explanation is not available on this device for the selected language.",
+                        )
+                    : undefined
+                }
+                onUnavailable={
+                  autoPlay
+                    ? () =>
+                        toast.message(
+                          "Voice explanation is not available on this device for the selected language.",
+                        )
+                    : undefined
+                }
+              />
             </div>
             {message.fallback && (!message.sources || message.sources.length === 0) ? (
               <TrustFallbackActions />

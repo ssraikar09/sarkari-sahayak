@@ -15,6 +15,8 @@ type Props = {
   className?: string;
   size?: "icon" | "sm" | "default";
   label?: string;
+  onFallback?: () => void;
+  onUnavailable?: () => void;
 };
 
 export function ListenButton({
@@ -23,6 +25,8 @@ export function ListenButton({
   className,
   size = "sm",
   label = "Listen",
+  onFallback,
+  onUnavailable,
 }: Props) {
   const { language, advancedMultilingual } = useVoiceSettings();
   const effectiveLang = advancedMultilingual ? language : "en-IN";
@@ -46,7 +50,11 @@ export function ListenButton({
     void speak(text, {
       lang: effectiveLang,
       onEnd: () => setPlaying(false),
-      onError: () => setPlaying(false),
+      onError: () => {
+        setPlaying(false);
+        onUnavailable?.();
+      },
+      onFallback: () => onFallback?.(),
     });
   };
 
