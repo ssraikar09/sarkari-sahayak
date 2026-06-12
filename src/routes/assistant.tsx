@@ -193,9 +193,9 @@ function AssistantPage() {
                 key={m.id}
                 message={m}
                 autoPlay={
-                  accessibilityMode &&
                   m.role === "assistant" &&
-                  m.id === lastAssistantId
+                  m.id === lastAssistantId &&
+                  !loading
                 }
               />
             ))
