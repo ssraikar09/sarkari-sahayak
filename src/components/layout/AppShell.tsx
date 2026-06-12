@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Sparkles,
   Atom,
+  Siren,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -45,6 +46,7 @@ const more: NavItem[] = [
   { to: "/policy-intelligence", label: "Policy Intelligence", icon: ShieldCheck },
   { to: "/outcome-prediction", label: "Outcome Prediction", icon: Sparkles },
   { to: "/digital-twin", label: "Digital Twin", icon: Atom },
+  { to: "/command-center", label: "Command Center", icon: Siren },
   { to: "/agent-dashboard", label: "CSC Dashboard", icon: Briefcase },
 ];
 

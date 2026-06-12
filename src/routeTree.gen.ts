@@ -22,6 +22,7 @@ import { Route as EligibilityRouteImport } from './routes/eligibility'
 import { Route as DigitalTwinRouteImport } from './routes/digital-twin'
 import { Route as DecisionEngineRouteImport } from './routes/decision-engine'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CommandCenterRouteImport } from './routes/command-center'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as ApplicationGuideRouteImport } from './routes/application-guide'
 import { Route as AgentDashboardRouteImport } from './routes/agent-dashboard'
@@ -94,6 +95,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommandCenterRoute = CommandCenterRouteImport.update({
+  id: '/command-center',
+  path: '/command-center',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AssistantRoute = AssistantRouteImport.update({
   id: '/assistant',
   path: '/assistant',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/agent-dashboard': typeof AgentDashboardRoute
   '/application-guide': typeof ApplicationGuideRoute
   '/assistant': typeof AssistantRoute
+  '/command-center': typeof CommandCenterRoute
   '/dashboard': typeof DashboardRoute
   '/decision-engine': typeof DecisionEngineRoute
   '/digital-twin': typeof DigitalTwinRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/agent-dashboard': typeof AgentDashboardRoute
   '/application-guide': typeof ApplicationGuideRoute
   '/assistant': typeof AssistantRoute
+  '/command-center': typeof CommandCenterRoute
   '/dashboard': typeof DashboardRoute
   '/decision-engine': typeof DecisionEngineRoute
   '/digital-twin': typeof DigitalTwinRoute
@@ -173,6 +181,7 @@ export interface FileRoutesById {
   '/agent-dashboard': typeof AgentDashboardRoute
   '/application-guide': typeof ApplicationGuideRoute
   '/assistant': typeof AssistantRoute
+  '/command-center': typeof CommandCenterRoute
   '/dashboard': typeof DashboardRoute
   '/decision-engine': typeof DecisionEngineRoute
   '/digital-twin': typeof DigitalTwinRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/agent-dashboard'
     | '/application-guide'
     | '/assistant'
+    | '/command-center'
     | '/dashboard'
     | '/decision-engine'
     | '/digital-twin'
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/agent-dashboard'
     | '/application-guide'
     | '/assistant'
+    | '/command-center'
     | '/dashboard'
     | '/decision-engine'
     | '/digital-twin'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/agent-dashboard'
     | '/application-guide'
     | '/assistant'
+    | '/command-center'
     | '/dashboard'
     | '/decision-engine'
     | '/digital-twin'
@@ -260,6 +272,7 @@ export interface RootRouteChildren {
   AgentDashboardRoute: typeof AgentDashboardRoute
   ApplicationGuideRoute: typeof ApplicationGuideRoute
   AssistantRoute: typeof AssistantRoute
+  CommandCenterRoute: typeof CommandCenterRoute
   DashboardRoute: typeof DashboardRoute
   DecisionEngineRoute: typeof DecisionEngineRoute
   DigitalTwinRoute: typeof DigitalTwinRoute
@@ -369,6 +382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/command-center': {
+      id: '/command-center'
+      path: '/command-center'
+      fullPath: '/command-center'
+      preLoaderRoute: typeof CommandCenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/assistant': {
       id: '/assistant'
       path: '/assistant'
@@ -430,6 +450,7 @@ const rootRouteChildren: RootRouteChildren = {
   AgentDashboardRoute: AgentDashboardRoute,
   ApplicationGuideRoute: ApplicationGuideRoute,
   AssistantRoute: AssistantRoute,
+  CommandCenterRoute: CommandCenterRoute,
   DashboardRoute: DashboardRoute,
   DecisionEngineRoute: DecisionEngineRoute,
   DigitalTwinRoute: DigitalTwinRoute,
