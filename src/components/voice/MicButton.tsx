@@ -26,7 +26,8 @@ export function MicButton({
   className,
   size = "icon",
 }: Props) {
-  const { language } = useVoiceSettings();
+  const { language, advancedMultilingual } = useVoiceSettings();
+  const effectiveLang = advancedMultilingual ? language : "en-IN";
   const [listening, setListening] = useState(false);
   const [supported, setSupported] = useState(true);
   const handleRef = useRef<RecognitionHandle | null>(null);
@@ -53,7 +54,7 @@ export function MicButton({
       onError?.("Voice features are not supported on this device.");
       return;
     }
-    handleRef.current = startRecognition(language, {
+    handleRef.current = startRecognition(effectiveLang, {
       onStart: () => setListening(true),
       onPartial: (t) => onPartial?.(t),
       onFinal: (t) => {
