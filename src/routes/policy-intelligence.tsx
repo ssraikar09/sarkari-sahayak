@@ -150,10 +150,10 @@ function PolicyIntelligencePage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14">
         <Hero generatedAt={data?.generatedAt} />
 
-        <div className="my-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm">
+        <div className="my-10 flex items-start gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-sm">
           <Info className="mt-0.5 size-4 shrink-0 text-primary" />
           <p className="text-muted-foreground">
             <span className="font-medium text-foreground">
