@@ -87,6 +87,8 @@ function AssistantPage() {
   const submit = async (raw: string) => {
     const original = raw.trim();
     if (!original || loading) return;
+    // Stop any in-progress narration immediately when a new query starts.
+    cancelSpeech();
     // Normalize regional scheme references so the RAG pipeline can match them.
     const query = normalizeVoiceQuery(original);
 
