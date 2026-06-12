@@ -267,8 +267,60 @@ function TrendsSection({ snap }: { snap: ResearchSnapshot }) {
             emptyMessage="No risk distribution data yet."
           />
         </Panel>
+        <Panel title="Navigator Adoption Trend">
+          {trends.navigatorAdoption.totalInteractions === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No navigator interactions recorded yet.
+            </p>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-3">
+                <MiniStat
+                  label="Adoption"
+                  value={`${trends.navigatorAdoption.adoptionPercent}%`}
+                />
+                <MiniStat
+                  label="Engaged"
+                  value={String(trends.navigatorAdoption.householdsEngaged)}
+                />
+                <MiniStat
+                  label="Interactions"
+                  value={String(trends.navigatorAdoption.totalInteractions)}
+                />
+              </div>
+              {trends.navigatorAdoption.topGoals.length > 0 ? (
+                <div className="mt-4">
+                  <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    Top navigator goals
+                  </div>
+                  <ul className="mt-2 flex flex-wrap gap-1.5">
+                    {trends.navigatorAdoption.topGoals.map((g) => (
+                      <li
+                        key={g.goal}
+                        className="rounded-full border bg-background px-2.5 py-0.5 text-xs text-muted-foreground"
+                      >
+                        {g.goal} · {g.count}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </>
+          )}
+        </Panel>
       </div>
     </section>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border bg-muted/40 p-3">
+      <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </div>
+      <div className="mt-1 text-xl font-semibold leading-none tabular-nums">{value}</div>
+    </div>
   );
 }
 
