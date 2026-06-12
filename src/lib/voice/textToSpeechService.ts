@@ -1,17 +1,39 @@
-/* Lightweight wrapper around window.speechSynthesis.
- * Honors the requested language but falls back to English voices when no
- * regional voice is installed in the browser. */
+/* Lightweight wrapper around window.speechSynthesis with an AI TTS fallback
+ * (ElevenLabs multilingual) used whenever no native voice exists for the
+ * requested language. */
+
+import { synthesizeSpeech } from "./elevenlabsTts.functions";
 
 const TTS_FALLBACK_LANG = "en-IN";
 const TTS_FALLBACK_LANG_2 = "en-US";
 
 let speechRunId = 0;
+let activeAudio: HTMLAudioElement | null = null;
+let activeAudioUrl: string | null = null;
 
 export function isSpeechSynthesisSupported(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    "speechSynthesis" in window
-  );
+  // Either the native browser API or our remote TTS fallback works.
+  return typeof window !== "undefined";
+}
+
+function stopActiveAudio() {
+  if (activeAudio) {
+    try {
+      activeAudio.pause();
+      activeAudio.src = "";
+    } catch {
+      /* noop */
+    }
+    activeAudio = null;
+  }
+  if (activeAudioUrl) {
+    try {
+      URL.revokeObjectURL(activeAudioUrl);
+    } catch {
+      /* noop */
+    }
+    activeAudioUrl = null;
+  }
 }
 
 function pickVoice(lang: string): SpeechSynthesisVoice | null {
@@ -72,26 +94,89 @@ export function stripMarkdownForSpeech(text: string): string {
 
 export function cancelSpeech(): void {
   speechRunId += 1;
-  if (!isSpeechSynthesisSupported()) return;
-  try {
-    window.speechSynthesis?.cancel();
-  } catch {
-    /* noop */
+  stopActiveAudio();
+  if (typeof window !== "undefined" && "speechSynthesis" in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch {
+      /* noop */
+    }
   }
 }
 
+const INDIC_LANGS = new Set(["hi", "te", "ta", "kn", "mr", "bn", "gu", "ml", "pa", "or", "as"]);
+
 export function speak(text: string, opts: SpeakOptions): void {
-  if (!isSpeechSynthesisSupported()) {
-    opts.onError?.("Voice features are not supported on this device.");
-    return;
-  }
+  if (typeof window === "undefined") return;
   const clean = stripMarkdownForSpeech(text);
   if (!clean) return;
 
   cancelSpeech();
   const runId = speechRunId;
 
+  const prefix = opts.lang.split("-")[0]?.toLowerCase() ?? "";
+  const browserVoice = pickVoice(opts.lang);
+  // Use AI TTS for Indic languages whenever the browser lacks a matching
+  // voice — covers Chrome on Windows/Linux/Android where regional voices
+  // are commonly missing.
+  const needsRemote = INDIC_LANGS.has(prefix) && !browserVoice;
+
+  if (needsRemote) {
+    void speakWithRemoteTts(clean, opts, runId);
+    return;
+  }
+
+  if (!("speechSynthesis" in window)) {
+    // No native voice; try remote even for English as a last resort.
+    void speakWithRemoteTts(clean, opts, runId);
+    return;
+  }
+
   speakWithBrowserTts(clean, opts, runId);
+}
+
+async function speakWithRemoteTts(
+  text: string,
+  opts: SpeakOptions,
+  runId: number,
+): Promise<void> {
+  try {
+    const { audioContent } = await synthesizeSpeech({ data: { text } });
+    if (runId !== speechRunId) return;
+    const url = `data:audio/mpeg;base64,${audioContent}`;
+    const audio = new Audio(url);
+    activeAudio = audio;
+    activeAudioUrl = null; // data URI doesn't need revoking
+    audio.onplay = () => {
+      if (runId === speechRunId) opts.onStart?.();
+    };
+    audio.onended = () => {
+      if (runId === speechRunId) {
+        opts.onEnd?.();
+        activeAudio = null;
+      }
+    };
+    audio.onerror = () => {
+      if (runId !== speechRunId) return;
+      activeAudio = null;
+      // Fall back to native browser TTS if remote playback fails.
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        speakWithBrowserTts(text, opts, runId);
+      } else {
+        opts.onError?.("Voice output failed.");
+      }
+    };
+    await audio.play();
+  } catch (err) {
+    if (runId !== speechRunId) return;
+    // Network/API failure → fall back to browser TTS so user still hears something.
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      speakWithBrowserTts(text, opts, runId);
+      opts.onFallback?.();
+    } else {
+      opts.onError?.((err as Error).message || "Voice output failed.");
+    }
+  }
 }
 
 function speakWithBrowserTts(text: string, opts: SpeakOptions, runId: number): void {
