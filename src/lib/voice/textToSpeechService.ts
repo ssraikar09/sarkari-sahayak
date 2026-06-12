@@ -123,14 +123,14 @@ function speakWithBrowserTts(text: string, opts: SpeakOptions, runId: number): v
 
   const assignVoice = () => {
     let voice = pickVoice(opts.lang);
-    const prefix = opts.lang.split("-")[0];
     let usedLang = voice?.lang ?? opts.lang;
-    if (!voice && prefix === "en") {
+
+    if (!voice) {
       voice = pickVoice(TTS_FALLBACK_LANG) ?? pickVoice(TTS_FALLBACK_LANG_2);
       usedLang = voice?.lang ?? TTS_FALLBACK_LANG;
-    } else if (!voice) {
       opts.onFallback?.();
     }
+
     utter.lang = usedLang;
     if (voice) utter.voice = voice;
   };
