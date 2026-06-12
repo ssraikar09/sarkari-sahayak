@@ -25,6 +25,12 @@ export type TrendObservatory = {
   }[];
   benefitConcentration: ConcentrationRow[];
   riskConcentration: ConcentrationRow[];
+  navigatorAdoption: {
+    totalInteractions: number;
+    householdsEngaged: number;
+    adoptionPercent: number;
+    topGoals: { goal: string; count: number }[];
+  };
 };
 
 export type ArchetypeKey =
@@ -52,6 +58,8 @@ export type ResearchFinding = {
   contributingModules: string[];
   datasets: string[];
   category: "exclusion" | "opportunity" | "demographic" | "utilization" | "risk";
+  confidence: "high" | "moderate" | "low";
+  confidenceExplanation: string;
 };
 
 export type ResearchSnapshot = {
