@@ -217,7 +217,7 @@ function speakWithRemoteTts(text: string, opts: SpeakOptions, runId: number): bo
 
   const playCurrent = () => {
     if (runId !== speechRunId) return;
-    audio.src = buildRemoteTtsUrl(chunks[index], opts.lang);
+    audio.src = buildRemoteTtsDataUrl(chunks[index], opts.lang);
     void audio
       .play()
       .then(() => {
@@ -245,14 +245,16 @@ function speakWithRemoteTts(text: string, opts: SpeakOptions, runId: number): bo
   return true;
 }
 
-function buildRemoteTtsUrl(text: string, lang: string): string {
-  const params = new URLSearchParams({
-    ie: "UTF-8",
-    client: "tw-ob",
-    tl: getShortLang(lang),
-    q: text,
-  });
-  return `${REMOTE_TTS_ENDPOINT}?${params.toString()}`;
+function buildRemoteTtsDataUrl(text: string, lang: string): string {
+  const speakable = encodeURIComponent(text);
+  const language = encodeURIComponent(getShortLang(lang));
+  const html = `<!doctype html><html><body><script>
+    const u = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${language}&q=${speakable}';
+    fetch(u).then(r => r.blob()).then(b => {
+      parent.postMessage({ type: 'tts-audio', url: URL.createObjectURL(b) }, '*');
+    }).catch(() => parent.postMessage({ type: 'tts-error' }, '*'));
+  </script></body></html>`;
+  return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
 }
 
 function stopActiveAudio(): void {
