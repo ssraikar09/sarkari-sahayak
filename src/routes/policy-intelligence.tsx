@@ -285,51 +285,63 @@ function EmptyState() {
 
 function Content({ snap }: { snap: PolicyIntelligenceSnapshot }) {
   return (
-    <div className="space-y-12">
+    <div className="space-y-20">
       {/* TOP — Executive KPIs */}
-      <SectionHeader
-        eyebrow="Executive Summary"
-        title="National welfare gap at a glance"
-        description="Top-line indicators across all analyzed households."
-      />
-      <Overview snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Executive Summary"
+          title="National welfare gap at a glance"
+          description="Top-line indicators across all analyzed households."
+        />
+        <Overview snap={snap} />
+      </section>
 
       {/* MIDDLE — Visual analytics */}
-      <SectionHeader
-        eyebrow="Visual Analytics"
-        title="Welfare exclusion & risk distribution"
-        description="Where citizens are missing benefits, and which groups are most affected."
-      />
-      <ExclusionAndRisk snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Visual Analytics"
+          title="Welfare exclusion & risk distribution"
+          description="Where citizens are missing benefits, and which groups are most affected."
+        />
+        <ExclusionAndRisk snap={snap} />
+      </section>
 
-      <SectionHeader
-        eyebrow="Regional Intelligence"
-        title="State-wise demand & risk concentration"
-        description="Where welfare demand is rising and where risk is concentrated."
-      />
-      <Regional snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Regional Intelligence"
+          title="State-wise demand & risk concentration"
+          description="Where welfare demand is rising and where risk is concentrated."
+        />
+        <Regional snap={snap} />
+      </section>
 
-      <SectionHeader
-        eyebrow="Recommendations"
-        title="Explainable policy recommendations"
-        description="Each recommendation is grounded in measurable evidence from real interactions."
-      />
-      <Recommendations snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Recommendations"
+          title="Explainable policy recommendations"
+          description="Each recommendation is grounded in measurable evidence from real interactions."
+        />
+        <Recommendations snap={snap} />
+      </section>
 
-      <SectionHeader
-        eyebrow="Trend Analysis"
-        title="Citizen demand & engagement signals"
-        description="Most common goals, recommended categories, and explored guides."
-      />
-      <Trends snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Trend Analysis"
+          title="Citizen demand & engagement signals"
+          description="Most common goals, recommended categories, and explored guides."
+        />
+        <Trends snap={snap} />
+      </section>
 
       {/* BOTTOM — Evidence tables & exports */}
-      <SectionHeader
-        eyebrow="Evidence"
-        title="Detailed evidence tables"
-        description="Granular data backing every insight above. Use the exports for offline review."
-      />
-      <EvidenceTables snap={snap} />
+      <section className="space-y-8">
+        <SectionHeader
+          eyebrow="Evidence"
+          title="Detailed evidence tables"
+          description="Granular data backing every insight above. Use the exports for offline review."
+        />
+        <EvidenceTables snap={snap} />
+      </section>
     </div>
   );
 }
@@ -344,14 +356,15 @@ function SectionHeader({
   description: string;
 }) {
   return (
-    <div className="border-l-2 border-primary/60 pl-4">
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-primary">
+    <div className="flex flex-col gap-3">
+      <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+        <span className="size-1.5 rounded-full bg-primary" />
         {eyebrow}
       </div>
-      <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+      <h2 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
         {title}
       </h2>
-      <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground">
+      <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
         {description}
       </p>
     </div>
