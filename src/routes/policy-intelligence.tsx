@@ -519,8 +519,8 @@ function Kpi({
       <div className="relative mt-2 flex items-baseline gap-1.5">
         <span
           className={cn(
-            "font-bold tracking-tight tabular-nums",
-            featured ? "text-5xl sm:text-6xl" : "text-3xl sm:text-4xl",
+            "font-bold leading-none tracking-tight tabular-nums",
+            featured ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl",
           )}
         >
           {value}
@@ -780,7 +780,7 @@ function RiskDonut({ snap }: { snap: PolicyIntelligenceSnapshot }) {
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-4xl font-bold tabular-nums">{highPct}%</div>
+              <div className="text-3xl font-bold leading-none tabular-nums md:text-4xl">{highPct}%</div>
               <div className="mt-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                 High risk
               </div>

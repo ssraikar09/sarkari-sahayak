@@ -882,7 +882,7 @@ function Kpi({ icon: Icon, label, value, sub, tone = "default" }: KpiProps) {
           <Icon className="size-4" />
         </div>
       </div>
-      <div className="mt-4 text-2xl font-bold tabular-nums">{value}</div>
+      <div className="mt-4 text-2xl font-semibold leading-none tabular-nums">{value}</div>
       <div className="mt-1 text-xs font-medium text-foreground/80">{label}</div>
       {sub && (
         <div className="mt-0.5 text-[11px] text-muted-foreground">{sub}</div>

@@ -443,7 +443,7 @@ function ComparisonCard({
           <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             Current
           </div>
-          <div className="mt-1 text-2xl font-bold tabular-nums sm:text-3xl">
+          <div className="mt-1 text-2xl font-semibold leading-none tabular-nums">
             {fmt(current)}
           </div>
         </div>
@@ -451,7 +451,7 @@ function ComparisonCard({
           <div className="text-[10px] font-bold uppercase tracking-wider text-primary">
             Predicted
           </div>
-          <div className="mt-1 text-3xl font-bold tabular-nums text-primary sm:text-4xl">
+          <div className="mt-1 text-3xl font-bold leading-none tabular-nums text-primary md:text-4xl">
             {fmt(predicted)}
           </div>
         </div>
@@ -1041,7 +1041,7 @@ function ResearchKpi({
       <div className="mt-4 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
         {label}
       </div>
-      <div className="mt-1 text-3xl font-bold tabular-nums sm:text-4xl">{value}</div>
+      <div className="mt-1 text-3xl font-bold leading-none tabular-nums md:text-4xl">{value}</div>
       <p className="mt-2 text-xs text-muted-foreground">{hint}</p>
     </div>
   );
