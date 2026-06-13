@@ -2,6 +2,10 @@ import type { NationalSnapshot } from "@/lib/command-center/types";
 
 export type WarningSeverity = "critical" | "high" | "moderate" | "low";
 
+export type WarningConfidence = "high" | "medium" | "low";
+
+export type WarningLifecycle = "emerging" | "escalating" | "critical" | "mitigated";
+
 export type WarningCategory =
   | "documentation-delay"
   | "low-engagement"
@@ -10,14 +14,19 @@ export type WarningCategory =
   | "benefit-expiration"
   | "women-underutilization"
   | "student-inactivity"
-  | "senior-non-enrollment";
+  | "senior-non-enrollment"
+  | "farmer-adoption-decline"
+  | "high-risk-concentration"
+  | "navigator-engagement-risk";
 
 export type PreventiveAction =
   | "documentation-camp"
   | "awareness-drive"
   | "scheme-promotion"
   | "csc-outreach"
-  | "navigator-engagement";
+  | "navigator-engagement"
+  | "beneficiary-verification"
+  | "district-review";
 
 export type EarlyWarningAlert = {
   id: string;
@@ -27,11 +36,14 @@ export type EarlyWarningAlert = {
   region: string;
   severity: WarningSeverity;
   signalScore: number; // 0..100 deterministic
+  confidence: WarningConfidence;
+  lifecycle: WarningLifecycle;
   householdsAffected: number;
   potentialBenefitLossINR: number;
   recommendedActions: PreventiveAction[];
   recommendedActionLabels: string[];
   triggeringConditions: string[];
+  deterministicRules: string[];
   contributingModules: string[];
   referencedDatasets: string[];
   rationale: string;
@@ -48,6 +60,7 @@ export type WarningTrends = {
   categoryDistribution: WarningTrendBucket[];
   regionConcentration: WarningTrendBucket[];
   severityComposition: WarningTrendBucket[];
+  lifecycleDistribution: WarningTrendBucket[];
 };
 
 export type EarlyWarningSnapshot = {
@@ -55,8 +68,9 @@ export type EarlyWarningSnapshot = {
   hasSufficientData: boolean;
   summary: {
     activeAlerts: number;
+    criticalAlerts: number;
     highPriorityAlerts: number;
-    householdsAtEmergingRisk: number;
+    householdsUnderObservation: number;
     benefitsAtRiskINR: number;
   };
   alerts: EarlyWarningAlert[];
