@@ -191,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/research-observatory': typeof ResearchObservatoryRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/welfare-observatory': typeof WelfareObservatoryRoute
+  '/welfare-observatory': typeof WelfareObservatoryRoute
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
   '/schemes/$id': typeof SchemesIdRoute
@@ -218,6 +219,7 @@ export interface FileRoutesByTo {
   '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/research-observatory': typeof ResearchObservatoryRoute
   '/schemes': typeof SchemesRouteWithChildren
+  '/welfare-observatory': typeof WelfareObservatoryRoute
   '/welfare-observatory': typeof WelfareObservatoryRoute
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -247,6 +249,7 @@ export interface FileRoutesById {
   '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/research-observatory': typeof ResearchObservatoryRoute
   '/schemes': typeof SchemesRouteWithChildren
+  '/welfare-observatory': typeof WelfareObservatoryRoute
   '/welfare-observatory': typeof WelfareObservatoryRoute
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
@@ -278,6 +281,7 @@ export interface FileRouteTypes {
     | '/research-observatory'
     | '/schemes'
     | '/welfare-observatory'
+    | '/welfare-observatory'
     | '/welfare-roadmap'
     | '/profile/$id'
     | '/schemes/$id'
@@ -306,6 +310,7 @@ export interface FileRouteTypes {
     | '/research-observatory'
     | '/schemes'
     | '/welfare-observatory'
+    | '/welfare-observatory'
     | '/welfare-roadmap'
     | '/profile/$id'
     | '/schemes/$id'
@@ -333,6 +338,7 @@ export interface FileRouteTypes {
     | '/policy-intelligence'
     | '/research-observatory'
     | '/schemes'
+    | '/welfare-observatory'
     | '/welfare-observatory'
     | '/welfare-roadmap'
     | '/profile/$id'
@@ -363,12 +369,20 @@ export interface RootRouteChildren {
   ResearchObservatoryRoute: typeof ResearchObservatoryRoute
   SchemesRoute: typeof SchemesRouteWithChildren
   WelfareObservatoryRoute: typeof WelfareObservatoryRoute
+  WelfareObservatoryRoute: typeof WelfareObservatoryRoute
   WelfareRoadmapRoute: typeof WelfareRoadmapRoute
   ProfileIdRoute: typeof ProfileIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welfare-observatory': {
+      id: '/welfare-observatory'
+      path: '/welfare-observatory'
+      fullPath: '/welfare-observatory'
+      preLoaderRoute: typeof WelfareObservatoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/welfare-roadmap': {
       id: '/welfare-roadmap'
       path: '/welfare-roadmap'
@@ -588,6 +602,7 @@ const rootRouteChildren: RootRouteChildren = {
   PolicyIntelligenceRoute: PolicyIntelligenceRoute,
   ResearchObservatoryRoute: ResearchObservatoryRoute,
   SchemesRoute: SchemesRouteWithChildren,
+  WelfareObservatoryRoute: WelfareObservatoryRoute,
   WelfareObservatoryRoute: WelfareObservatoryRoute,
   WelfareRoadmapRoute: WelfareRoadmapRoute,
   ProfileIdRoute: ProfileIdRoute,
