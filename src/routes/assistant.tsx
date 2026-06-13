@@ -90,6 +90,45 @@ function AssistantPage() {
     });
   }, [messages, loading]);
 
+  // Auto-narrate the latest assistant reply once it has fully rendered.
+  const narratedRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!lastAssistantId || loading) return;
+    if (narratedRef.current.has(lastAssistantId)) return;
+    const reply = messages.find((m) => m.id === lastAssistantId);
+    if (!reply || reply.role !== "assistant") return;
+    const clean = stripMarkdownForSpeech(reply.content);
+    if (!clean) return;
+    narratedRef.current.add(lastAssistantId);
+
+    const effectiveLang = advancedMultilingual ? language : "en-IN";
+    const meta = getVoiceLanguage(effectiveLang);
+    if (!isSpeechSynthesisSupported()) {
+      console.warn("[voice] Speech synthesis not supported on this device.");
+      return;
+    }
+    // Wait for the bubble to paint before speaking to avoid race conditions.
+    const t = window.setTimeout(() => {
+      console.log("[voice] Voice narration started");
+      console.log(`[voice] Selected language: ${meta.label} (${effectiveLang})`);
+      speak(clean, {
+        lang: effectiveLang,
+        onEnd: () => console.log("[voice] Voice narration completed"),
+        onFallback: () => {
+          console.warn("[voice] Falling back to English narration");
+          toast.message(
+            "Voice unavailable in the selected language. Playing English narration.",
+          );
+        },
+        onError: (msg) => {
+          console.error("[voice] Voice narration failed:", msg);
+          toast.error("Unable to play voice narration. Please try again.");
+        },
+      });
+    }, 250);
+    return () => window.clearTimeout(t);
+  }, [lastAssistantId, loading, messages, advancedMultilingual, language]);
+
   const submit = async (raw: string) => {
     const original = raw.trim();
     if (!original || loading) return;
