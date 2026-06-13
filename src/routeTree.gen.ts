@@ -22,6 +22,7 @@ import { Route as InterventionPlannerRouteImport } from './routes/intervention-p
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as FamilyPlannerRouteImport } from './routes/family-planner'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
+import { Route as EarlyWarningRouteImport } from './routes/early-warning'
 import { Route as DigitalTwinRouteImport } from './routes/digital-twin'
 import { Route as DecisionEngineRouteImport } from './routes/decision-engine'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -98,6 +99,11 @@ const EligibilityRoute = EligibilityRouteImport.update({
   path: '/eligibility',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EarlyWarningRoute = EarlyWarningRouteImport.update({
+  id: '/early-warning',
+  path: '/early-warning',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DigitalTwinRoute = DigitalTwinRouteImport.update({
   id: '/digital-twin',
   path: '/digital-twin',
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/decision-engine': typeof DecisionEngineRoute
   '/digital-twin': typeof DigitalTwinRoute
+  '/early-warning': typeof EarlyWarningRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/insights': typeof InsightsRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/decision-engine': typeof DecisionEngineRoute
   '/digital-twin': typeof DigitalTwinRoute
+  '/early-warning': typeof EarlyWarningRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/insights': typeof InsightsRoute
@@ -209,6 +217,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/decision-engine': typeof DecisionEngineRoute
   '/digital-twin': typeof DigitalTwinRoute
+  '/early-warning': typeof EarlyWarningRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/insights': typeof InsightsRoute
@@ -236,6 +245,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/decision-engine'
     | '/digital-twin'
+    | '/early-warning'
     | '/eligibility'
     | '/family-planner'
     | '/insights'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/decision-engine'
     | '/digital-twin'
+    | '/early-warning'
     | '/eligibility'
     | '/family-planner'
     | '/insights'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/decision-engine'
     | '/digital-twin'
+    | '/early-warning'
     | '/eligibility'
     | '/family-planner'
     | '/insights'
@@ -312,6 +324,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DecisionEngineRoute: typeof DecisionEngineRoute
   DigitalTwinRoute: typeof DigitalTwinRoute
+  EarlyWarningRoute: typeof EarlyWarningRoute
   EligibilityRoute: typeof EligibilityRoute
   FamilyPlannerRoute: typeof FamilyPlannerRoute
   InsightsRoute: typeof InsightsRoute
@@ -421,6 +434,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EligibilityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/early-warning': {
+      id: '/early-warning'
+      path: '/early-warning'
+      fullPath: '/early-warning'
+      preLoaderRoute: typeof EarlyWarningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/digital-twin': {
       id: '/digital-twin'
       path: '/digital-twin'
@@ -514,6 +534,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   DecisionEngineRoute: DecisionEngineRoute,
   DigitalTwinRoute: DigitalTwinRoute,
+  EarlyWarningRoute: EarlyWarningRoute,
   EligibilityRoute: EligibilityRoute,
   FamilyPlannerRoute: FamilyPlannerRoute,
   InsightsRoute: InsightsRoute,
