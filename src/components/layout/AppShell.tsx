@@ -23,6 +23,7 @@ import {
   Siren,
   Microscope,
   Workflow,
+  WifiOff,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -51,6 +52,7 @@ const more: NavItem[] = [
   { to: "/command-center", label: "Command Center", icon: Siren },
   { to: "/intervention-planner", label: "Intervention Planner", icon: Workflow },
   { to: "/research-observatory", label: "Research Observatory", icon: Microscope },
+  { to: "/offline-assistance", label: "Offline Assistance", icon: WifiOff },
   { to: "/agent-dashboard", label: "CSC Dashboard", icon: Briefcase },
 ];
 
