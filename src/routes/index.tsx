@@ -16,6 +16,10 @@ import {
   CheckCircle2,
   FileText,
   ArrowRight,
+  Database,
+  Cpu,
+  Globe2,
+  Lock,
   type LucideIcon,
 } from "lucide-react";
 
@@ -89,7 +93,7 @@ function Welcome() {
         <div className="absolute inset-0 -z-10 [background:radial-gradient(60%_50%_at_85%_30%,oklch(0.62_0.16_150/0.10),transparent_70%)]" />
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-card/70 px-4 py-1.5 text-xs font-semibold text-primary backdrop-blur">
+            <div className="inline-flex animate-fade-in items-center gap-2 rounded-full border border-primary/30 bg-card/70 px-4 py-1.5 text-xs font-semibold text-primary shadow-sm backdrop-blur">
               <Sparkles className="size-3.5" />
               AI-Powered Government Scheme Navigator
               <ArrowRight className="size-3.5" />
@@ -97,22 +101,22 @@ function Welcome() {
             <h1
               lang="hi"
               style={{ fontFamily: '"Noto Sans Devanagari", "Tiro Devanagari Hindi", system-ui, sans-serif' }}
-              className="mt-7 bg-gradient-to-r from-primary via-amber-500 to-secondary bg-clip-text pb-2 text-5xl font-extrabold leading-[1.2] tracking-tight text-transparent sm:text-7xl"
+              className="mt-7 animate-fade-in bg-gradient-to-r from-primary via-amber-500 to-secondary bg-clip-text pb-2 text-5xl font-extrabold leading-[1.15] tracking-tight text-transparent drop-shadow-sm sm:text-7xl lg:text-8xl"
             >
               सरकारी सहायक
             </h1>
-            <p className="mt-5 text-balance text-xl font-semibold text-foreground sm:text-2xl">
+            <p className="mt-6 animate-fade-in text-balance text-xl font-semibold text-foreground sm:text-2xl">
               Transforming Welfare Access into Welfare Intelligence
             </p>
-            <p className="mt-3 text-balance text-base text-muted-foreground sm:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl animate-fade-in text-balance text-base text-muted-foreground sm:text-lg">
               One platform to discover, check eligibility, and apply for{" "}
               <span className="font-bold text-primary">{displayCount} government schemes</span>
               {" "}— in your own language.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-10 flex animate-fade-in flex-wrap items-center justify-center gap-3">
               <Link
                 to="/eligibility"
-                className="group inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-primary to-amber-500 px-7 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:shadow-xl hover:shadow-primary/30"
+                className="group inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-primary to-amber-500 px-8 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all duration-200 hover:scale-[1.03] hover:shadow-xl hover:shadow-primary/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <CheckCircle2 className="mr-2 size-4" />
                 Check Your Eligibility
@@ -120,7 +124,7 @@ function Welcome() {
               </Link>
               <Link
                 to="/assistant"
-                className="inline-flex h-12 items-center justify-center rounded-full border-2 border-secondary/50 bg-background px-7 text-sm font-semibold text-foreground hover:border-secondary hover:bg-secondary/5"
+                className="inline-flex h-12 items-center justify-center rounded-full border-2 border-secondary/50 bg-background px-8 text-sm font-semibold text-foreground transition-all duration-200 hover:scale-[1.03] hover:border-secondary hover:bg-secondary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
               >
                 <MessageCircle className="mr-2 size-4 text-secondary" />
                 Ask AI Assistant
@@ -128,7 +132,15 @@ function Welcome() {
             </div>
           </div>
 
-          <div className="mx-auto mt-12 grid max-w-4xl gap-3 sm:grid-cols-3">
+          {/* Stats strip */}
+          <div className="mx-auto mt-14 grid max-w-5xl animate-fade-in grid-cols-2 gap-3 sm:grid-cols-4">
+            <StatCard icon={Database} value={displayCount} label="Government Schemes" />
+            <StatCard icon={Languages} value="6" label="Languages Supported" />
+            <StatCard icon={Cpu} value="25" label="Intelligent Modules" />
+            <StatCard icon={Sparkles} value="AI" label="Welfare Intelligence" />
+          </div>
+
+          <div className="mx-auto mt-10 grid max-w-4xl animate-fade-in gap-3 sm:grid-cols-3">
             <Feature icon={ShieldCheck} title="Personalized" desc="Matched to your profile, family and income." />
             <Feature icon={Sparkles} title="AI-powered" desc="Smart eligibility across hundreds of programs." />
             <Feature icon={Languages} title="Your language" desc="English, Hindi, Kannada, Marathi, Tamil." />
@@ -163,7 +175,28 @@ function Welcome() {
           items={sectionD}
         />
 
-        <div className="rounded-2xl border bg-card p-6 text-center shadow-sm sm:p-8">
+        {/* Trust Indicators */}
+        <section>
+          <div className="mb-5 flex flex-col gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-secondary">
+              Trust
+            </span>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              Built on Trustworthy Foundations
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Every recommendation traces back to a verified source.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <TrustBadge icon={ShieldCheck} title="Verified Government Sources" desc="Grounded in official scheme records." />
+            <TrustBadge icon={Globe2} title="Multilingual Support" desc="Six Indian languages, end-to-end." />
+            <TrustBadge icon={Sparkles} title="AI-Assisted Guidance" desc="Explainable, citation-backed answers." />
+            <TrustBadge icon={Lock} title="Privacy-Aware Design" desc="Profiles stay scoped to your session." />
+          </div>
+        </section>
+
+        <div className="rounded-2xl border bg-card p-6 text-center shadow-sm transition-shadow hover:shadow-md sm:p-8">
           <FileText className="mx-auto size-6 text-primary" />
           <h3 className="mt-3 text-lg font-semibold">Need to apply for a scheme?</h3>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -172,7 +205,7 @@ function Welcome() {
           <Link
             to="/application-guide"
             search={{ schemeId: undefined }}
-            className="mt-4 inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-5 text-sm font-medium hover:bg-accent"
+            className="mt-4 inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-5 text-sm font-medium transition-all hover:scale-[1.02] hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Open Application Guide
             <ArrowRight className="ml-1.5 size-4" />
@@ -217,14 +250,18 @@ function ActionCard({ item }: { item: CardItem }) {
   return (
     <Link
       to={item.to}
-      className="group relative flex flex-col rounded-2xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="group relative flex h-full min-h-[180px] flex-col rounded-2xl border bg-card p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
-      <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-        <Icon className="size-5" />
+      <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+        <Icon className="size-6" />
       </div>
-      <h3 className="mt-4 font-semibold text-foreground">{item.title}</h3>
-      <p className="mt-1 text-sm text-muted-foreground">{item.desc}</p>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+      <h3 className="mt-4 text-base font-semibold tracking-tight text-foreground">
+        {item.title}
+      </h3>
+      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+        {item.desc}
+      </p>
+      <span className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
         Open
         <ArrowRight className="size-3.5" />
       </span>
@@ -234,12 +271,60 @@ function ActionCard({ item }: { item: CardItem }) {
 
 function Feature({ icon: Icon, title, desc }: { icon: LucideIcon; title: string; desc: string }) {
   return (
-    <div className="rounded-xl border bg-card p-4 text-left shadow-sm">
+    <div className="rounded-xl border bg-card p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
         <Icon className="size-4" />
       </div>
       <h3 className="mt-3 text-sm font-semibold text-foreground">{title}</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">{desc}</p>
+    </div>
+  );
+}
+
+function StatCard({
+  icon: Icon,
+  value,
+  label,
+}: {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+}) {
+  return (
+    <div className="group rounded-2xl border bg-card/80 p-4 text-center shadow-sm backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
+      <div className="mx-auto flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+        <Icon className="size-4" aria-hidden />
+      </div>
+      <div className="mt-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+        {value}
+      </div>
+      <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function TrustBadge({
+  icon: Icon,
+  title,
+  desc,
+}: {
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-xl border bg-card p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-secondary/40 hover:shadow-md">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
+        <Icon className="size-4" aria-hidden />
+      </div>
+      <div className="min-w-0">
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+          {desc}
+        </p>
+      </div>
     </div>
   );
 }
