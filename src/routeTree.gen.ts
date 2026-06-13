@@ -20,6 +20,7 @@ import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as KnowledgeGraphRouteImport } from './routes/knowledge-graph'
 import { Route as InterventionPlannerRouteImport } from './routes/intervention-planner'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as ImpactMonitoringRouteImport } from './routes/impact-monitoring'
 import { Route as FamilyPlannerRouteImport } from './routes/family-planner'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
 import { Route as EarlyWarningRouteImport } from './routes/early-warning'
@@ -87,6 +88,11 @@ const InterventionPlannerRoute = InterventionPlannerRouteImport.update({
 const InsightsRoute = InsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpactMonitoringRoute = ImpactMonitoringRouteImport.update({
+  id: '/impact-monitoring',
+  path: '/impact-monitoring',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FamilyPlannerRoute = FamilyPlannerRouteImport.update({
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/early-warning': typeof EarlyWarningRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
+  '/impact-monitoring': typeof ImpactMonitoringRoute
   '/insights': typeof InsightsRoute
   '/intervention-planner': typeof InterventionPlannerRoute
   '/knowledge-graph': typeof KnowledgeGraphRoute
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/early-warning': typeof EarlyWarningRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
+  '/impact-monitoring': typeof ImpactMonitoringRoute
   '/insights': typeof InsightsRoute
   '/intervention-planner': typeof InterventionPlannerRoute
   '/knowledge-graph': typeof KnowledgeGraphRoute
@@ -220,6 +228,7 @@ export interface FileRoutesById {
   '/early-warning': typeof EarlyWarningRoute
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
+  '/impact-monitoring': typeof ImpactMonitoringRoute
   '/insights': typeof InsightsRoute
   '/intervention-planner': typeof InterventionPlannerRoute
   '/knowledge-graph': typeof KnowledgeGraphRoute
@@ -248,6 +257,7 @@ export interface FileRouteTypes {
     | '/early-warning'
     | '/eligibility'
     | '/family-planner'
+    | '/impact-monitoring'
     | '/insights'
     | '/intervention-planner'
     | '/knowledge-graph'
@@ -274,6 +284,7 @@ export interface FileRouteTypes {
     | '/early-warning'
     | '/eligibility'
     | '/family-planner'
+    | '/impact-monitoring'
     | '/insights'
     | '/intervention-planner'
     | '/knowledge-graph'
@@ -300,6 +311,7 @@ export interface FileRouteTypes {
     | '/early-warning'
     | '/eligibility'
     | '/family-planner'
+    | '/impact-monitoring'
     | '/insights'
     | '/intervention-planner'
     | '/knowledge-graph'
@@ -327,6 +339,7 @@ export interface RootRouteChildren {
   EarlyWarningRoute: typeof EarlyWarningRoute
   EligibilityRoute: typeof EligibilityRoute
   FamilyPlannerRoute: typeof FamilyPlannerRoute
+  ImpactMonitoringRoute: typeof ImpactMonitoringRoute
   InsightsRoute: typeof InsightsRoute
   InterventionPlannerRoute: typeof InterventionPlannerRoute
   KnowledgeGraphRoute: typeof KnowledgeGraphRoute
@@ -418,6 +431,13 @@ declare module '@tanstack/react-router' {
       path: '/insights'
       fullPath: '/insights'
       preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impact-monitoring': {
+      id: '/impact-monitoring'
+      path: '/impact-monitoring'
+      fullPath: '/impact-monitoring'
+      preLoaderRoute: typeof ImpactMonitoringRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/family-planner': {
@@ -537,6 +557,7 @@ const rootRouteChildren: RootRouteChildren = {
   EarlyWarningRoute: EarlyWarningRoute,
   EligibilityRoute: EligibilityRoute,
   FamilyPlannerRoute: FamilyPlannerRoute,
+  ImpactMonitoringRoute: ImpactMonitoringRoute,
   InsightsRoute: InsightsRoute,
   InterventionPlannerRoute: InterventionPlannerRoute,
   KnowledgeGraphRoute: KnowledgeGraphRoute,
