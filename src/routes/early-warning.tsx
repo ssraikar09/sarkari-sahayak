@@ -18,7 +18,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { AppShell } from "@/components/layout/AppShell";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -111,7 +111,9 @@ function EarlyWarningPage() {
   };
 
   return (
-    <AppShell>
+  return (
+    <>
+
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
           <div>
