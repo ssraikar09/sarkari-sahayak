@@ -250,14 +250,18 @@ function ActionCard({ item }: { item: CardItem }) {
   return (
     <Link
       to={item.to}
-      className="group relative flex flex-col rounded-2xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="group relative flex h-full min-h-[180px] flex-col rounded-2xl border bg-card p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
-      <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-        <Icon className="size-5" />
+      <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+        <Icon className="size-6" />
       </div>
-      <h3 className="mt-4 font-semibold text-foreground">{item.title}</h3>
-      <p className="mt-1 text-sm text-muted-foreground">{item.desc}</p>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+      <h3 className="mt-4 text-base font-semibold tracking-tight text-foreground">
+        {item.title}
+      </h3>
+      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+        {item.desc}
+      </p>
+      <span className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
         Open
         <ArrowRight className="size-3.5" />
       </span>
@@ -267,12 +271,60 @@ function ActionCard({ item }: { item: CardItem }) {
 
 function Feature({ icon: Icon, title, desc }: { icon: LucideIcon; title: string; desc: string }) {
   return (
-    <div className="rounded-xl border bg-card p-4 text-left shadow-sm">
+    <div className="rounded-xl border bg-card p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
         <Icon className="size-4" />
       </div>
       <h3 className="mt-3 text-sm font-semibold text-foreground">{title}</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">{desc}</p>
+    </div>
+  );
+}
+
+function StatCard({
+  icon: Icon,
+  value,
+  label,
+}: {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+}) {
+  return (
+    <div className="group rounded-2xl border bg-card/80 p-4 text-center shadow-sm backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
+      <div className="mx-auto flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+        <Icon className="size-4" aria-hidden />
+      </div>
+      <div className="mt-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+        {value}
+      </div>
+      <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function TrustBadge({
+  icon: Icon,
+  title,
+  desc,
+}: {
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-xl border bg-card p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-secondary/40 hover:shadow-md">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
+        <Icon className="size-4" aria-hidden />
+      </div>
+      <div className="min-w-0">
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+          {desc}
+        </p>
+      </div>
     </div>
   );
 }
