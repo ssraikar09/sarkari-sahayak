@@ -41,6 +41,22 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { formatINR } from "@/lib/welfare-gap/benefitEstimator";
+
+// Compact INR formatting for on-screen policy figures.
+// Exports retain the exact rupee values via formatINR.
+function formatINRCompact(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return "₹0";
+  if (value >= 1_00_00_000) {
+    return `₹${(value / 1_00_00_000).toFixed(1)} crore`;
+  }
+  if (value >= 1_00_000) {
+    return `₹${(value / 1_00_000).toFixed(1)} lakh`;
+  }
+  if (value >= 1_000) {
+    return `₹${(value / 1_000).toFixed(1)}k`;
+  }
+  return `₹${Math.round(value)}`;
+}
 import { getInterventionPlannerFn } from "@/lib/intervention-planner/planner.functions";
 import {
   exportPlannerReport,
