@@ -21,7 +21,7 @@ import {
   Layers,
   TrendingUp,
   Info,
-} from "lucide-react";
+  Network,
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
