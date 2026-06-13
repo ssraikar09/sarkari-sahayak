@@ -93,7 +93,7 @@ function Welcome() {
         <div className="absolute inset-0 -z-10 [background:radial-gradient(60%_50%_at_85%_30%,oklch(0.62_0.16_150/0.10),transparent_70%)]" />
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-card/70 px-4 py-1.5 text-xs font-semibold text-primary backdrop-blur">
+            <div className="inline-flex animate-fade-in items-center gap-2 rounded-full border border-primary/30 bg-card/70 px-4 py-1.5 text-xs font-semibold text-primary shadow-sm backdrop-blur">
               <Sparkles className="size-3.5" />
               AI-Powered Government Scheme Navigator
               <ArrowRight className="size-3.5" />
@@ -101,22 +101,22 @@ function Welcome() {
             <h1
               lang="hi"
               style={{ fontFamily: '"Noto Sans Devanagari", "Tiro Devanagari Hindi", system-ui, sans-serif' }}
-              className="mt-7 bg-gradient-to-r from-primary via-amber-500 to-secondary bg-clip-text pb-2 text-5xl font-extrabold leading-[1.2] tracking-tight text-transparent sm:text-7xl"
+              className="mt-7 animate-fade-in bg-gradient-to-r from-primary via-amber-500 to-secondary bg-clip-text pb-2 text-5xl font-extrabold leading-[1.15] tracking-tight text-transparent drop-shadow-sm sm:text-7xl lg:text-8xl"
             >
               सरकारी सहायक
             </h1>
-            <p className="mt-5 text-balance text-xl font-semibold text-foreground sm:text-2xl">
+            <p className="mt-6 animate-fade-in text-balance text-xl font-semibold text-foreground sm:text-2xl">
               Transforming Welfare Access into Welfare Intelligence
             </p>
-            <p className="mt-3 text-balance text-base text-muted-foreground sm:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl animate-fade-in text-balance text-base text-muted-foreground sm:text-lg">
               One platform to discover, check eligibility, and apply for{" "}
               <span className="font-bold text-primary">{displayCount} government schemes</span>
               {" "}— in your own language.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-10 flex animate-fade-in flex-wrap items-center justify-center gap-3">
               <Link
                 to="/eligibility"
-                className="group inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-primary to-amber-500 px-7 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:shadow-xl hover:shadow-primary/30"
+                className="group inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-primary to-amber-500 px-8 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all duration-200 hover:scale-[1.03] hover:shadow-xl hover:shadow-primary/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <CheckCircle2 className="mr-2 size-4" />
                 Check Your Eligibility
@@ -124,7 +124,7 @@ function Welcome() {
               </Link>
               <Link
                 to="/assistant"
-                className="inline-flex h-12 items-center justify-center rounded-full border-2 border-secondary/50 bg-background px-7 text-sm font-semibold text-foreground hover:border-secondary hover:bg-secondary/5"
+                className="inline-flex h-12 items-center justify-center rounded-full border-2 border-secondary/50 bg-background px-8 text-sm font-semibold text-foreground transition-all duration-200 hover:scale-[1.03] hover:border-secondary hover:bg-secondary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
               >
                 <MessageCircle className="mr-2 size-4 text-secondary" />
                 Ask AI Assistant
@@ -132,7 +132,15 @@ function Welcome() {
             </div>
           </div>
 
-          <div className="mx-auto mt-12 grid max-w-4xl gap-3 sm:grid-cols-3">
+          {/* Stats strip */}
+          <div className="mx-auto mt-14 grid max-w-5xl animate-fade-in grid-cols-2 gap-3 sm:grid-cols-4">
+            <StatCard icon={Database} value={displayCount} label="Government Schemes" />
+            <StatCard icon={Languages} value="6" label="Languages Supported" />
+            <StatCard icon={Cpu} value="25" label="Intelligent Modules" />
+            <StatCard icon={Sparkles} value="AI" label="Welfare Intelligence" />
+          </div>
+
+          <div className="mx-auto mt-10 grid max-w-4xl animate-fade-in gap-3 sm:grid-cols-3">
             <Feature icon={ShieldCheck} title="Personalized" desc="Matched to your profile, family and income." />
             <Feature icon={Sparkles} title="AI-powered" desc="Smart eligibility across hundreds of programs." />
             <Feature icon={Languages} title="Your language" desc="English, Hindi, Kannada, Marathi, Tamil." />
