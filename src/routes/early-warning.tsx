@@ -295,7 +295,7 @@ function EarlyWarningPage() {
           platform datasets. Refreshes do not alter alerts unless underlying data changes.
         </p>
       </div>
-    </AppShell>
+    </>
   );
 }
 
