@@ -698,7 +698,7 @@ function InterventionCard({
             -{forecast.missedOpportunityReductionPct}% missed ops
           </Badge>
           <Badge variant="outline">
-            {formatINR(forecast.annualBenefitIncreaseINR)} / yr
+            {formatINRCompact(forecast.annualBenefitIncreaseINR)} / yr
           </Badge>
         </div>
       ) : null}
