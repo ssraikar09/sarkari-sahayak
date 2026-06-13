@@ -130,8 +130,29 @@ function AssistantPage() {
   }, [lastAssistantId, loading, messages, advancedMultilingual, language]);
 
   const submit = async (raw: string) => {
-    const original = raw.trim();
+    // Input validation: trim, reject empty, cap at 500 chars, collapse whitespace.
+    const original = raw.replace(/\s+/g, " ").trim().slice(0, 500);
     if (!original || loading) return;
+
+    // Lightweight client-side rate limit: 20 requests / 5 minutes per session.
+    const now = Date.now();
+    const WINDOW_MS = 5 * 60 * 1000;
+    const LIMIT = 20;
+    try {
+      const raw = sessionStorage.getItem("assistant_rl") ?? "[]";
+      const hits: number[] = JSON.parse(raw).filter(
+        (t: number) => now - t < WINDOW_MS,
+      );
+      if (hits.length >= LIMIT) {
+        toast.error("Please wait a moment before sending another request.");
+        return;
+      }
+      hits.push(now);
+      sessionStorage.setItem("assistant_rl", JSON.stringify(hits));
+    } catch {
+      /* ignore storage errors */
+    }
+
     // Stop any in-progress narration immediately when a new query starts.
     cancelSpeech();
     // Normalize regional scheme references so the RAG pipeline can match them.
@@ -261,7 +282,8 @@ function AssistantPage() {
           <Textarea
             ref={textareaRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            maxLength={500}
+            onChange={(e) => setInput(e.target.value.slice(0, 500))}
             onKeyDown={onKeyDown}
             rows={1}
             placeholder="Ask a question or tap the mic to speak…"
