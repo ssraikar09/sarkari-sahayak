@@ -234,15 +234,7 @@ function AssistantPage() {
             <EmptyState onPick={(p) => void submit(p)} />
           ) : (
             messages.map((m) => (
-              <MessageBubble
-                key={m.id}
-                message={m}
-                autoPlay={
-                  m.role === "assistant" &&
-                  m.id === lastAssistantId &&
-                  !loading
-                }
-              />
+              <MessageBubble key={m.id} message={m} />
             ))
           )}
           {loading ? <TypingIndicator /> : null}
