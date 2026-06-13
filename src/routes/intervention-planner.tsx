@@ -251,7 +251,7 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
         <StatCard
           icon={Target}
           label="Annual benefits unlocked"
-          value={formatINR(aggregate.annualBenefitIncreaseINR)}
+          value={formatINRCompact(aggregate.annualBenefitIncreaseINR)}
           hint={`Welfare readiness +${aggregate.welfareReadinessLift}`}
         />
       </section>
