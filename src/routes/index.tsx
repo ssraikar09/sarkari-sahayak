@@ -175,7 +175,28 @@ function Welcome() {
           items={sectionD}
         />
 
-        <div className="rounded-2xl border bg-card p-6 text-center shadow-sm sm:p-8">
+        {/* Trust Indicators */}
+        <section>
+          <div className="mb-5 flex flex-col gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-secondary">
+              Trust
+            </span>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              Built on Trustworthy Foundations
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Every recommendation traces back to a verified source.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <TrustBadge icon={ShieldCheck} title="Verified Government Sources" desc="Grounded in official scheme records." />
+            <TrustBadge icon={Globe2} title="Multilingual Support" desc="Six Indian languages, end-to-end." />
+            <TrustBadge icon={Sparkles} title="AI-Assisted Guidance" desc="Explainable, citation-backed answers." />
+            <TrustBadge icon={Lock} title="Privacy-Aware Design" desc="Profiles stay scoped to your session." />
+          </div>
+        </section>
+
+        <div className="rounded-2xl border bg-card p-6 text-center shadow-sm transition-shadow hover:shadow-md sm:p-8">
           <FileText className="mx-auto size-6 text-primary" />
           <h3 className="mt-3 text-lg font-semibold">Need to apply for a scheme?</h3>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -184,7 +205,7 @@ function Welcome() {
           <Link
             to="/application-guide"
             search={{ schemeId: undefined }}
-            className="mt-4 inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-5 text-sm font-medium hover:bg-accent"
+            className="mt-4 inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-5 text-sm font-medium transition-all hover:scale-[1.02] hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Open Application Guide
             <ArrowRight className="ml-1.5 size-4" />
