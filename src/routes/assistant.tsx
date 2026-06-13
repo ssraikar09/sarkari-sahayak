@@ -282,7 +282,8 @@ function AssistantPage() {
           <Textarea
             ref={textareaRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            maxLength={500}
+            onChange={(e) => setInput(e.target.value.slice(0, 500))}
             onKeyDown={onKeyDown}
             rows={1}
             placeholder="Ask a question or tap the mic to speak…"
