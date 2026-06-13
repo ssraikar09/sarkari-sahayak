@@ -317,18 +317,8 @@ function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
   );
 }
 
-function MessageBubble({
-  message,
-  autoPlay = false,
-}: {
-  message: AssistantMessage;
-  autoPlay?: boolean;
-}) {
+function MessageBubble({ message }: { message: AssistantMessage }) {
   const isUser = message.role === "user";
-  const fallbackNotice = () =>
-    toast.message(
-      "Voice unavailable in the selected language. Playing English narration.",
-    );
   return (
     <div
       className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}
@@ -349,12 +339,7 @@ function MessageBubble({
               <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <ListenButton
-                text={message.content}
-                autoPlay={autoPlay}
-                onFallback={autoPlay ? fallbackNotice : undefined}
-                onUnavailable={autoPlay ? fallbackNotice : undefined}
-              />
+              <ListenButton text={message.content} />
             </div>
             {message.fallback && (!message.sources || message.sources.length === 0) ? (
               <TrustFallbackActions />
