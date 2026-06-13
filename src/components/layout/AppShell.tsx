@@ -22,6 +22,7 @@ import {
   Atom,
   Siren,
   Microscope,
+  Workflow,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
