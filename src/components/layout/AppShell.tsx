@@ -49,6 +49,7 @@ const more: NavItem[] = [
   { to: "/outcome-prediction", label: "Outcome Prediction", icon: Sparkles },
   { to: "/digital-twin", label: "Digital Twin", icon: Atom },
   { to: "/command-center", label: "Command Center", icon: Siren },
+  { to: "/intervention-planner", label: "Intervention Planner", icon: Workflow },
   { to: "/research-observatory", label: "Research Observatory", icon: Microscope },
   { to: "/agent-dashboard", label: "CSC Dashboard", icon: Briefcase },
 ];
