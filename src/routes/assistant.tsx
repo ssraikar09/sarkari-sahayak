@@ -355,45 +355,56 @@ function MessageBubble({ message }: { message: AssistantMessage }) {
 }
 
 function VerifiedSources({ sources }: { sources: AssistantSource[] }) {
+  const hasAnyLink = sources.some((s) => !!s.official_link);
   return (
     <div className="mt-3 rounded-xl border bg-accent/40 p-3">
       <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
         <ShieldCheck className="size-3.5 text-primary" aria-hidden />
         Verified Sources
       </div>
-      <ul className="mt-2 space-y-1.5">
+      <ul className="mt-2 space-y-2">
         {sources.map((s) => (
-          <li key={s.id} className="flex items-start gap-2 text-xs">
-            <Badge
-              variant="secondary"
-              className="mt-0.5 gap-1 px-1.5 py-0 text-[10px]"
-            >
-              <MapPin className="size-2.5" />
-              {s.scheme_scope === "National" ? "National" : s.state}
-            </Badge>
-            <div className="min-w-0 flex-1">
+          <li key={s.id} className="flex flex-col gap-1 text-xs">
+            <div className="flex items-start gap-2">
+              <Badge
+                variant="secondary"
+                className="mt-0.5 gap-1 px-1.5 py-0 text-[10px]"
+              >
+                <MapPin className="size-2.5" />
+                {s.scheme_scope === "National" ? "National" : s.state}
+              </Badge>
               <Link
                 to="/schemes/$id"
                 params={{ id: s.id }}
-                className="font-medium text-foreground hover:text-primary"
+                className="min-w-0 flex-1 font-medium text-foreground hover:text-primary"
               >
                 {s.scheme_name}
               </Link>
-              {s.official_link ? (
-                <a
-                  href={s.official_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-2 inline-flex items-center gap-0.5 text-muted-foreground hover:text-primary"
-                >
-                  Official link
-                  <ExternalLink className="size-3" aria-hidden />
-                </a>
-              ) : null}
             </div>
+            {s.official_link ? (
+              <a
+                href={s.official_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-1 inline-flex w-fit items-center gap-1 rounded-md border border-primary/30 bg-primary/5 px-2 py-1 text-[11px] font-medium text-primary hover:bg-primary/10"
+              >
+                <ExternalLink className="size-3" aria-hidden />
+                Official Government Website
+              </a>
+            ) : (
+              <p className="ml-1 text-[11px] text-muted-foreground">
+                Official website currently unavailable for this scheme.
+              </p>
+            )}
           </li>
         ))}
       </ul>
+      {!hasAnyLink ? (
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Verified information shown above. No official portal links are
+          currently on file for these schemes.
+        </p>
+      ) : null}
     </div>
   );
 }
