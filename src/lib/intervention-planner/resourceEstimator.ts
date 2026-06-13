@@ -67,19 +67,28 @@ const PROFILES: Record<InterventionKind, ResourceProfile> = {
   },
 };
 
+// Deterministic per-household scaling rules tuned for policymaker dashboards.
+const HOUSEHOLDS_PER_OPERATOR = 50;
+const HOUSEHOLDS_PER_CAMP = 25;
+const HOUSEHOLDS_PER_SESSION = 40;
+const HOUSEHOLDS_PER_FACILITATOR = 30;
+
 export function buildResourcePlans(interventions: PlannerIntervention[]): ResourcePlan[] {
   return interventions.map((iv) => {
     const p = PROFILES[iv.kind];
-    const per1000 = iv.populationAffected / 1000;
-    const round = (n: number) => Math.max(0, Math.ceil(n));
+    const pop = iv.populationAffected;
+    const atLeastOne = (n: number) => Math.max(1, Math.ceil(n));
     return {
       interventionId: iv.id,
-      cscOperators: round(per1000 * p.operatorsPer1000),
-      documentationCamps: round(per1000 * p.campsPer1000),
-      awarenessSessions: round(per1000 * p.sessionsPer1000),
-      navigatorFacilitators: round(per1000 * p.facilitatorsPer1000),
-      householdsExpectedToBenefit: Math.round(iv.populationAffected * p.benefitRate),
+      cscOperators: atLeastOne((pop * p.operatorsPer1000) / 1000 + pop / HOUSEHOLDS_PER_OPERATOR / 4),
+      documentationCamps: atLeastOne((pop * p.campsPer1000) / 1000 + pop / HOUSEHOLDS_PER_CAMP / 8),
+      awarenessSessions: atLeastOne((pop * p.sessionsPer1000) / 1000 + pop / HOUSEHOLDS_PER_SESSION / 6),
+      navigatorFacilitators: atLeastOne(
+        (pop * p.facilitatorsPer1000) / 1000 + pop / HOUSEHOLDS_PER_FACILITATOR / 6,
+      ),
+      householdsExpectedToBenefit: Math.max(1, Math.round(pop * p.benefitRate)),
       notes: p.notes,
     };
   });
 }
+

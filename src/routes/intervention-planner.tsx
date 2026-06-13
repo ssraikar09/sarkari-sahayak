@@ -41,6 +41,22 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { formatINR } from "@/lib/welfare-gap/benefitEstimator";
+
+// Compact INR formatting for on-screen policy figures.
+// Exports retain the exact rupee values via formatINR.
+function formatINRCompact(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return "₹0";
+  if (value >= 1_00_00_000) {
+    return `₹${(value / 1_00_00_000).toFixed(1)} crore`;
+  }
+  if (value >= 1_00_000) {
+    return `₹${(value / 1_00_000).toFixed(1)} lakh`;
+  }
+  if (value >= 1_000) {
+    return `₹${(value / 1_000).toFixed(1)}k`;
+  }
+  return `₹${Math.round(value)}`;
+}
 import { getInterventionPlannerFn } from "@/lib/intervention-planner/planner.functions";
 import {
   exportPlannerReport,
@@ -235,7 +251,7 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
         <StatCard
           icon={Target}
           label="Annual benefits unlocked"
-          value={formatINR(aggregate.annualBenefitIncreaseINR)}
+          value={formatINRCompact(aggregate.annualBenefitIncreaseINR)}
           hint={`Welfare readiness +${aggregate.welfareReadinessLift}`}
         />
       </section>
@@ -342,11 +358,11 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
             <TableHeader>
               <TableRow>
                 <TableHead>Intervention</TableHead>
-                <TableHead className="text-right">CSC operators</TableHead>
-                <TableHead className="text-right">Doc camps</TableHead>
-                <TableHead className="text-right">Awareness sessions</TableHead>
+                <TableHead className="text-right">Estimated CSC support</TableHead>
+                <TableHead className="text-right">Documentation drives</TableHead>
+                <TableHead className="text-right">Outreach sessions</TableHead>
                 <TableHead className="text-right">Navigator facilitators</TableHead>
-                <TableHead className="text-right">Households benefiting</TableHead>
+                <TableHead className="text-right">Priority households</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -356,10 +372,10 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
                 return (
                   <TableRow key={r.interventionId}>
                     <TableCell className="font-medium">{iv.title}</TableCell>
-                    <TableCell className="text-right">{r.cscOperators}</TableCell>
-                    <TableCell className="text-right">{r.documentationCamps}</TableCell>
-                    <TableCell className="text-right">{r.awarenessSessions}</TableCell>
-                    <TableCell className="text-right">{r.navigatorFacilitators}</TableCell>
+                    <TableCell className="text-right">~{r.cscOperators}</TableCell>
+                    <TableCell className="text-right">~{r.documentationCamps}</TableCell>
+                    <TableCell className="text-right">~{r.awarenessSessions}</TableCell>
+                    <TableCell className="text-right">~{r.navigatorFacilitators}</TableCell>
                     <TableCell className="text-right">
                       {r.householdsExpectedToBenefit.toLocaleString()}
                     </TableCell>
@@ -369,6 +385,10 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
             </TableBody>
           </Table>
         </div>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Planning estimates are derived deterministically from current analytics and
+          automatically scale as additional households are analyzed.
+        </p>
       </section>
 
       {/* Impact Forecast table */}
@@ -406,7 +426,7 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
                       -{f.missedOpportunityReductionPct}%
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatINR(f.annualBenefitIncreaseINR)}
+                      {formatINRCompact(f.annualBenefitIncreaseINR)}/yr
                     </TableCell>
                   </TableRow>
                 );
@@ -650,7 +670,7 @@ function InterventionCard({
       </div>
       <div className="mt-3 grid gap-3 text-xs sm:grid-cols-3">
         <div>
-          <div className="text-muted-foreground">Population affected</div>
+          <div className="text-muted-foreground">Estimated beneficiary reach</div>
           <div className="text-sm font-medium">
             {iv.populationAffected.toLocaleString()}
           </div>
@@ -658,11 +678,11 @@ function InterventionCard({
         <div>
           <div className="text-muted-foreground">Benefits unlocked</div>
           <div className="text-sm font-medium">
-            {formatINR(iv.estimatedBenefitUnlockedINR)}
+            {formatINRCompact(iv.estimatedBenefitUnlockedINR)}
           </div>
         </div>
         <div>
-          <div className="text-muted-foreground">Households expected to benefit</div>
+          <div className="text-muted-foreground">Priority households identified</div>
           <div className="text-sm font-medium">
             {resource ? resource.householdsExpectedToBenefit.toLocaleString() : "—"}
           </div>
@@ -678,7 +698,7 @@ function InterventionCard({
             -{forecast.missedOpportunityReductionPct}% missed ops
           </Badge>
           <Badge variant="outline">
-            {formatINR(forecast.annualBenefitIncreaseINR)} / yr
+            {formatINRCompact(forecast.annualBenefitIncreaseINR)} / yr
           </Badge>
         </div>
       ) : null}
