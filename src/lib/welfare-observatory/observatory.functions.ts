@@ -19,7 +19,7 @@ export const getWelfareObservatoryFn = createServerFn({ method: "GET" })
     const { buildObservatorySnapshot } = await import("./observatoryEngine");
 
     const [national, planner, warnings, impact] = await Promise.all([
-      getNationalSnapshotFn(),
+      getCommandCenterFn(),
       getInterventionPlannerFn(),
       getEarlyWarningFn(),
       getImpactMonitoringFn(),
