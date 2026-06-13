@@ -17,6 +17,7 @@ import { Route as OutcomePredictionRouteImport } from './routes/outcome-predicti
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as KnowledgeGraphRouteImport } from './routes/knowledge-graph'
+import { Route as InterventionPlannerRouteImport } from './routes/intervention-planner'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as FamilyPlannerRouteImport } from './routes/family-planner'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
@@ -69,6 +70,11 @@ const NavigatorRoute = NavigatorRouteImport.update({
 const KnowledgeGraphRoute = KnowledgeGraphRouteImport.update({
   id: '/knowledge-graph',
   path: '/knowledge-graph',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InterventionPlannerRoute = InterventionPlannerRouteImport.update({
+  id: '/intervention-planner',
+  path: '/intervention-planner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsRoute = InsightsRouteImport.update({
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/insights': typeof InsightsRoute
+  '/intervention-planner': typeof InterventionPlannerRoute
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/insights': typeof InsightsRoute
+  '/intervention-planner': typeof InterventionPlannerRoute
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
@@ -196,6 +204,7 @@ export interface FileRoutesById {
   '/eligibility': typeof EligibilityRoute
   '/family-planner': typeof FamilyPlannerRoute
   '/insights': typeof InsightsRoute
+  '/intervention-planner': typeof InterventionPlannerRoute
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
   '/onboarding': typeof OnboardingRoute
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/eligibility'
     | '/family-planner'
     | '/insights'
+    | '/intervention-planner'
     | '/knowledge-graph'
     | '/navigator'
     | '/onboarding'
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/eligibility'
     | '/family-planner'
     | '/insights'
+    | '/intervention-planner'
     | '/knowledge-graph'
     | '/navigator'
     | '/onboarding'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
     | '/eligibility'
     | '/family-planner'
     | '/insights'
+    | '/intervention-planner'
     | '/knowledge-graph'
     | '/navigator'
     | '/onboarding'
@@ -291,6 +303,7 @@ export interface RootRouteChildren {
   EligibilityRoute: typeof EligibilityRoute
   FamilyPlannerRoute: typeof FamilyPlannerRoute
   InsightsRoute: typeof InsightsRoute
+  InterventionPlannerRoute: typeof InterventionPlannerRoute
   KnowledgeGraphRoute: typeof KnowledgeGraphRoute
   NavigatorRoute: typeof NavigatorRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       path: '/knowledge-graph'
       fullPath: '/knowledge-graph'
       preLoaderRoute: typeof KnowledgeGraphRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/intervention-planner': {
+      id: '/intervention-planner'
+      path: '/intervention-planner'
+      fullPath: '/intervention-planner'
+      preLoaderRoute: typeof InterventionPlannerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights': {
@@ -477,6 +497,7 @@ const rootRouteChildren: RootRouteChildren = {
   EligibilityRoute: EligibilityRoute,
   FamilyPlannerRoute: FamilyPlannerRoute,
   InsightsRoute: InsightsRoute,
+  InterventionPlannerRoute: InterventionPlannerRoute,
   KnowledgeGraphRoute: KnowledgeGraphRoute,
   NavigatorRoute: NavigatorRoute,
   OnboardingRoute: OnboardingRoute,
