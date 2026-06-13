@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelfareObservatoryRouteImport } from './routes/welfare-observatory'
 import { Route as WelfareRoadmapRouteImport } from './routes/welfare-roadmap'
 import { Route as WelfareObservatoryRouteImport } from './routes/welfare-observatory'
 import { Route as SchemesRouteImport } from './routes/schemes'
@@ -36,6 +37,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SchemesIdRouteImport } from './routes/schemes.$id'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
 
+const WelfareObservatoryRoute = WelfareObservatoryRouteImport.update({
+  id: '/welfare-observatory',
+  path: '/welfare-observatory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WelfareRoadmapRoute = WelfareRoadmapRouteImport.update({
   id: '/welfare-roadmap',
   path: '/welfare-roadmap',
