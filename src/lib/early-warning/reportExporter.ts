@@ -1,13 +1,19 @@
 import type { EarlyWarningSnapshot } from "./types";
 import { formatINR } from "@/lib/welfare-gap/benefitEstimator";
 
-export type WarningReportKind = "early-warning" | "district-summary" | "action-plan";
+export type WarningReportKind =
+  | "early-warning"
+  | "district-summary"
+  | "action-plan"
+  | "evidence-pack";
 
 const TITLES: Record<WarningReportKind, string> = {
   "early-warning": "Welfare Early Warning Report",
   "district-summary": "District Alert Summary",
   "action-plan": "Preventive Action Plan",
+  "evidence-pack": "Alert Evidence Pack",
 };
+
 
 export function exportWarningReport(
   snap: EarlyWarningSnapshot,
@@ -47,16 +53,18 @@ function esc(s: string): string {
 }
 
 function buildHtml(snap: EarlyWarningSnapshot, kind: WarningReportKind): string {
-  const showActions = kind !== "district-summary";
-  const showExplain = kind === "early-warning";
+  const showActions = kind !== "district-summary" && kind !== "evidence-pack";
+  const showExplain = kind === "early-warning" || kind === "evidence-pack";
   const showRegions = kind !== "action-plan";
+  const showEvidence = kind === "evidence-pack";
 
   const summary = `
 <h2>Summary</h2>
 <table>
   <tr><td>Active alerts</td><td><b>${snap.summary.activeAlerts}</b></td></tr>
+  <tr><td>Critical alerts</td><td><b>${snap.summary.criticalAlerts}</b></td></tr>
   <tr><td>High-priority alerts</td><td><b>${snap.summary.highPriorityAlerts}</b></td></tr>
-  <tr><td>Households at emerging risk</td><td><b>${snap.summary.householdsAtEmergingRisk.toLocaleString()}</b></td></tr>
+  <tr><td>Households under observation</td><td><b>${snap.summary.householdsUnderObservation.toLocaleString()}</b></td></tr>
   <tr><td>Estimated benefits at risk</td><td><b>${formatINR(snap.summary.benefitsAtRiskINR)}</b></td></tr>
   <tr><td>Welfare readiness score</td><td><b>${snap.context.welfareReadinessScore}/100</b></td></tr>
 </table>`;
@@ -65,7 +73,7 @@ function buildHtml(snap: EarlyWarningSnapshot, kind: WarningReportKind): string 
     .map(
       (a) => `
 <div class="alert">
-  <div style="font-weight:600">${esc(a.title)} <span class="badge">${a.severity}</span></div>
+  <div style="font-weight:600">${esc(a.title)} <span class="badge">${a.severity}</span> <span class="badge" style="background:#eef;color:#335">${a.lifecycle}</span> <span class="badge" style="background:#efe;color:#264">${a.confidence} confidence</span></div>
   <div class="muted">${esc(a.categoryLabel)} · ${esc(a.region)} · ${a.householdsAffected.toLocaleString()} households · ${formatINR(a.potentialBenefitLossINR)} at risk</div>
   <div style="font-size:12px;color:#444;margin-top:4px">${esc(a.rationale)}</div>
   ${
@@ -75,12 +83,18 @@ function buildHtml(snap: EarlyWarningSnapshot, kind: WarningReportKind): string 
   }
   ${
     showExplain
-      ? `<div style="font-size:11px;color:#555;margin-top:6px"><b>Triggering conditions:</b> ${a.triggeringConditions.map(esc).join("; ")}<br/><b>Modules:</b> ${a.contributingModules.map(esc).join(", ")} · <b>Datasets:</b> ${a.referencedDatasets.map(esc).join(", ")}</div>`
+      ? `<div style="font-size:11px;color:#555;margin-top:6px"><b>Triggering conditions:</b> ${a.triggeringConditions.map(esc).join("; ")}<br/><b>Deterministic rules:</b> ${a.deterministicRules.map(esc).join("; ")}<br/><b>Modules:</b> ${a.contributingModules.map(esc).join(", ")} · <b>Datasets:</b> ${a.referencedDatasets.map(esc).join(", ")}</div>`
+      : ""
+  }
+  ${
+    showEvidence
+      ? `<div style="font-size:11px;color:#333;margin-top:6px"><b>Evidence:</b><ul style="margin:4px 0 0 18px">${a.evidence.map((e) => `<li>${esc(e)}</li>`).join("")}</ul></div>`
       : ""
   }
 </div>`,
     )
     .join("");
+
 
   const regionBlock = showRegions
     ? `<h2>Region concentration</h2>
