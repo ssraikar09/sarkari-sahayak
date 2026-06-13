@@ -670,7 +670,7 @@ function InterventionCard({
       </div>
       <div className="mt-3 grid gap-3 text-xs sm:grid-cols-3">
         <div>
-          <div className="text-muted-foreground">Population affected</div>
+          <div className="text-muted-foreground">Estimated beneficiary reach</div>
           <div className="text-sm font-medium">
             {iv.populationAffected.toLocaleString()}
           </div>
@@ -678,11 +678,11 @@ function InterventionCard({
         <div>
           <div className="text-muted-foreground">Benefits unlocked</div>
           <div className="text-sm font-medium">
-            {formatINR(iv.estimatedBenefitUnlockedINR)}
+            {formatINRCompact(iv.estimatedBenefitUnlockedINR)}
           </div>
         </div>
         <div>
-          <div className="text-muted-foreground">Households expected to benefit</div>
+          <div className="text-muted-foreground">Priority households identified</div>
           <div className="text-sm font-medium">
             {resource ? resource.householdsExpectedToBenefit.toLocaleString() : "—"}
           </div>
