@@ -1,25 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import {
   ArrowLeft,
   ArrowUp,
   BookOpen,
-  CheckCircle2,
-  ClipboardCopy,
   ExternalLink,
-  FileText,
-  Gift,
-  Headphones,
-  ListChecks,
   MapPin,
   MessageCircle,
-  Mic,
   ShieldCheck,
   Sparkles,
-  Square,
-  Volume2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,21 +21,12 @@ import { getStoredProfileId } from "@/lib/citizen-profile/storage";
 import type { AssistantMessage, AssistantSource } from "@/lib/rag/types";
 import { toast } from "sonner";
 import { MicButton } from "@/components/voice/MicButton";
+import { ListenButton } from "@/components/voice/ListenButton";
 import { VoiceSettingsBar } from "@/components/voice/VoiceSettingsBar";
 import { useVoiceSettings } from "@/lib/voice/voiceSettings";
 import { normalizeVoiceQuery } from "@/lib/voice/queryNormalizer";
-import {
-  cancelSpeech,
-  isSpeechSynthesisSupported,
-  speak,
-  stripMarkdownForSpeech,
-} from "@/lib/voice/textToSpeechService";
+import { cancelSpeech } from "@/lib/voice/textToSpeechService";
 import { translateFromEnglish } from "@/lib/voice/translationService";
-import {
-  VOICE_LANGUAGES,
-  getVoiceLanguage,
-  type VoiceLanguageCode,
-} from "@/lib/voice/languageConfig";
 
 export const Route = createFileRoute("/assistant")({
   head: () => ({
@@ -69,17 +51,12 @@ export const Route = createFileRoute("/assistant")({
   component: AssistantPage,
 });
 
-const SUGGESTED_PROMPTS: { title: string; q: string }[] = [
-  { title: "Eligibility check", q: "What schemes am I eligible for?" },
-  { title: "Explain a scheme", q: "Explain PM-KISAN in simple language." },
-  { title: "Documents required", q: "What documents are required for Mudra Yojana?" },
-  { title: "By group", q: "Suggest schemes for students." },
+const SUGGESTED_PROMPTS: string[] = [
+  "What schemes am I eligible for?",
+  "Explain PM-KISAN.",
+  "What documents are required for Mudra Yojana?",
+  "Suggest schemes for students.",
 ];
-
-type NarrationStatus =
-  | { kind: "idle" }
-  | { kind: "playing"; langLabel: string; fallback: boolean }
-  | { kind: "ended" };
 
 function AssistantPage() {
   const ask = useServerFn(askAssistant);
@@ -89,13 +66,8 @@ function AssistantPage() {
   const [loading, setLoading] = useState(false);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [lastAssistantId, setLastAssistantId] = useState<string | null>(null);
-  const [narration, setNarration] = useState<NarrationStatus>({ kind: "idle" });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const autoPlayedRef = useRef<Set<string>>(new Set());
-
-  const effectiveLang: VoiceLanguageCode = advancedMultilingual ? language : "en-IN";
-  const selectedLangMeta = getVoiceLanguage(effectiveLang);
 
   useEffect(() => {
     setProfileId(getStoredProfileId());
@@ -112,41 +84,12 @@ function AssistantPage() {
     });
   }, [messages, loading]);
 
-  useEffect(() => () => cancelSpeech(), []);
-
-  const playNarration = (text: string) => {
-    if (!isSpeechSynthesisSupported()) return;
-    cancelSpeech();
-    const clean = stripMarkdownForSpeech(text);
-    if (!clean) return;
-    setNarration({
-      kind: "playing",
-      langLabel: selectedLangMeta.label,
-      fallback: false,
-    });
-    speak(clean, {
-      lang: effectiveLang,
-      onEnd: () => setNarration({ kind: "ended" }),
-      onError: () => setNarration({ kind: "ended" }),
-      onFallback: () =>
-        setNarration({
-          kind: "playing",
-          langLabel: selectedLangMeta.label,
-          fallback: true,
-        }),
-    });
-  };
-
-  const stopNarration = () => {
-    cancelSpeech();
-    setNarration({ kind: "ended" });
-  };
-
   const submit = async (raw: string) => {
     const original = raw.trim();
     if (!original || loading) return;
+    // Stop any in-progress narration immediately when a new query starts.
     cancelSpeech();
-    setNarration({ kind: "idle" });
+    // Normalize regional scheme references so the RAG pipeline can match them.
     const query = normalizeVoiceQuery(original);
 
     const userMsg: AssistantMessage = {
@@ -160,7 +103,9 @@ function AssistantPage() {
     setLoading(true);
 
     try {
-      const res = await ask({ data: { query, citizenProfileId: profileId } });
+      const res = await ask({
+        data: { query, citizenProfileId: profileId },
+      });
       let displayContent = res.answer;
       if (advancedMultilingual && language !== "en-IN") {
         const t = await translateFromEnglish(res.answer, language);
@@ -168,7 +113,7 @@ function AssistantPage() {
           displayContent = t.text;
         } else {
           toast.message(
-            "Regional translation is currently unavailable. Showing English text.",
+            "Regional narration is currently unavailable. English narration will be used.",
           );
         }
       }
@@ -182,13 +127,6 @@ function AssistantPage() {
       };
       setMessages((m) => [...m, reply]);
       setLastAssistantId(reply.id);
-
-      // Auto-narrate after render.
-      if (!autoPlayedRef.current.has(reply.id)) {
-        autoPlayedRef.current.add(reply.id);
-        // Small delay so the bubble paints first.
-        setTimeout(() => playNarration(displayContent), 200);
-      }
     } catch (err) {
       console.error(err);
       setMessages((m) => [
@@ -214,8 +152,6 @@ function AssistantPage() {
       void submit(input);
     }
   };
-
-  const voiceAvailable = useMemo(() => isSpeechSynthesisSupported(), []);
 
   return (
     <main className="flex min-h-screen flex-col bg-gradient-to-b from-background to-accent/30">
@@ -245,29 +181,22 @@ function AssistantPage() {
 
         <VoiceSettingsBar className="mb-3" />
 
-        <NarrationStatusBar status={narration} onStop={stopNarration} />
-
         <div
           ref={scrollRef}
           className="flex-1 space-y-4 overflow-y-auto rounded-2xl border bg-card/60 p-4 shadow-sm sm:p-6"
         >
           {messages.length === 0 ? (
-            <EmptyState
-              onPick={(p) => void submit(p)}
-              voiceAvailable={voiceAvailable}
-              activeLang={selectedLangMeta.label}
-            />
+            <EmptyState onPick={(p) => void submit(p)} />
           ) : (
             messages.map((m) => (
               <MessageBubble
                 key={m.id}
                 message={m}
-                isLastAssistant={m.id === lastAssistantId}
-                isNarrating={
-                  narration.kind === "playing" && m.id === lastAssistantId
+                autoPlay={
+                  m.role === "assistant" &&
+                  m.id === lastAssistantId &&
+                  !loading
                 }
-                onReplay={() => playNarration(m.content)}
-                onStop={stopNarration}
               />
             ))
           )}
@@ -284,6 +213,7 @@ function AssistantPage() {
           <MicButton
             onTranscript={(t) => {
               setInput(t);
+              // Auto-submit final transcript.
               void submit(t);
             }}
             onPartial={(t) => setInput(t)}
@@ -320,190 +250,55 @@ function AssistantPage() {
   );
 }
 
-function NarrationStatusBar({
-  status,
-  onStop,
-}: {
-  status: NarrationStatus;
-  onStop: () => void;
-}) {
-  if (status.kind !== "playing") return null;
+function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
   return (
-    <div className="mb-3 flex items-center justify-between gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-foreground">
-      <div className="flex items-center gap-2">
-        <Headphones className="size-3.5 text-primary" aria-hidden />
-        {status.fallback ? (
-          <span>
-            <span className="font-medium">{status.langLabel}</span> voice
-            unavailable. Playing English narration.
-          </span>
-        ) : (
-          <span>
-            Narrating in <span className="font-medium">{status.langLabel}</span>
-            …
-          </span>
-        )}
+    <div className="space-y-5 py-6 text-center sm:py-10">
+      <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <MessageCircle className="size-7" aria-hidden />
       </div>
-      <Button
-        type="button"
-        size="sm"
-        variant="ghost"
-        className="h-7 px-2 text-xs"
-        onClick={onStop}
-      >
-        <Square className="mr-1 size-3" aria-hidden />
-        Stop
-      </Button>
-    </div>
-  );
-}
-
-function EmptyState({
-  onPick,
-  voiceAvailable,
-  activeLang,
-}: {
-  onPick: (prompt: string) => void;
-  voiceAvailable: boolean;
-  activeLang: string;
-}) {
-  return (
-    <div className="space-y-6 py-4 sm:py-8">
-      <div className="text-center">
-        <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <MessageCircle className="size-7" aria-hidden />
-        </div>
-        <h2 className="mt-3 text-lg font-semibold text-foreground">
-          Welcome to your AI Welfare Assistant
+      <div>
+        <h2 className="text-lg font-semibold text-foreground">
+          How can I help today?
         </h2>
         <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-          Ask about schemes, eligibility, benefits or documents.
+          Try one of these to get started.
         </p>
       </div>
-
       <div className="mx-auto grid max-w-xl gap-2 sm:grid-cols-2">
         {SUGGESTED_PROMPTS.map((p) => (
           <button
-            key={p.q}
+            key={p}
             type="button"
-            onClick={() => onPick(p.q)}
-            className="group rounded-xl border bg-background px-4 py-3 text-left transition hover:border-primary/40 hover:bg-accent"
+            onClick={() => onPick(p)}
+            className="rounded-xl border bg-background px-4 py-3 text-left text-sm text-foreground transition hover:border-primary/40 hover:bg-accent"
           >
-            <div className="text-[11px] font-semibold uppercase tracking-wide text-primary/80">
-              {p.title}
-            </div>
-            <div className="mt-0.5 text-sm text-foreground group-hover:text-foreground">
-              {p.q}
-            </div>
+            {p}
           </button>
         ))}
       </div>
-
-      <div className="mx-auto max-w-xl space-y-3 rounded-xl border bg-background/60 p-3">
-        <div>
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            Supported Languages
-          </div>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {VOICE_LANGUAGES.map((l) => (
-              <Badge
-                key={l.code}
-                variant={l.label === activeLang ? "default" : "secondary"}
-                className="text-[11px]"
-              >
-                {l.label}
-                {l.short !== "en" ? ` · ${l.nativeLabel}` : ""}
-              </Badge>
-            ))}
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          {voiceAvailable ? (
-            <>
-              <CheckCircle2 className="size-3.5 text-emerald-600" aria-hidden />
-              <span>
-                Voice assistant available · Mic input and narration ready
-              </span>
-            </>
-          ) : (
-            <>
-              <Mic className="size-3.5" aria-hidden />
-              <span>
-                Voice features may be limited on this device. Text mode works
-                normally.
-              </span>
-            </>
-          )}
-        </div>
-      </div>
     </div>
   );
-}
-
-type Section = { key: string; title: string; icon: typeof BookOpen; body: string };
-
-const SECTION_MAP: { match: RegExp; title: string; icon: typeof BookOpen; key: string }[] = [
-  { key: "summary", match: /^(summary|overview|about)/i, title: "Summary", icon: BookOpen },
-  { key: "eligibility", match: /eligib/i, title: "Eligibility", icon: ShieldCheck },
-  { key: "benefits", match: /benefit/i, title: "Benefits", icon: Gift },
-  { key: "documents", match: /(document|paper)/i, title: "Documents Required", icon: FileText },
-  { key: "process", match: /(apply|application|process|how to)/i, title: "Application Process", icon: ListChecks },
-];
-
-function parseSections(markdown: string): Section[] | null {
-  // Split by H1/H2/H3 markdown headings.
-  const regex = /^#{1,3}\s+(.+)$/gm;
-  const matches: { title: string; index: number; headingLen: number }[] = [];
-  let m: RegExpExecArray | null;
-  while ((m = regex.exec(markdown)) !== null) {
-    matches.push({ title: m[1].trim(), index: m.index, headingLen: m[0].length });
-  }
-  if (matches.length < 2) return null;
-  const sections: Section[] = [];
-  for (let i = 0; i < matches.length; i++) {
-    const cur = matches[i];
-    const next = matches[i + 1];
-    const bodyStart = cur.index + cur.headingLen;
-    const bodyEnd = next ? next.index : markdown.length;
-    const body = markdown.slice(bodyStart, bodyEnd).trim();
-    const mapped = SECTION_MAP.find((s) => s.match.test(cur.title));
-    if (!mapped) continue;
-    if (sections.some((s) => s.key === mapped.key)) continue;
-    sections.push({ key: mapped.key, title: mapped.title, icon: mapped.icon, body });
-  }
-  return sections.length >= 2 ? sections : null;
 }
 
 function MessageBubble({
   message,
-  isLastAssistant,
-  isNarrating,
-  onReplay,
-  onStop,
+  autoPlay = false,
 }: {
   message: AssistantMessage;
-  isLastAssistant: boolean;
-  isNarrating: boolean;
-  onReplay: () => void;
-  onStop: () => void;
+  autoPlay?: boolean;
 }) {
   const isUser = message.role === "user";
-  const sections = !isUser ? parseSections(message.content) : null;
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(stripMarkdownForSpeech(message.content));
-      toast.success("Response copied");
-    } catch {
-      toast.error("Could not copy to clipboard");
-    }
-  };
-
+  const fallbackNotice = () =>
+    toast.message(
+      "Voice unavailable in the selected language. Playing English narration.",
+    );
   return (
-    <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
+    <div
+      className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}
+    >
       <div
         className={cn(
-          "max-w-[92%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+          "max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
           isUser
             ? "bg-primary text-primary-foreground"
             : "bg-background text-foreground shadow-sm ring-1 ring-border",
@@ -513,70 +308,18 @@ function MessageBubble({
           <p className="whitespace-pre-wrap">{message.content}</p>
         ) : (
           <>
-            {sections ? (
-              <div className="space-y-2">
-                {sections.map((s) => {
-                  const Icon = s.icon;
-                  return (
-                    <div
-                      key={s.key}
-                      className="rounded-xl border bg-card/60 p-3"
-                    >
-                      <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-primary">
-                        <Icon className="size-3.5" aria-hidden />
-                        {s.title}
-                      </div>
-                      <div className="prose prose-sm max-w-none text-foreground prose-p:my-1 prose-ul:my-1 prose-headings:hidden prose-strong:text-foreground">
-                        <ReactMarkdown>{s.body}</ReactMarkdown>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="prose prose-sm max-w-none text-foreground prose-p:my-2 prose-ul:my-2 prose-headings:mt-3 prose-headings:mb-1 prose-strong:text-foreground">
-                <ReactMarkdown>{message.content}</ReactMarkdown>
-              </div>
-            )}
-
-            <div className="mt-2 flex flex-wrap items-center gap-1.5">
-              {isNarrating ? (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  className="h-7 px-2 text-xs"
-                  onClick={onStop}
-                >
-                  <Square className="mr-1 size-3" aria-hidden />
-                  Stop narration
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  className="h-7 px-2 text-xs"
-                  onClick={onReplay}
-                >
-                  <Volume2 className="mr-1 size-3" aria-hidden />
-                  {isLastAssistant ? "Replay" : "Listen"}
-                </Button>
-              )}
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                className="h-7 px-2 text-xs"
-                onClick={copy}
-              >
-                <ClipboardCopy className="mr-1 size-3" aria-hidden />
-                Copy
-              </Button>
+            <div className="prose prose-sm max-w-none text-foreground prose-p:my-2 prose-ul:my-2 prose-headings:mt-3 prose-headings:mb-1 prose-strong:text-foreground">
+              <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
-
-            {message.fallback &&
-            (!message.sources || message.sources.length === 0) ? (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <ListenButton
+                text={message.content}
+                autoPlay={autoPlay}
+                onFallback={autoPlay ? fallbackNotice : undefined}
+                onUnavailable={autoPlay ? fallbackNotice : undefined}
+              />
+            </div>
+            {message.fallback && (!message.sources || message.sources.length === 0) ? (
               <TrustFallbackActions />
             ) : null}
             {message.sources && message.sources.length > 0 ? (
