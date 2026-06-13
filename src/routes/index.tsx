@@ -16,6 +16,10 @@ import {
   CheckCircle2,
   FileText,
   ArrowRight,
+  Database,
+  Cpu,
+  Globe2,
+  Lock,
   type LucideIcon,
 } from "lucide-react";
 
