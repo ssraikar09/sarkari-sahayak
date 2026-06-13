@@ -25,8 +25,14 @@ import { ListenButton } from "@/components/voice/ListenButton";
 import { VoiceSettingsBar } from "@/components/voice/VoiceSettingsBar";
 import { useVoiceSettings } from "@/lib/voice/voiceSettings";
 import { normalizeVoiceQuery } from "@/lib/voice/queryNormalizer";
-import { cancelSpeech } from "@/lib/voice/textToSpeechService";
+import {
+  cancelSpeech,
+  isSpeechSynthesisSupported,
+  speak,
+  stripMarkdownForSpeech,
+} from "@/lib/voice/textToSpeechService";
 import { translateFromEnglish } from "@/lib/voice/translationService";
+import { getVoiceLanguage } from "@/lib/voice/languageConfig";
 
 export const Route = createFileRoute("/assistant")({
   head: () => ({
@@ -83,6 +89,45 @@ function AssistantPage() {
       behavior: "smooth",
     });
   }, [messages, loading]);
+
+  // Auto-narrate the latest assistant reply once it has fully rendered.
+  const narratedRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!lastAssistantId || loading) return;
+    if (narratedRef.current.has(lastAssistantId)) return;
+    const reply = messages.find((m) => m.id === lastAssistantId);
+    if (!reply || reply.role !== "assistant") return;
+    const clean = stripMarkdownForSpeech(reply.content);
+    if (!clean) return;
+    narratedRef.current.add(lastAssistantId);
+
+    const effectiveLang = advancedMultilingual ? language : "en-IN";
+    const meta = getVoiceLanguage(effectiveLang);
+    if (!isSpeechSynthesisSupported()) {
+      console.warn("[voice] Speech synthesis not supported on this device.");
+      return;
+    }
+    // Wait for the bubble to paint before speaking to avoid race conditions.
+    const t = window.setTimeout(() => {
+      console.log("[voice] Voice narration started");
+      console.log(`[voice] Selected language: ${meta.label} (${effectiveLang})`);
+      speak(clean, {
+        lang: effectiveLang,
+        onEnd: () => console.log("[voice] Voice narration completed"),
+        onFallback: () => {
+          console.warn("[voice] Falling back to English narration");
+          toast.message(
+            "Voice unavailable in the selected language. Playing English narration.",
+          );
+        },
+        onError: (msg) => {
+          console.error("[voice] Voice narration failed:", msg);
+          toast.error("Unable to play voice narration. Please try again.");
+        },
+      });
+    }, 250);
+    return () => window.clearTimeout(t);
+  }, [lastAssistantId, loading, messages, advancedMultilingual, language]);
 
   const submit = async (raw: string) => {
     const original = raw.trim();
@@ -189,15 +234,7 @@ function AssistantPage() {
             <EmptyState onPick={(p) => void submit(p)} />
           ) : (
             messages.map((m) => (
-              <MessageBubble
-                key={m.id}
-                message={m}
-                autoPlay={
-                  m.role === "assistant" &&
-                  m.id === lastAssistantId &&
-                  !loading
-                }
-              />
+              <MessageBubble key={m.id} message={m} />
             ))
           )}
           {loading ? <TypingIndicator /> : null}
@@ -280,18 +317,8 @@ function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
   );
 }
 
-function MessageBubble({
-  message,
-  autoPlay = false,
-}: {
-  message: AssistantMessage;
-  autoPlay?: boolean;
-}) {
+function MessageBubble({ message }: { message: AssistantMessage }) {
   const isUser = message.role === "user";
-  const fallbackNotice = () =>
-    toast.message(
-      "Voice unavailable in the selected language. Playing English narration.",
-    );
   return (
     <div
       className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}
@@ -312,12 +339,7 @@ function MessageBubble({
               <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <ListenButton
-                text={message.content}
-                autoPlay={autoPlay}
-                onFallback={autoPlay ? fallbackNotice : undefined}
-                onUnavailable={autoPlay ? fallbackNotice : undefined}
-              />
+              <ListenButton text={message.content} />
             </div>
             {message.fallback && (!message.sources || message.sources.length === 0) ? (
               <TrustFallbackActions />
@@ -333,45 +355,56 @@ function MessageBubble({
 }
 
 function VerifiedSources({ sources }: { sources: AssistantSource[] }) {
+  const hasAnyLink = sources.some((s) => !!s.official_link);
   return (
     <div className="mt-3 rounded-xl border bg-accent/40 p-3">
       <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
         <ShieldCheck className="size-3.5 text-primary" aria-hidden />
         Verified Sources
       </div>
-      <ul className="mt-2 space-y-1.5">
+      <ul className="mt-2 space-y-2">
         {sources.map((s) => (
-          <li key={s.id} className="flex items-start gap-2 text-xs">
-            <Badge
-              variant="secondary"
-              className="mt-0.5 gap-1 px-1.5 py-0 text-[10px]"
-            >
-              <MapPin className="size-2.5" />
-              {s.scheme_scope === "National" ? "National" : s.state}
-            </Badge>
-            <div className="min-w-0 flex-1">
+          <li key={s.id} className="flex flex-col gap-1 text-xs">
+            <div className="flex items-start gap-2">
+              <Badge
+                variant="secondary"
+                className="mt-0.5 gap-1 px-1.5 py-0 text-[10px]"
+              >
+                <MapPin className="size-2.5" />
+                {s.scheme_scope === "National" ? "National" : s.state}
+              </Badge>
               <Link
                 to="/schemes/$id"
                 params={{ id: s.id }}
-                className="font-medium text-foreground hover:text-primary"
+                className="min-w-0 flex-1 font-medium text-foreground hover:text-primary"
               >
                 {s.scheme_name}
               </Link>
-              {s.official_link ? (
-                <a
-                  href={s.official_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-2 inline-flex items-center gap-0.5 text-muted-foreground hover:text-primary"
-                >
-                  Official link
-                  <ExternalLink className="size-3" aria-hidden />
-                </a>
-              ) : null}
             </div>
+            {s.official_link ? (
+              <a
+                href={s.official_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-1 inline-flex w-fit items-center gap-1 rounded-md border border-primary/30 bg-primary/5 px-2 py-1 text-[11px] font-medium text-primary hover:bg-primary/10"
+              >
+                <ExternalLink className="size-3" aria-hidden />
+                Official Government Website
+              </a>
+            ) : (
+              <p className="ml-1 text-[11px] text-muted-foreground">
+                Official website currently unavailable for this scheme.
+              </p>
+            )}
           </li>
         ))}
       </ul>
+      {!hasAnyLink ? (
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Verified information shown above. No official portal links are
+          currently on file for these schemes.
+        </p>
+      ) : null}
     </div>
   );
 }
