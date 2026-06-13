@@ -57,6 +57,7 @@ const more: NavItem[] = [
   { to: "/offline-assistance", label: "Offline Assistance", icon: WifiOff },
   { to: "/early-warning", label: "Early Warning", icon: Siren },
   { to: "/impact-monitoring", label: "Impact Monitoring", icon: Activity },
+  { to: "/welfare-observatory", label: "Welfare Observatory", icon: Telescope },
   { to: "/agent-dashboard", label: "CSC Dashboard", icon: Briefcase },
 ];
 
