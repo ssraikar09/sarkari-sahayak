@@ -358,11 +358,11 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
             <TableHeader>
               <TableRow>
                 <TableHead>Intervention</TableHead>
-                <TableHead className="text-right">CSC operators</TableHead>
-                <TableHead className="text-right">Doc camps</TableHead>
-                <TableHead className="text-right">Awareness sessions</TableHead>
+                <TableHead className="text-right">Estimated CSC support</TableHead>
+                <TableHead className="text-right">Documentation drives</TableHead>
+                <TableHead className="text-right">Outreach sessions</TableHead>
                 <TableHead className="text-right">Navigator facilitators</TableHead>
-                <TableHead className="text-right">Households benefiting</TableHead>
+                <TableHead className="text-right">Priority households</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -372,10 +372,10 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
                 return (
                   <TableRow key={r.interventionId}>
                     <TableCell className="font-medium">{iv.title}</TableCell>
-                    <TableCell className="text-right">{r.cscOperators}</TableCell>
-                    <TableCell className="text-right">{r.documentationCamps}</TableCell>
-                    <TableCell className="text-right">{r.awarenessSessions}</TableCell>
-                    <TableCell className="text-right">{r.navigatorFacilitators}</TableCell>
+                    <TableCell className="text-right">~{r.cscOperators}</TableCell>
+                    <TableCell className="text-right">~{r.documentationCamps}</TableCell>
+                    <TableCell className="text-right">~{r.awarenessSessions}</TableCell>
+                    <TableCell className="text-right">~{r.navigatorFacilitators}</TableCell>
                     <TableCell className="text-right">
                       {r.householdsExpectedToBenefit.toLocaleString()}
                     </TableCell>
@@ -385,6 +385,10 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
             </TableBody>
           </Table>
         </div>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Planning estimates are derived deterministically from current analytics and
+          automatically scale as additional households are analyzed.
+        </p>
       </section>
 
       {/* Impact Forecast table */}
