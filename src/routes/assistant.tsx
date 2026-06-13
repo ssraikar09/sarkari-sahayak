@@ -16,7 +16,6 @@ import {
   MapPin,
   MessageCircle,
   Mic,
-  RotateCcw,
   ShieldCheck,
   Sparkles,
   Square,
