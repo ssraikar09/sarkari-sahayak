@@ -14,10 +14,11 @@ export const getEarlyWarningFn = createServerFn({ method: "GET" })
     const alerts = generateWarningAlerts(source);
     const trends = buildWarningTrends(alerts);
 
+    const criticalAlerts = alerts.filter((a) => a.severity === "critical").length;
     const highPriorityAlerts = alerts.filter(
       (a) => a.severity === "critical" || a.severity === "high",
     ).length;
-    const householdsAtEmergingRisk = alerts.reduce(
+    const householdsUnderObservation = alerts.reduce(
       (s, a) => s + a.householdsAffected,
       0,
     );
@@ -31,10 +32,12 @@ export const getEarlyWarningFn = createServerFn({ method: "GET" })
       hasSufficientData: source.hasSufficientData,
       summary: {
         activeAlerts: alerts.length,
+        criticalAlerts,
         highPriorityAlerts,
-        householdsAtEmergingRisk,
+        householdsUnderObservation,
         benefitsAtRiskINR,
       },
+
       alerts,
       trends,
       context: {

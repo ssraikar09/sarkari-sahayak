@@ -4,11 +4,13 @@ export function buildWarningTrends(alerts: EarlyWarningAlert[]): WarningTrends {
   const cat = new Map<string, { count: number; households: number }>();
   const reg = new Map<string, { count: number; households: number }>();
   const sev = new Map<string, { count: number; households: number }>();
+  const life = new Map<string, { count: number; households: number }>();
 
   for (const a of alerts) {
     bump(cat, a.categoryLabel, a.householdsAffected);
     bump(reg, a.region, a.householdsAffected);
     bump(sev, capitalize(a.severity), a.householdsAffected);
+    bump(life, capitalize(a.lifecycle), a.householdsAffected);
   }
 
   return {
@@ -20,6 +22,9 @@ export function buildWarningTrends(alerts: EarlyWarningAlert[]): WarningTrends {
       .slice(0, 8),
     severityComposition: toRows(sev).sort(
       (a, b) => severityOrder(a.label) - severityOrder(b.label),
+    ),
+    lifecycleDistribution: toRows(life).sort(
+      (a, b) => lifecycleOrder(a.label) - lifecycleOrder(b.label),
     ),
   };
 }
@@ -53,6 +58,16 @@ function severityOrder(label: string) {
     High: 1,
     Moderate: 2,
     Low: 3,
+  };
+  return order[label] ?? 99;
+}
+
+function lifecycleOrder(label: string) {
+  const order: Record<string, number> = {
+    Emerging: 0,
+    Escalating: 1,
+    Critical: 2,
+    Mitigated: 3,
   };
   return order[label] ?? 99;
 }
