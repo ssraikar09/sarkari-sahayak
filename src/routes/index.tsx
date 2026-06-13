@@ -93,11 +93,15 @@ function Welcome() {
         <div className="absolute inset-0 -z-10 [background:radial-gradient(60%_50%_at_85%_30%,oklch(0.62_0.16_150/0.10),transparent_70%)]" />
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex animate-fade-in items-center gap-2 rounded-full border border-primary/30 bg-card/70 px-4 py-1.5 text-xs font-semibold text-primary shadow-sm backdrop-blur">
+            <Link
+              to="/assistant"
+              aria-label="Open AI Government Scheme Navigator"
+              className="group inline-flex animate-fade-in items-center gap-2 rounded-full border border-primary/30 bg-card/70 px-4 py-1.5 text-xs font-semibold text-primary shadow-sm backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
               <Sparkles className="size-3.5" />
               AI-Powered Government Scheme Navigator
-              <ArrowRight className="size-3.5" />
-            </div>
+              <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-[3px]" />
+            </Link>
             <h1
               lang="hi"
               style={{ fontFamily: '"Noto Sans Devanagari", "Tiro Devanagari Hindi", system-ui, sans-serif' }}
