@@ -25,6 +25,7 @@ import {
   Workflow,
   WifiOff,
   Activity,
+  Telescope,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
