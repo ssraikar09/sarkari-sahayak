@@ -15,6 +15,7 @@ import { Route as ResearchObservatoryRouteImport } from './routes/research-obser
 import { Route as PolicyIntelligenceRouteImport } from './routes/policy-intelligence'
 import { Route as OutcomePredictionRouteImport } from './routes/outcome-prediction'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as OfflineAssistanceRouteImport } from './routes/offline-assistance'
 import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as KnowledgeGraphRouteImport } from './routes/knowledge-graph'
 import { Route as InterventionPlannerRouteImport } from './routes/intervention-planner'
@@ -60,6 +61,11 @@ const OutcomePredictionRoute = OutcomePredictionRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfflineAssistanceRoute = OfflineAssistanceRouteImport.update({
+  id: '/offline-assistance',
+  path: '/offline-assistance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NavigatorRoute = NavigatorRouteImport.update({
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/intervention-planner': typeof InterventionPlannerRoute
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
+  '/offline-assistance': typeof OfflineAssistanceRoute
   '/onboarding': typeof OnboardingRoute
   '/outcome-prediction': typeof OutcomePredictionRoute
   '/policy-intelligence': typeof PolicyIntelligenceRoute
@@ -182,6 +189,7 @@ export interface FileRoutesByTo {
   '/intervention-planner': typeof InterventionPlannerRoute
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
+  '/offline-assistance': typeof OfflineAssistanceRoute
   '/onboarding': typeof OnboardingRoute
   '/outcome-prediction': typeof OutcomePredictionRoute
   '/policy-intelligence': typeof PolicyIntelligenceRoute
@@ -207,6 +215,7 @@ export interface FileRoutesById {
   '/intervention-planner': typeof InterventionPlannerRoute
   '/knowledge-graph': typeof KnowledgeGraphRoute
   '/navigator': typeof NavigatorRoute
+  '/offline-assistance': typeof OfflineAssistanceRoute
   '/onboarding': typeof OnboardingRoute
   '/outcome-prediction': typeof OutcomePredictionRoute
   '/policy-intelligence': typeof PolicyIntelligenceRoute
@@ -233,6 +242,7 @@ export interface FileRouteTypes {
     | '/intervention-planner'
     | '/knowledge-graph'
     | '/navigator'
+    | '/offline-assistance'
     | '/onboarding'
     | '/outcome-prediction'
     | '/policy-intelligence'
@@ -257,6 +267,7 @@ export interface FileRouteTypes {
     | '/intervention-planner'
     | '/knowledge-graph'
     | '/navigator'
+    | '/offline-assistance'
     | '/onboarding'
     | '/outcome-prediction'
     | '/policy-intelligence'
@@ -281,6 +292,7 @@ export interface FileRouteTypes {
     | '/intervention-planner'
     | '/knowledge-graph'
     | '/navigator'
+    | '/offline-assistance'
     | '/onboarding'
     | '/outcome-prediction'
     | '/policy-intelligence'
@@ -306,6 +318,7 @@ export interface RootRouteChildren {
   InterventionPlannerRoute: typeof InterventionPlannerRoute
   KnowledgeGraphRoute: typeof KnowledgeGraphRoute
   NavigatorRoute: typeof NavigatorRoute
+  OfflineAssistanceRoute: typeof OfflineAssistanceRoute
   OnboardingRoute: typeof OnboardingRoute
   OutcomePredictionRoute: typeof OutcomePredictionRoute
   PolicyIntelligenceRoute: typeof PolicyIntelligenceRoute
@@ -357,6 +370,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offline-assistance': {
+      id: '/offline-assistance'
+      path: '/offline-assistance'
+      fullPath: '/offline-assistance'
+      preLoaderRoute: typeof OfflineAssistanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/navigator': {
@@ -500,6 +520,7 @@ const rootRouteChildren: RootRouteChildren = {
   InterventionPlannerRoute: InterventionPlannerRoute,
   KnowledgeGraphRoute: KnowledgeGraphRoute,
   NavigatorRoute: NavigatorRoute,
+  OfflineAssistanceRoute: OfflineAssistanceRoute,
   OnboardingRoute: OnboardingRoute,
   OutcomePredictionRoute: OutcomePredictionRoute,
   PolicyIntelligenceRoute: PolicyIntelligenceRoute,
@@ -511,13 +532,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
