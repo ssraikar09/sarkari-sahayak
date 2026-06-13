@@ -4,8 +4,8 @@ import type { WelfareObservatorySnapshot } from "./types";
 export const getWelfareObservatoryFn = createServerFn({ method: "GET" })
   .inputValidator(() => ({}))
   .handler(async (): Promise<WelfareObservatorySnapshot> => {
-    const { getNationalSnapshotFn } = await import(
-      "@/lib/command-center/command.functions"
+    const { getCommandCenterFn } = await import(
+      "@/lib/command-center/nationalAnalytics"
     );
     const { getInterventionPlannerFn } = await import(
       "@/lib/intervention-planner/planner.functions"
