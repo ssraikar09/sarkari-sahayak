@@ -86,6 +86,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Transforming Welfare Access into Welfare Intelligence. Discover government schemes you're eligible for — personalized, AI-powered, in your language." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Sarkari Sahayak" },
+      { name: "twitter:description", content: "Transforming Welfare Access into Welfare Intelligence. Discover government schemes you're eligible for — personalized, AI-powered, in your language." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/08a1ec1e-29bf-498a-90c4-762f11ca973c/id-preview-3bfb72e5--fa53b604-ebc6-437c-9bd4-d65da23fa8bb.lovable.app-1781375401757.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/08a1ec1e-29bf-498a-90c4-762f11ca973c/id-preview-3bfb72e5--fa53b604-ebc6-437c-9bd4-d65da23fa8bb.lovable.app-1781375401757.png" },
     ],
     links: [
       {
