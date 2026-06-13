@@ -141,16 +141,11 @@ function WelfareObservatoryPage() {
           <ol className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {data.lifecycle.map((stage, idx) => (
               <li key={stage.key} className="rounded-xl border bg-background/60 p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    <span className="grid size-5 place-items-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
-                      {idx + 1}
-                    </span>
-                    {stage.label}
-                  </div>
-                  <Badge variant="outline" className="text-[10px]">
-                    {stage.module}
-                  </Badge>
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span className="grid size-5 place-items-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
+                    {idx + 1}
+                  </span>
+                  {stage.label}
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">{stage.description}</p>
                 <div className="mt-2 flex items-center justify-between text-[11px]">
