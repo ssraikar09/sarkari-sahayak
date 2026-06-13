@@ -426,7 +426,7 @@ function PlannerBody({ snap }: { snap: InterventionPlannerSnapshot }) {
                       -{f.missedOpportunityReductionPct}%
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatINR(f.annualBenefitIncreaseINR)}
+                      {formatINRCompact(f.annualBenefitIncreaseINR)}/yr
                     </TableCell>
                   </TableRow>
                 );
