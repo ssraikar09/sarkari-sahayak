@@ -144,7 +144,7 @@ function OfflineAssistancePage() {
       <header className="mb-8">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
           <Database className="size-4" />
-          Module 22 · Offline CSC Assistance
+          Offline CSC Assistance
         </div>
         <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
           Offline Assistance Engine
