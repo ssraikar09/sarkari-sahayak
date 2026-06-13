@@ -407,6 +407,3 @@ function EmptyState() {
     </div>
   );
 }
-
-// local network icon import shim — using lucide Network would conflict with naming; alias below
-import { Network } from "lucide-react";
