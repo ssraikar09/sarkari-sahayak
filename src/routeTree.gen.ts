@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelfareRoadmapRouteImport } from './routes/welfare-roadmap'
+import { Route as WelfareObservatoryRouteImport } from './routes/welfare-observatory'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as ResearchObservatoryRouteImport } from './routes/research-observatory'
 import { Route as PolicyIntelligenceRouteImport } from './routes/policy-intelligence'
@@ -38,6 +39,11 @@ import { Route as ProfileIdRouteImport } from './routes/profile.$id'
 const WelfareRoadmapRoute = WelfareRoadmapRouteImport.update({
   id: '/welfare-roadmap',
   path: '/welfare-roadmap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelfareObservatoryRoute = WelfareObservatoryRouteImport.update({
+  id: '/welfare-observatory',
+  path: '/welfare-observatory',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SchemesRoute = SchemesRouteImport.update({
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/research-observatory': typeof ResearchObservatoryRoute
   '/schemes': typeof SchemesRouteWithChildren
+  '/welfare-observatory': typeof WelfareObservatoryRoute
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
   '/schemes/$id': typeof SchemesIdRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/research-observatory': typeof ResearchObservatoryRoute
   '/schemes': typeof SchemesRouteWithChildren
+  '/welfare-observatory': typeof WelfareObservatoryRoute
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
   '/schemes/$id': typeof SchemesIdRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/policy-intelligence': typeof PolicyIntelligenceRoute
   '/research-observatory': typeof ResearchObservatoryRoute
   '/schemes': typeof SchemesRouteWithChildren
+  '/welfare-observatory': typeof WelfareObservatoryRoute
   '/welfare-roadmap': typeof WelfareRoadmapRoute
   '/profile/$id': typeof ProfileIdRoute
   '/schemes/$id': typeof SchemesIdRoute
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/policy-intelligence'
     | '/research-observatory'
     | '/schemes'
+    | '/welfare-observatory'
     | '/welfare-roadmap'
     | '/profile/$id'
     | '/schemes/$id'
@@ -295,6 +305,7 @@ export interface FileRouteTypes {
     | '/policy-intelligence'
     | '/research-observatory'
     | '/schemes'
+    | '/welfare-observatory'
     | '/welfare-roadmap'
     | '/profile/$id'
     | '/schemes/$id'
@@ -322,6 +333,7 @@ export interface FileRouteTypes {
     | '/policy-intelligence'
     | '/research-observatory'
     | '/schemes'
+    | '/welfare-observatory'
     | '/welfare-roadmap'
     | '/profile/$id'
     | '/schemes/$id'
@@ -350,6 +362,7 @@ export interface RootRouteChildren {
   PolicyIntelligenceRoute: typeof PolicyIntelligenceRoute
   ResearchObservatoryRoute: typeof ResearchObservatoryRoute
   SchemesRoute: typeof SchemesRouteWithChildren
+  WelfareObservatoryRoute: typeof WelfareObservatoryRoute
   WelfareRoadmapRoute: typeof WelfareRoadmapRoute
   ProfileIdRoute: typeof ProfileIdRoute
 }
@@ -361,6 +374,13 @@ declare module '@tanstack/react-router' {
       path: '/welfare-roadmap'
       fullPath: '/welfare-roadmap'
       preLoaderRoute: typeof WelfareRoadmapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welfare-observatory': {
+      id: '/welfare-observatory'
+      path: '/welfare-observatory'
+      fullPath: '/welfare-observatory'
+      preLoaderRoute: typeof WelfareObservatoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/schemes': {
@@ -568,9 +588,20 @@ const rootRouteChildren: RootRouteChildren = {
   PolicyIntelligenceRoute: PolicyIntelligenceRoute,
   ResearchObservatoryRoute: ResearchObservatoryRoute,
   SchemesRoute: SchemesRouteWithChildren,
+  WelfareObservatoryRoute: WelfareObservatoryRoute,
   WelfareRoadmapRoute: WelfareRoadmapRoute,
   ProfileIdRoute: ProfileIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
