@@ -115,11 +115,11 @@ export function speak(text: string, opts: SpeakOptions): void {
   const runId = speechRunId;
 
   const prefix = opts.lang.split("-")[0]?.toLowerCase() ?? "";
-  const browserVoice = pickVoice(opts.lang);
-  // Use AI TTS for Indic languages whenever the browser lacks a matching
-  // voice — covers Chrome on Windows/Linux/Android where regional voices
-  // are commonly missing.
-  const needsRemote = INDIC_LANGS.has(prefix) && !browserVoice;
+  pickVoice(opts.lang);
+  // Remote AI TTS disabled (workspace credits exhausted); always use the
+  // built-in browser speech synthesis, falling back to English if needed.
+  const needsRemote = false;
+  void prefix;
 
   if (needsRemote) {
     void speakWithRemoteTts(clean, opts, runId);
