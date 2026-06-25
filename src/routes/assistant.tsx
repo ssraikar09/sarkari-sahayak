@@ -31,7 +31,6 @@ import {
   speak,
   stripMarkdownForSpeech,
 } from "@/lib/voice/textToSpeechService";
-import { translateFromEnglish } from "@/lib/voice/translationService";
 import { getVoiceLanguage } from "@/lib/voice/languageConfig";
 
 export const Route = createFileRoute("/assistant")({
@@ -173,23 +172,16 @@ function AssistantPage() {
 
     try {
       const res = await ask({
-        data: { query, citizenProfileId: profileId },
+        data: {
+          query,
+          citizenProfileId: profileId,
+          targetLanguage: advancedMultilingual ? language : "en-IN",
+        },
       });
-      let displayContent = res.answer;
-      if (advancedMultilingual && language !== "en-IN") {
-        const t = await translateFromEnglish(res.answer, language);
-        if (t.translated) {
-          displayContent = t.text;
-        } else {
-          toast.message(
-            "Regional narration is currently unavailable. English narration will be used.",
-          );
-        }
-      }
       const reply: AssistantMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: displayContent,
+        content: res.answer,
         sources: res.sources,
         fallback: res.fallback,
         createdAt: new Date().toISOString(),

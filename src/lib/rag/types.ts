@@ -1,5 +1,6 @@
 import type { GovernmentScheme } from "@/lib/schemes";
 import type { CitizenProfile } from "@/lib/citizen-profile/constants";
+import type { VoiceLanguageCode } from "@/lib/voice/languageConfig";
 
 export type AssistantIntent =
   | "eligibility"
@@ -36,6 +37,7 @@ export type AssistantMessage = {
 export type AssistantRequest = {
   query: string;
   citizenProfileId?: string | null;
+  targetLanguage?: VoiceLanguageCode;
 };
 
 export type AssistantResponse = {
@@ -48,6 +50,8 @@ export type AssistantResponse = {
 
 export type AssistantContext = {
   query: string;
+  originalQuery: string;
+  responseLanguage: string;
   intent: AssistantIntent;
   profile: CitizenProfile | null;
   retrieved: RetrievedScheme[];
