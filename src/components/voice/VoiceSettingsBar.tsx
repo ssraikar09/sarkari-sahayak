@@ -117,7 +117,7 @@ export function VoiceSettingsBar({
 
       <p className="w-full text-xs text-muted-foreground">
         {advancedMultilingual
-          ? "Speak in your selected language. Responses will be translated and narrated in that language when supported. If a regional voice is unavailable, English narration will be used."
+          ? "Speak in your selected language. Responses will be answered and narrated in that language when supported. If a regional voice is unavailable, English narration will be used."
           : "Voice interaction currently supports English for optimal recognition accuracy. Enable Advanced Multilingual to speak and listen in the 5 pilot-state languages: Hindi, Kannada, Marathi, Tamil, and Telugu."}
       </p>
     </div>

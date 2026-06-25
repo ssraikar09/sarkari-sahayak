@@ -1,10 +1,16 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { AssistantResponse } from "./types";
+import { getVoiceLanguage } from "@/lib/voice/languageConfig";
+import { normalizeVoiceQuery } from "@/lib/voice/queryNormalizer";
 
 const Input = z.object({
   query: z.string().trim().min(2).max(500),
   citizenProfileId: z.string().uuid().nullable().optional(),
+  targetLanguage: z
+    .enum(["en-IN", "hi-IN", "kn-IN", "ta-IN", "te-IN", "mr-IN"])
+    .optional()
+    .default("en-IN"),
 });
 
 /**
@@ -27,7 +33,9 @@ export const askAssistant = createServerFn({ method: "POST" })
       "./sourceAttribution"
     );
 
-    const intent = detectIntent(data.query);
+    const targetLanguage = getVoiceLanguage(data.targetLanguage);
+    const responseLanguage = `${targetLanguage.label}${targetLanguage.nativeLabel !== targetLanguage.label ? ` (${targetLanguage.nativeLabel})` : ""}`;
+    const key = process.env.GEMINI_API_KEY;
 
     // Load citizen profile (admin client — public RAG endpoint).
     const { supabaseAdmin } = await import(
@@ -44,7 +52,14 @@ export const askAssistant = createServerFn({ method: "POST" })
       profile = (row as never) ?? null;
     }
 
-    const retrieved = await retrieveSchemes(data.query, profile, intent);
+    const normalizedQuery = normalizeVoiceQuery(data.query);
+    const retrievalQuery = await buildEnglishRetrievalQuery(
+      normalizedQuery,
+      targetLanguage.short,
+      key,
+    );
+    const intent = detectIntent(retrievalQuery);
+    const retrieved = await retrieveSchemes(retrievalQuery, profile, intent);
     const retrievedIds = retrieved.map((r) => r.scheme.id);
 
     // Log the query for analytics. Never let logging break the response.
@@ -62,7 +77,7 @@ export const askAssistant = createServerFn({ method: "POST" })
     // Trust layer: no verified schemes → deterministic fallback, no AI call.
     if (retrieved.length === 0) {
       return {
-        answer: TRUST_FALLBACK_MESSAGE,
+        answer: getLocalizedTrustFallback(targetLanguage.short, TRUST_FALLBACK_MESSAGE),
         sources: [],
         intent,
         fallback: true,
@@ -70,7 +85,6 @@ export const askAssistant = createServerFn({ method: "POST" })
       };
     }
 
-    const key = process.env.GEMINI_API_KEY;
     if (!key) {
       return {
         answer:
@@ -82,8 +96,15 @@ export const askAssistant = createServerFn({ method: "POST" })
       };
     }
 
-    const ctx = buildContext(data.query, intent, profile, retrieved);
-    const systemPrompt = buildSystemPrompt();
+    const ctx = buildContext(
+      retrievalQuery,
+      data.query,
+      responseLanguage,
+      intent,
+      profile,
+      retrieved,
+    );
+    const systemPrompt = buildSystemPrompt(responseLanguage);
     const userPrompt = buildUserPrompt(ctx);
 
     try {
@@ -146,4 +167,69 @@ export const askAssistant = createServerFn({ method: "POST" })
       };
     }
   });
+
+async function buildEnglishRetrievalQuery(
+  query: string,
+  targetShort: string,
+  key: string | undefined,
+): Promise<string> {
+  const normalized = normalizeVoiceQuery(query).trim();
+  if (!normalized) return query;
+  if (!key || (targetShort === "en" && isMostlyEnglish(normalized))) {
+    return normalized;
+  }
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [
+              {
+                text:
+                  "Translate Indian welfare/government-scheme questions into concise English for database search. Preserve scheme names such as PM-KISAN, Mudra Yojana, Ayushman Bharat, PM Awas Yojana, Atal Pension Yojana, and Sukanya Samriddhi Yojana. Return only the translated search query. If already English, return it unchanged.",
+              },
+            ],
+          },
+          contents: [{ role: "user", parts: [{ text: normalized }] }],
+        }),
+      },
+    );
+    if (!res.ok) return normalized;
+    const json = (await res.json()) as {
+      candidates?: { content?: { parts?: { text?: string }[] } }[];
+    };
+    const translated =
+      json.candidates?.[0]?.content?.parts
+        ?.map((p) => p.text ?? "")
+        .join("")
+        .replace(/^['"]|['"]$/g, "")
+        .trim() ?? "";
+    return translated ? normalizeVoiceQuery(translated).slice(0, 500) : normalized;
+  } catch (err) {
+    console.warn("Assistant query translation failed", err);
+    return normalized;
+  }
+}
+
+function isMostlyEnglish(text: string): boolean {
+  const letters = text.replace(/[^\p{L}]/gu, "");
+  if (!letters) return true;
+  const latin = text.replace(/[^A-Za-z]/g, "");
+  return latin.length / letters.length > 0.75;
+}
+
+function getLocalizedTrustFallback(short: string, english: string): string {
+  const messages: Record<string, string> = {
+    hi: "हम आपके प्रश्न से जुड़ी सत्यापित जानकारी Sarkari Sahayak के ज्ञान आधार में नहीं ढूंढ पाए।",
+    kn: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ಸಂಬಂಧಿಸಿದ ಪರಿಶೀಲಿತ ಮಾಹಿತಿಯನ್ನು Sarkari Sahayak ಜ್ಞಾನಾಧಾರದಲ್ಲಿ ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ.",
+    ta: "உங்கள் கேள்விக்கு தொடர்பான சரிபார்க்கப்பட்ட தகவலை Sarkari Sahayak அறிவு தளத்தில் கண்டறிய முடியவில்லை.",
+    te: "మీ ప్రశ్నకు సంబంధించిన ధృవీకరించిన సమాచారాన్ని Sarkari Sahayak జ్ఞానాధారంలో కనుగొనలేకపోయాం.",
+    mr: "आपल्या प्रश्नाशी संबंधित पडताळलेली माहिती Sarkari Sahayak च्या ज्ञानाधारात सापडली नाही.",
+  };
+  return messages[short] ?? english;
+}
 

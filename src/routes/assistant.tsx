@@ -24,14 +24,12 @@ import { MicButton } from "@/components/voice/MicButton";
 import { ListenButton } from "@/components/voice/ListenButton";
 import { VoiceSettingsBar } from "@/components/voice/VoiceSettingsBar";
 import { useVoiceSettings } from "@/lib/voice/voiceSettings";
-import { normalizeVoiceQuery } from "@/lib/voice/queryNormalizer";
 import {
   cancelSpeech,
   isSpeechSynthesisSupported,
   speak,
   stripMarkdownForSpeech,
 } from "@/lib/voice/textToSpeechService";
-import { translateFromEnglish } from "@/lib/voice/translationService";
 import { getVoiceLanguage } from "@/lib/voice/languageConfig";
 
 export const Route = createFileRoute("/assistant")({
@@ -158,9 +156,6 @@ function AssistantPage() {
 
     // Stop any in-progress narration immediately when a new query starts.
     cancelSpeech();
-    // Normalize regional scheme references so the RAG pipeline can match them.
-    const query = normalizeVoiceQuery(original);
-
     const userMsg: AssistantMessage = {
       id: crypto.randomUUID(),
       role: "user",
@@ -173,23 +168,16 @@ function AssistantPage() {
 
     try {
       const res = await ask({
-        data: { query, citizenProfileId: profileId },
+        data: {
+          query: original,
+          citizenProfileId: profileId,
+          targetLanguage: advancedMultilingual ? language : "en-IN",
+        },
       });
-      let displayContent = res.answer;
-      if (advancedMultilingual && language !== "en-IN") {
-        const t = await translateFromEnglish(res.answer, language);
-        if (t.translated) {
-          displayContent = t.text;
-        } else {
-          toast.message(
-            "Regional narration is currently unavailable. English narration will be used.",
-          );
-        }
-      }
       const reply: AssistantMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: displayContent,
+        content: res.answer,
         sources: res.sources,
         fallback: res.fallback,
         createdAt: new Date().toISOString(),
