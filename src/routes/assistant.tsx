@@ -24,7 +24,6 @@ import { MicButton } from "@/components/voice/MicButton";
 import { ListenButton } from "@/components/voice/ListenButton";
 import { VoiceSettingsBar } from "@/components/voice/VoiceSettingsBar";
 import { useVoiceSettings } from "@/lib/voice/voiceSettings";
-import { normalizeVoiceQuery } from "@/lib/voice/queryNormalizer";
 import {
   cancelSpeech,
   isSpeechSynthesisSupported,
