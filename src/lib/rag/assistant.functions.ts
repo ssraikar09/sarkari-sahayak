@@ -70,11 +70,11 @@ export const askAssistant = createServerFn({ method: "POST" })
       };
     }
 
-    const key = process.env.LOVABLE_API_KEY;
+    const key = process.env.GEMINI_API_KEY;
     if (!key) {
       return {
         answer:
-          "The AI assistant is temporarily unavailable. Please try again later or browse schemes directly.",
+          "The AI assistant is temporarily unavailable (missing GEMINI_API_KEY). Please try again later or browse schemes directly.",
         sources: toAssistantSources(retrieved),
         intent,
         fallback: true,
@@ -82,23 +82,43 @@ export const askAssistant = createServerFn({ method: "POST" })
       };
     }
 
-    const { createLovableAiGatewayProvider } = await import(
-      "@/lib/ai-gateway.server"
-    );
-    const { generateText } = await import("ai");
-
     const ctx = buildContext(data.query, intent, profile, retrieved);
-    const gateway = createLovableAiGatewayProvider(key);
+    const systemPrompt = buildSystemPrompt();
+    const userPrompt = buildUserPrompt(ctx);
 
     try {
-      const { text } = await generateText({
-        model: gateway("google/gemini-3-flash-preview"),
-        system: buildSystemPrompt(),
-        prompt: buildUserPrompt(ctx),
-      });
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+          }),
+        },
+      );
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Gemini ${res.status}: ${errText}`);
+      }
+
+      const json = (await res.json()) as {
+        candidates?: { content?: { parts?: { text?: string }[] } }[];
+      };
+      const text =
+        json.candidates?.[0]?.content?.parts
+          ?.map((p) => p.text ?? "")
+          .join("")
+          .trim() ?? "";
+
+      if (!text) {
+        throw new Error("Empty response from Gemini");
+      }
 
       return {
-        answer: text.trim(),
+        answer: text,
         sources: toAssistantSources(retrieved),
         intent,
         fallback: false,
@@ -109,12 +129,12 @@ export const askAssistant = createServerFn({ method: "POST" })
       const lower = message.toLowerCase();
       let userMsg =
         "The AI assistant could not generate a response right now. Please try again shortly.";
-      if (lower.includes("429") || lower.includes("rate")) {
+      if (lower.includes("429") || lower.includes("rate") || lower.includes("quota")) {
         userMsg =
           "The AI assistant is busy right now (rate limit reached). Please try again in a moment.";
-      } else if (lower.includes("402") || lower.includes("credit")) {
+      } else if (lower.includes("api key") || lower.includes("api_key") || lower.includes("permission")) {
         userMsg =
-          "AI credits for this workspace are exhausted. Please add credits in Settings → Workspace → Usage.";
+          "The AI assistant key is invalid. Please update GEMINI_API_KEY in project secrets.";
       }
       console.error("Assistant generation failed", err);
       return {
@@ -126,3 +146,4 @@ export const askAssistant = createServerFn({ method: "POST" })
       };
     }
   });
+
