@@ -157,9 +157,6 @@ function AssistantPage() {
 
     // Stop any in-progress narration immediately when a new query starts.
     cancelSpeech();
-    // Normalize regional scheme references so the RAG pipeline can match them.
-    const query = normalizeVoiceQuery(original);
-
     const userMsg: AssistantMessage = {
       id: crypto.randomUUID(),
       role: "user",
@@ -173,7 +170,7 @@ function AssistantPage() {
     try {
       const res = await ask({
         data: {
-          query,
+          query: original,
           citizenProfileId: profileId,
           targetLanguage: advancedMultilingual ? language : "en-IN",
         },
