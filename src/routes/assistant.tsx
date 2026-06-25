@@ -121,9 +121,12 @@ function AssistantPage() {
           );
         },
         onError: (msg) => {
-          console.error("[voice] Voice narration failed:", msg);
-          toast.error("Unable to play voice narration. Please try again.");
+          console.warn("[voice] Voice narration unavailable:", msg);
+          // Auto-narration may be blocked by the browser (no user gesture)
+          // or the OS may lack a matching voice. Don't disrupt the user —
+          // they can still tap the Listen button to play manually.
         },
+
       });
     }, 250);
     return () => window.clearTimeout(t);
