@@ -199,12 +199,21 @@ function speakWithBrowserTts(text: string, opts: SpeakOptions, runId: number): v
   utter.onerror = (e) => {
     if (runId !== speechRunId) return;
     const err = e as SpeechSynthesisErrorEvent;
-    if (err.error === "interrupted" || err.error === "canceled") {
+    const code = err.error ?? "unknown";
+    // Treat benign/transient cases as a normal end so we don't spam errors.
+    if (
+      code === "interrupted" ||
+      code === "canceled" ||
+      code === "not-allowed" ||
+      code === "synthesis-failed" ||
+      code === "audio-busy"
+    ) {
       opts.onEnd?.();
       return;
     }
-    opts.onError?.(`Voice output failed (${err.error ?? "unknown"}).`);
+    opts.onError?.(`Voice output failed (${code}).`);
   };
+
 
   const assignVoice = () => {
     let voice = pickVoice(opts.lang);
